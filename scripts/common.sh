@@ -27,6 +27,15 @@ function printerr() {
   echo -e "${color_red}ERROR${color_reset} $@" >&2
 }
 
+# assert sudoer status under threat of exitution
+# can prevent auth failures from polluting sudo'd conditional expressions
+function assert_sudo() {
+  if ! sudo true; then
+    printerr "failed to authenticate"
+    exit 1
+  fi
+}
+
 # `read` but allows a default value
 function read_default() {
   if [[ $# -ne 3 ]] ; then

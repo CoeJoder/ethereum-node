@@ -23,17 +23,23 @@ echo -e "To abort at any time, press ${color_green}ctrl + c${color_reset}"
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
+# eager authentication
+assert_sudo
+
 # ask for location of the wallet created during validator initialization
 default_val="/var/lib/prysm/validator/prysm-wallet-v2"
 read_default "\nValidator wallet (default: ${color_lightgray}$default_val${color_reset}): " "$default_val" wallet_dir
+assert_sudo
 if sudo test ! -d "$wallet_dir"; then
   printerr "directory not found"
   exit 1
 fi
 
+
 # ask for location of the file containing wallet password
 default_val="/var/lib/prysm/validator/wallet-password.txt"
 read_default "\nWallet password file (default: ${color_lightgray}$default_val${color_reset}): " "$default_val" wallet_password_file
+assert_sudo
 if sudo test ! -f "$wallet_password_file"; then
   printerr "file not found"
   exit 1
