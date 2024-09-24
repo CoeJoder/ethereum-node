@@ -12,3 +12,6 @@
 
 !test/
 !test/tests.sh
+
+!docs/
+!docs/hardware-requirements.md
