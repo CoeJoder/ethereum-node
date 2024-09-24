@@ -15,7 +15,7 @@
 ## Client PC
 - your laptop or desktop computer, connected to the same LAN as the node server
 - will be used to administer the node server via SSH, secured by key+passphrase authentication
-- this guide presumes you have Linux installed.  With minor modifications, you could also use Windows 10+ via WSL (Windows Subsystem for Linux), or Mac OS, but this is beyond the scope of this guide
+- this guide presumes you have Linux installed.  With minor modifications, you could also use Windows 10+ via WSL (Windows Subsystem for Linux), or Mac OS, but that is beyond the scope of this guide
 
 ## Air-Gapped PC
 - will be used to generate seed phrases, and to sign transactions by typing in the seed phrase
@@ -30,8 +30,8 @@
 - for example:
 	- [Linksys WRT3200ACM](https://www.amazon.com/dp/B01JOXW3YE?&tag=router10-20) (*Èl Classicò Americàno*)
 		- long in the tooth, but still works well.  It has dual-partition storage to house two firmware installs simultaneously and switches between them automatically during flashing, which makes tinkering safer.  It's also widely supported with a huge userbase, so finding help on the various forums is easy
-		- there are newer WiFi 6+ routers which are open source-friendly, including a variety of cheap Chinesium appliances which are popular in the "tech bro" community, but they are buggy, suffer occasional zero-day exploits ([exhibit A](https://news.ycombinator.com/item?id=41605680)) and supply-chain attacks ([exhibit B](https://archive.is/xewlX)).  I recommend sticking with *Èl Classicò Americàno* for now.  If better WiFi is needed, disable its WiFi radios and connect a separate AP
-		- a viable alternative would be either a dedicated Mini PC or a pfSense/OPNSense appliance, and running pfSense/OPNSense for routing & firewall duties instead of OpenWRT, but this is out of scope for this guide
+	- there are newer WiFi 6+ routers which are open source-friendly, including a variety of cheap Chinesium appliances which are popular in the "tech bro" community, but they are buggy, suffer occasional zero-day exploits ([exhibit A](https://news.ycombinator.com/item?id=41605680)) and supply-chain attacks ([exhibit B](https://archive.is/xewlX)).  I recommend sticking with *Èl Classicò Americàno* for now.  If better WiFi is needed, disable its WiFi radios and connect a separate AP
+	- a viable alternative would be either a dedicated Mini PC or an official pfSense/OPNSense appliance, and running pfSense/OPNSense as an O/S for routing & firewall duties instead of OpenWRT, but that is beyond the scope of this guide
 
 ## UPS Battery Backup
 - provides surge & sag protection, extending the life of the node server and router
@@ -43,6 +43,6 @@
 ## A Few Cheap Flash Drives
 - one for the server ISO (Ubuntu Server)
 - one for the desktop ISO (Mint or Ubuntu Desktop)
-- one for transfering software and signed transactions between the client PC and the air-gapped PC
+- one for transferring software and signed transactions between the client PC and the air-gapped PC
 - for example:
 	- [SanDisk 32GB 3-Pack Ultra USB 3.0 Flash Drive 32GB](https://www.amazon.com/SanDisk-3-Pack-Ultra-Flash-3x32GB/dp/B08HSS37H7?th=1)
