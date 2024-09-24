@@ -1,0 +1,12 @@
+# ignore all but those explicitly allowed
+*
+
+!README.md
+!LICENSE
+!.gitignore
+!.editorconfig
+
+!scripts/common.sh
+!scripts/exit.sh
+
+!test/tests.sh
