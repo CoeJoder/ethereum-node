@@ -2,7 +2,6 @@
 
 # -------------------------- PREAMBLE -----------------------------------------
 
-# load constants and utility functions
 this_dir="$(dirname "$(realpath "$0")")"
 common_sh="$this_dir/common.sh"
 source "$common_sh"
@@ -19,7 +18,7 @@ echo '$$   ____| $$  $$<  $$ |  $$ |$$\ '
 echo '\$$$$$$$\ $$  /\$$\ $$ |  \$$$$  |'
 echo ' \_______|\__/  \__|\__|   \____/ '
 echo "${color_reset}"
-echo -e "To abort at any time, press ${color_green}ctrl + c${color_reset}"
+echo -e "To abort this process, press ${color_green}ctrl + c${color_reset}"
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
@@ -77,25 +76,31 @@ echo -e "${color_green}${prysm_version}${color_reset}"
 temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
-function cleanup_on_exit() {
+function on_exit() {
   echo -en "\nCleaning up..."
   popd >/dev/null
   [[ -d $temp_dir ]] && rm -rf "$temp_dir" >/dev/null
   echo -e "${color_green}OK${color_reset}"
 }
 
-trap 'cleanup_on_exit' EXIT
+errmsg="\nSomething went wrong. Send screenshots of the terminal to the HGiC (Head Geek-in-Charge), or just try it again and don't screw it up this time ;)"
+trap 'printerr_trap $? "$errmsg"; exit $?' ERR
+trap 'on_exit' EXIT
 
 echo -e "Downloading prysmctl-$prysm_version..."
 prysmctl_bin="prysmctl-${prysm_version}-linux-amd64"
 prysmctl_bin_sha256="prysmctl-${prysm_version}-linux-amd64.sha256"
 wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/${prysmctl_bin}"
 wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/${prysmctl_bin_sha256}"
-echo "$(cat "$prysmctl_bin_sha256")" | shasum -a 256 -c - || exit 1
+echo "$(cat "$prysmctl_bin_sha256")" | shasum -a 256 -c - || (
+  printerr $? "prysmctl checksum failed; supply-chain may be compromised"
+  exit 1
+)
 
 # need to invoke prysmctl as `prysmvalidator`, in a directory where both
 # the current user and `prysmvalidator` have read/write/execute permissions
 install_dir="/var/lib/prysm/prysmctl"
+assert_sudo
 sudo mkdir -p "$install_dir"
 sudo mv -f "$prysmctl_bin" "$install_dir"
 sudo chown -R "${USER}:${prysmvalidator_user}" "$install_dir"
@@ -115,6 +120,7 @@ echo -e "${color_lightgray}sudo -u \"${prysmvalidator_user}\" \"./${prysmctl_bin
 read -p "Continue? (y/N): " confirm \
     && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 0
 
+assert_sudo
 sudo -u "${prysmvalidator_user}" "./${prysmctl_bin}" validator exit \
   --wallet-dir "$wallet_dir" \
   --wallet-password-file "$wallet_password_file" \
@@ -122,10 +128,3 @@ sudo -u "${prysmvalidator_user}" "./${prysmctl_bin}" validator exit \
   --force-exit \
   $prysm_param_network \
   $prysm_param_validators
-retval="$?"
-
-if [[ $retval -ne "0" ]]; then
-  printf "\n"
-  printerr "Something went wrong. Send screenshots of the terminal to the HGiC (Head Geek-in-Charge), or just try it again and don't screw it up this time ;)"
-fi
-exit $retval

@@ -23,8 +23,40 @@ fi
 
 # -------------------------- UTILITIES ----------------------------------------
 
+# terminal error logger that propagates and optionally overrides exit code
+# examples:
+#   `printerr 2 "failed to launch"`
+#   `printerr "failed to launch"`
 function printerr() {
-  echo -e "${color_red}ERROR${color_reset} $@" >&2
+  local code="$?" msg
+  if [[ $# -eq 2 ]]; then
+    code="$1" msg="$2"
+    echo -e "${color_red}ERROR ${code}${color_reset} $msg" >&2
+  elif [[ $# -eq 1 ]]; then
+    msg="$1"
+    echo -e "${color_red}ERROR${color_reset} $msg" >&2
+  else
+    echo "usage: printerr [code] msg" >&2
+    return 1
+  fi
+  return "$code"
+}
+
+# logger for ERR trap that propagates and optionally overrides exit code
+# examples:
+#   `trap 'printerr_trap; exit $?' ERR
+#   `trap 'printerr_trap $? "failed to launch"; exit 1' ERR`
+function printerr_trap() {
+  local code="$?"
+  local msg="at line $(caller)"
+  if [[ $# -eq 2 ]]; then
+    code="$1"
+    msg="$msg: $2"
+  elif [[ $# -eq 1 ]]; then
+    code="$1"
+  fi
+  printerr "$code" "$msg"
+  return "$code"
 }
 
 # assert sudoer status under threat of exitution
