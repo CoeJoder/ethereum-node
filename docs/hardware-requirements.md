@@ -1,6 +1,6 @@
 # Full-Node Hardware Requirements
 ## Node Server
-- powerful, efficient, headless, always-online computer, running the Ethereum node software
+- headless, always-online computer, running Ubuntu Server and the Ethereum node software
 - Mini PC form factor is ideal for its power efficiency
 - NVMe primary disk is required for its high I/O speed
 - cheaper/slower 2.5" HDD or SSD as secondary disk is sufficient for less-demanding "ancient" blockchain data
@@ -14,16 +14,23 @@
 
 ## Client PC
 - your laptop or desktop computer, connected to the same LAN as the node server
+- will be used to administer the node server via SSH, secured by key+passphrase authentication
 - this guide presumes you have Linux installed.  With minor modifications, you could also use Windows 10+ via WSL (Windows Subsystem for Linux), or Mac OS, but this is beyond the scope of this guide
-- this guide will instruct you on how to create a SSH tunnel with passkey authentication for administering the node server in a secure way
+
+## Air-Gapped PC
+- will be used to generate seed phrases, and to sign transactions by typing in the seed phrase
+- once commissioned, must *NEVER, EVER* be connected to the internet or any networked device
+- any old, retired PC will do so long as it can run [the Ethereum staking deposit CLI](https://github.com/ethereum/staking-deposit-cli)
+- should not have a storage disk installed; a live Linux USB disk will be used to boot into RAM
+- should not have wireless capabilities (e.g. WiFi/4G/5G), or should at least have these functions disabled in the BIOS or by physical toggle if available
 
 ## Router / Firewall
 - the hub of your LAN which connects the node server & client PC together and to the internet
-- a decent router which can run [OpenWRT](https://openwrt.org/)
+- must have decent CPU and RAM, able to run [OpenWRT](https://openwrt.org/) and handle the node server's high traffic
 - for example:
 	- [Linksys WRT3200ACM](https://www.amazon.com/dp/B01JOXW3YE?&tag=router10-20) (*Èl Classicò Americàno*)
-		- long in the tooth, but still works well.  It has dual-partition storage to house two firmware installs simultaneously and switches between them automatically during flashing, which makes tinkering much easier.  It's also widely supported with a huge userbase, so finding help on the various forums is easy
-		- there are newer WiFi 6+ routers which are open source-friendly, including a variety of cheap Chinesium appliances which are popular in the "tech bro" community, but they are buggy, suffer occasional zero-day exploits ([exhibit A](https://news.ycombinator.com/item?id=41605680)) and supply-chain attacks ([exhibit B](https://archive.is/xewlX)).  I recommend sticking with *Èl Classicò Americàno* for now.  If better WiFi is needed, disable its Wifi radios and connect a separate AP
+		- long in the tooth, but still works well.  It has dual-partition storage to house two firmware installs simultaneously and switches between them automatically during flashing, which makes tinkering safer.  It's also widely supported with a huge userbase, so finding help on the various forums is easy
+		- there are newer WiFi 6+ routers which are open source-friendly, including a variety of cheap Chinesium appliances which are popular in the "tech bro" community, but they are buggy, suffer occasional zero-day exploits ([exhibit A](https://news.ycombinator.com/item?id=41605680)) and supply-chain attacks ([exhibit B](https://archive.is/xewlX)).  I recommend sticking with *Èl Classicò Americàno* for now.  If better WiFi is needed, disable its WiFi radios and connect a separate AP
 		- a viable alternative would be either a dedicated Mini PC or a pfSense/OPNSense appliance, and running pfSense/OPNSense for routing & firewall duties instead of OpenWRT, but this is out of scope for this guide
 
 ## UPS Battery Backup
@@ -32,3 +39,10 @@
 - gracefully shuts-down the node server during extended power outtages
 - for example:
 	- [CyberPower CP1500PFCLCD](https://www.amazon.com/CyberPower-CP1500PFCLCD-Sinewave-Outlets-Mini-Tower/dp/B00429N19W?th=1)
+
+## A Few Cheap Flash Drives
+- one for the server ISO (Ubuntu Server)
+- one for the desktop ISO (Mint or Ubuntu Desktop)
+- one for transfering software and signed transactions between the client PC and the air-gapped PC
+- for example:
+	- [SanDisk 32GB 3-Pack Ultra USB 3.0 Flash Drive 32GB](https://www.amazon.com/SanDisk-3-Pack-Ultra-Flash-3x32GB/dp/B08HSS37H7?th=1)
