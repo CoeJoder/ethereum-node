@@ -22,7 +22,8 @@
 ## Configurable Values
 This guide is written using the following configurable values:
 - router IP address: `192.168.1.1`
-- static IP address of the node server: `192.168.1.25`
+- node server IP address: `192.168.1.25`
+- node server timezone: `America/Los_Angeles`
 - node server SSH port: `55522`
 - node server hostname: `eth-node-mainnet`
 - node server username: `coejoder`
@@ -117,7 +118,7 @@ Confirm your password: ********
 - [ ] decline to install additional software when prompted and go to next screen
 - [ ] when installation is complete, follow the on-screen instructions. It will reboot and present a terminal command prompt.  Leave it there and begin the setup of the client PC.
 
-### 4. SSH Configuration
+### 4. Configure SSH
 
 #### On the Client PC
 - [ ] login as the local user that will be interacting with the node server.  If this PC is your main Desktop computer, your existing user account is fine to use
@@ -224,10 +225,11 @@ ssh -p 55522 eth-node-mainnet
 # for now, stay logged in and continue to the next step
 ```
 
-- [ ] install the latest system updates:
+- [ ] install the latest system updates and remove orphaned dependencies:
 
 ```bash
 sudo apt update && sudo apt upgrade -y
+sudo apt autoremove
 ```
 
 - [ ] ensure system timezone & time are correct
@@ -243,7 +245,7 @@ sudo timedatectl set-timezone America/Los_Angeles
 sudo shutdown now
 ```
 
-### 5. Finalize Initial Setup
+### 5. Finish Up
 - [ ] disconnect the mouse, keyboard, and monitor from the node server
 - [ ] move the node server to its permanent home, likely near the router and UPS battery backup
 - [ ] power-on the node server and try logging in from the client PC again
