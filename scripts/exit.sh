@@ -57,9 +57,8 @@ else
 fi
 
 # ask for network
-default_val="mainnet"
-read_default "\nEthereum network" $default_val eth_network
-prysm_param_network="--${eth_network}"
+read_default "\nEthereum network" $ethnode_network ethnode_network
+prysm_param_network="--${ethnode_network}"
 
 # lookup the latest program version
 echo -en "\nLooking up latest prysm version..."
@@ -117,7 +116,7 @@ echo -e "${color_lightgray}sudo -u \"${prysm_validator_user}\" \"./${prysmctl_bi
   $prysm_param_validators \n${color_reset}"
 
 read -p "Continue? (y/N): " confirm \
-    && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 0
+  && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 0
 
 assert_sudo
 sudo -u "${prysm_validator_user}" "./${prysmctl_bin}" validator exit \

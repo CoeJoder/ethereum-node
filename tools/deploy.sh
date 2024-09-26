@@ -24,8 +24,8 @@ echo "${color_reset}"
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 if [[ $1 == '-h' ]]; then
-    echo "usage: deploy.sh [--dry-run]" >&2
-    exit 0
+  echo "usage: deploy.sh [--dry-run]" >&2
+  exit 0
 fi
 
 if [[ $(hostname) == $node_server_hostname ]]; then

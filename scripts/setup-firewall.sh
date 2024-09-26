@@ -10,14 +10,16 @@ source "$env_sh"
 
 # -------------------------- BANNER -------------------------------------------
 
-echo "                                ${color_red}(                                  (   (     ${color_reset}"
-echo "                                ${color_red})\ )  (   (      (   (  (       )  )\  )\    ${color_reset}"
-echo "          _                     ${color_red}(()/(  )\  )(    ))\  )\))(   ( /( ((_)((_)  ${color_reset}"
-echo " ___  ___| |_ _   _ _ __        ${color_red}/(_))((_)(()\  /((_)((_)()\  )(_)) _   _     ${color_reset}"
-echo "/ __|/ _ \ __| | | | '_ \ _____${color_yellow}(_) _| (_) ((_)(_))  _(()((_)((_)_ | | | | ${color_reset}"
-echo "\__ \  __/ |_| |_| | |_) |_____|${color_yellow}|  _| | || '_|/ -_) \ V  V // _\` || | | |${color_reset}"
-echo "|___/\___|\__|\__,_| .__/       |_|   |_||_|  \___|  \_/\_/ \__,_||_| |_|                              "
-echo "                   |_|                                                                                 "
+printf "\n"
+echo "                               ${color_red} (                            (  (     ${color_reset}"
+echo "                               ${color_red} )\ ) (  (     (  (  (      ) )\ )\    ${color_reset}"
+echo "          _                    ${color_red}(()/( )\ )(   ))\ )\))(  ( /(((_|(_)   ${color_reset}"
+echo " ___  ___| |_ _   _ _ __       ${color_red}/(_)|(_|()\ /((_|(_)()\ )(_))_  _      ${color_reset}"
+echo "/ __|/ _ \ __| | | | '_ \ ____${color_yellow}(_) _|(_)((_|_)) _(()((_|(_)_| || |  ${color_reset}"
+echo "\__ \  __/ |_| |_| | |_) |____|${color_yellow}|  _|| | '_/ -_)\ V  V / _\` | || | ${color_reset}"
+echo "|___/\___|\__|\__,_| .__/      |_|  |_|_| \___| \_/\_/\__,_|_||_|                               "
+echo "                   |_|                                                                          "
+printf "\n"
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
@@ -54,7 +56,7 @@ sudo ufw status numbered
 ${color_reset}"
 
 read -p "Continue? (y/N): " confirm \
-    && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+  && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 sudo ufw disable
 sudo ufw --force reset
