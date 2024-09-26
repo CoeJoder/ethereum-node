@@ -27,7 +27,7 @@ assert_sudo
 
 # ask for location of the wallet created during validator initialization
 default_val="/var/lib/prysm/validator/prysm-wallet-v2"
-read_default "\nValidator wallet (default: ${color_lightgray}$default_val${color_reset}): " "$default_val" wallet_dir
+read_default "\nValidator wallet" "$default_val" wallet_dir
 assert_sudo
 if sudo test ! -d "$wallet_dir"; then
   printerr "directory not found"
@@ -37,7 +37,7 @@ fi
 
 # ask for location of the file containing wallet password
 default_val="/var/lib/prysm/validator/wallet-password.txt"
-read_default "\nWallet password file (default: ${color_lightgray}$default_val${color_reset}): " "$default_val" wallet_password_file
+read_default "\nWallet password file" "$default_val" wallet_password_file
 assert_sudo
 if sudo test ! -f "$wallet_password_file"; then
   printerr "file not found"
@@ -46,7 +46,7 @@ fi
 
 # ask for comma-separated list of the public hex keys of the validators to exit
 echo -e "\nEnter a comma-separated list of validator public keys (e.g. ${color_lightgray}0xABC123,0xDEF456${color_reset}) or ${color_lightgray}all${color_reset}."
-read_default "Validators to exit (default: ${color_lightgray}all${color_reset}): " "all" public_keys
+read_default "Validators to exit" "all" public_keys
 if [[ $public_keys == "all" ]]; then
   prysm_param_validators="--exit-all"
 elif [[ $public_keys =~ $regex_hex_csv ]]; then
@@ -58,7 +58,7 @@ fi
 
 # ask for network
 default_val="mainnet"
-read_default "\nEthereum network (default: ${color_lightgray}$default_val${color_reset}): " $default_val eth_network
+read_default "\nEthereum network" $default_val eth_network
 prysm_param_network="--${eth_network}"
 
 # lookup the latest program version
@@ -83,8 +83,7 @@ function on_exit() {
   echo -e "${color_green}OK${color_reset}"
 }
 
-errmsg="\nSomething went wrong. Send screenshots of the terminal to the HGiC (Head Geek-in-Charge), or just try it again and don't screw it up this time ;)"
-trap 'printerr_trap $? "$errmsg"; exit $?' ERR
+trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
 trap 'on_exit' EXIT
 
 echo -e "Downloading prysmctl-$prysm_version..."
@@ -103,13 +102,13 @@ install_dir="/var/lib/prysm/prysmctl"
 assert_sudo
 sudo mkdir -p "$install_dir"
 sudo mv -f "$prysmctl_bin" "$install_dir"
-sudo chown -R "${USER}:${prysmvalidator_user}" "$install_dir"
+sudo chown -R "${USER}:${prysm_validator_user}" "$install_dir"
 sudo chmod -R 770 "$install_dir"
 popd >/dev/null
 pushd "$install_dir" >/dev/null
 
 echo -e "\nReady to invoke prysmctl the following way:"
-echo -e "${color_lightgray}sudo -u \"${prysmvalidator_user}\" \"./${prysmctl_bin}\" validator exit \\
+echo -e "${color_lightgray}sudo -u \"${prysm_validator_user}\" \"./${prysmctl_bin}\" validator exit \\
   --wallet-dir \"$wallet_dir\" \\
   --wallet-password-file \"$wallet_password_file\" \\
   --accept-terms-of-use \\
@@ -121,7 +120,7 @@ read -p "Continue? (y/N): " confirm \
     && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 0
 
 assert_sudo
-sudo -u "${prysmvalidator_user}" "./${prysmctl_bin}" validator exit \
+sudo -u "${prysm_validator_user}" "./${prysmctl_bin}" validator exit \
   --wallet-dir "$wallet_dir" \
   --wallet-password-file "$wallet_password_file" \
   --accept-terms-of-use \

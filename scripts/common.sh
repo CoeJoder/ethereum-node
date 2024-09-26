@@ -2,8 +2,6 @@
 
 # -------------------------- CONSTANTS ----------------------------------------
 
-prysmvalidator_user='prysmvalidator'
-
 # e.g. "0xAbC123,0xdEf456"
 # unit tests: test_regex_hex_list()
 regex_hex_csv='^0x[[:xdigit:]]+(,0x[[:xdigit:]]+)*$'
@@ -20,6 +18,8 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
   color_lightgray=$(tput setaf 245)
   color_reset=$(tput sgr0)
 fi
+
+errmsg_retry="\nSomething went wrong. Send screenshots of the terminal to the HGiC (Head Geek-in-Charge), or just try it again and don't screw it up this time ;)"
 
 # -------------------------- UTILITIES ----------------------------------------
 
@@ -71,11 +71,11 @@ function assert_sudo() {
 # `read` but allows a default value
 function read_default() {
   if [[ $# -ne 3 ]] ; then
-    echo "usage: read_default prompt default_val outvar" >&2
+    echo "usage: read_default description default_val outvar" >&2
     return 1
   fi
-  local prompt="$1" default_val="$2" outvar="$3" val
-  echo -e "${prompt}${color_green}"
+  local description="$1" default_val="$2" outvar="$3" val
+  echo -e "${description} (default: ${color_lightgray}$default_val${color_reset}):${color_green}"
   read val
   if [[ -z $val ]]; then
     val="$default_val"
@@ -89,11 +89,11 @@ function read_default() {
 # `read` but stylized like `read_default`
 function read_no_default() {
   if [[ $# -ne 2 ]] ; then
-    echo "usage: read_no_default prompt outvar" >&2
+    echo "usage: read_no_default description outvar" >&2
     return 1
   fi
-  local prompt="$1" outvar="$2" val
-  read -p "${prompt}${color_green}" val
+  local description="$1" outvar="$2" val
+  read -p "${description}: ${color_green}" val
   echo -en "${color_reset}"
   printf -v $outvar "$val"
 }
