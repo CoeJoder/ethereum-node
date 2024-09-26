@@ -1,0 +1,8 @@
+# files included in deployment
+
+*/
+common.sh
+env.sh
+env-private.sh
+setup-firewall.sh
+exit.sh

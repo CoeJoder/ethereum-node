@@ -7,7 +7,9 @@
 !.editorconfig
 
 !scripts/
+!scripts/env.sh
 !scripts/common.sh
+!scripts/setup-firewall.sh
 !scripts/exit.sh
 
 !test/
@@ -16,3 +18,7 @@
 !docs/
 !docs/hardware-requirements.md
 !docs/initial-setup.md
+
+!tools/
+!tools/deploy.sh
+!tools/includes.txt
