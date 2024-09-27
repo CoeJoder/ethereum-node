@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# -------------------------- HEADER -------------------------------------------
+
+# propagate top-level ERR traps to subcontexts
+set -E
+
+# project directories
+proj_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
+scripts_dir="$proj_dir/scripts"
+tools_dir="$proj_dir/tools"
+test_dir="$proj_dir/test"
+
+# project environment variables
+source "$proj_dir/scripts/env.sh"
+
 # -------------------------- CONSTANTS ----------------------------------------
 
 # e.g. "0xAbC123,0xdEf456"
@@ -19,7 +33,9 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
   color_reset=$(tput sgr0)
 fi
 
-errmsg_retry="\nSomething went wrong. Send screenshots of the terminal to the HGiC (Head Geek-in-Charge), or just try it again and don't screw it up this time ;)"
+# generic error messages to display on ERR trap
+errmsg_noretry="\nSomething went wrong.  Send screenshots of the terminal to the HGiC (Head Geek-in-Charge)"
+errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this time ;)"
 
 # -------------------------- UTILITIES ----------------------------------------
 
@@ -59,15 +75,6 @@ function printerr_trap() {
   return "$code"
 }
 
-# assert sudoer status under threat of exitution
-# can prevent auth failures from polluting sudo'd conditional expressions
-function assert_sudo() {
-  if ! sudo true; then
-    printerr "failed to authenticate"
-    exit 1
-  fi
-}
-
 # `read` but allows a default value
 function read_default() {
   if [[ $# -ne 3 ]] ; then
@@ -103,4 +110,29 @@ function get_latest_release() {
   curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
     grep '"tag_name":' |                                            # Get tag line
     sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
+}
+
+# assert sudoer status
+# can prevent auth failures from polluting sudo'd conditional expressions
+function assert_sudo() {
+  if ! sudo true; then
+    printerr "failed to authenticate"
+    exit 1
+  fi
+}
+
+# assert that script process is running on the node server
+function assert_on_node_server() {
+  if [[ $(hostname) != $node_server_hostname ]]; then
+    printerr "script must be run on the node server: $node_server_hostname"
+    exit 1
+  fi
+}
+
+# assert that script process is not running on the node server
+function assert_not_on_node_server() {
+  if [[ $(hostname) == $node_server_hostname ]]; then
+    printerr "script must be run on the client PC, not the node server"
+    exit 1
+  fi
 }

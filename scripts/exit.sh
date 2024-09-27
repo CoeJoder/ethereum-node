@@ -1,29 +1,39 @@
 #!/bin/bash
 
-# -------------------------- PREAMBLE -----------------------------------------
+# -------------------------- HEADER -------------------------------------------
 
-this_dir="$(dirname "$(realpath "$0")")"
-common_sh="$this_dir/common.sh"
-source "$common_sh"
+scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+source "$scripts_dir/common.sh"
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -e "\nSo, you've decided to... ${color_green}"
-echo '                    $$\   $$\     '
-echo '                    \__|  $$ |    '
-echo ' $$$$$$\  $$\   $$\ $$\ $$$$$$\   '
-echo '$$  __$$\ \$$\ $$  |$$ |\_$$  _|  '
-echo '$$$$$$$$ | \$$$$  / $$ |  $$ |    '
-echo '$$   ____| $$  $$<  $$ |  $$ |$$\ '
-echo '\$$$$$$$\ $$  /\$$\ $$ |  \$$$$  |'
-echo ' \_______|\__/  \__|\__|   \____/ '
+echo "${color_green}"
+cat <<'EOF'
+                    $$\   $$\     
+                    \__|  $$ |    
+ $$$$$$\  $$\   $$\ $$\ $$$$$$\   
+$$  __$$\ \$$\ $$  |$$ |\_$$  _|  
+$$$$$$$$ | \$$$$  / $$ |  $$ |    
+$$   ____| $$  $$<  $$ |  $$ |$$\ 
+\$$$$$$$\ $$  /\$$\ $$ |  \$$$$  |
+ \_______|\__/  \__|\__|   \____/ 
+EOF
 echo "${color_reset}"
-echo -e "To abort this process, press ${color_green}ctrl + c${color_reset}"
+
+# -------------------------- PREAMBLE -----------------------------------------
+
+cat << EOF
+Performs a voluntary exit of the validator node.
+To abort this process, press ${color_green}ctrl + c${color_reset}.
+
+EOF
+
+# -------------------------- PRECONDITIONS ------------------------------------
+
+assert_on_node_server
+assert_sudo
 
 # -------------------------- RECONNAISSANCE -----------------------------------
-
-# eager authentication
-assert_sudo
 
 # ask for location of the wallet created during validator initialization
 default_val="/var/lib/prysm/validator/prysm-wallet-v2"
@@ -70,7 +80,7 @@ if [[ ! "$prysm_version" =~ v[0-9]\.[0-9]\.[0-9] ]]; then
 fi
 echo -e "${color_green}${prysm_version}${color_reset}"
 
-# -------------------------- COMMENCEMENT -------------------------------------
+# -------------------------- EXECUTION ----------------------------------------
 
 temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null

@@ -1,32 +1,38 @@
 #!/bin/bash
 
-# -------------------------- PREAMBLE -----------------------------------------
+# -------------------------- HEADER -------------------------------------------
 
-this_dir="$(dirname "$(realpath "$0")")"
-common_sh="$this_dir/common.sh"
-env_sh="$this_dir/env.sh"
-source "$common_sh"
-source "$env_sh"
+scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+source "$scripts_dir/common.sh"
 
 # -------------------------- BANNER -------------------------------------------
 
-printf "\n"
-echo "                               ${color_red} (                            (  (     ${color_reset}"
-echo "                               ${color_red} )\ ) (  (     (  (  (      ) )\ )\    ${color_reset}"
-echo "          _                    ${color_red}(()/( )\ )(   ))\ )\))(  ( /(((_|(_)   ${color_reset}"
-echo " ___  ___| |_ _   _ _ __       ${color_red}/(_)|(_|()\ /((_|(_)()\ )(_))_  _      ${color_reset}"
-echo "/ __|/ _ \ __| | | | '_ \ ____${color_yellow}(_) _|(_)((_|_)) _(()((_|(_)_| || |  ${color_reset}"
-echo "\__ \  __/ |_| |_| | |_) |____|${color_yellow}|  _|| | '_/ -_)\ V  V / _\` | || | ${color_reset}"
-echo "|___/\___|\__|\__,_| .__/      |_|  |_|_| \___| \_/\_/\__,_|_||_|                               "
-echo "                   |_|                                                                          "
-printf "\n"
+cat <<EOF
+                               ${color_red} (                            (  (     ${color_reset}
+                               ${color_red} )\ ) (  (     (  (  (      ) )\ )\    ${color_reset}
+          _                    ${color_red}(()/( )\ )(   ))\ )\))(  ( /(((_|(_)   ${color_reset}
+ ___  ___| |_ _   _ _ __       ${color_red}/(_)|(_|()\ /((_|(_)()\ )(_))_  _      ${color_reset}
+/ __|/ _ \ __| | | | '_ \ ____${color_yellow}(_) _|(_)((_|_)) _(()((_|(_)_| || |  ${color_reset}
+\__ \  __/ |_| |_| | |_) |____|${color_yellow}|  _|| | '_/ -_)\ V  V / _\` | || | ${color_reset}
+|___/\___|\__|\__,_| .__/      |_|  |_|_| \___| \_/\_/\__,_|_||_|                               
+                   |_|                                                                          
+
+EOF
+
+# -------------------------- PREAMBLE -----------------------------------------
+
+cat <<EOF
+Configures the firewall on the node server to allow only the ports needed for
+the Ethereum node software and rate-limited SSH access.
+To abort this process, press ${color_green}ctrl + c${color_reset}.
+
+EOF
+
+# -------------------------- PRECONDITIONS ------------------------------------
+
+assert_on_node_server
 
 # -------------------------- RECONNAISSANCE -----------------------------------
-
-if [[ $(hostname) != $node_server_hostname ]]; then
-  printerr "script must be run on the node server: $node_server_hostname"
-  exit 1
-fi
 
 read_default "\nSSH port (TCP)" "$node_server_ssh_port" node_server_ssh_port
 read_default "Geth port (TCP)" "$geth_port" geth_port
@@ -35,7 +41,7 @@ read_default "Prysm Beacon P2P port (TCP)" "$prysm_beacon_p2p_tcp_port" prysm_be
 read_default "Prysm Beacon P2P port (UDP)" "$prysm_beacon_p2p_udp_port" prysm_beacon_p2p_udp_port
 read_default "Prysm Beacon quic port (UDP)" "$prysm_beacon_p2p_quic_port" prysm_beacon_p2p_quic_port
 
-# -------------------------- COMMENCEMENT -------------------------------------
+# -------------------------- EXECUTION ----------------------------------------
 
 trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
 
@@ -52,7 +58,7 @@ sudo ufw allow ${prysm_beacon_p2p_quic_port}/udp comment 'Allow Prysm Beacon P2P
 sudo ufw allow ${prysm_beacon_p2p_udp_port}/udp comment 'Allow Prysm Beacon quic port (UDP)'
 sudo ufw logging low
 sudo ufw enable
-sudo ufw status numbered 
+sudo ufw status numbered
 ${color_reset}"
 
 read -p "Continue? (y/N): " confirm \
@@ -71,6 +77,8 @@ sudo ufw allow ${prysm_beacon_p2p_udp_port}/udp comment 'Allow Prysm Beacon quic
 sudo ufw logging low
 sudo ufw enable
 sudo ufw status numbered 
+
+# -------------------------- POSTCONDITIONS -----------------------------------
 
 echo "Success!  Now you must configure your router for port forwarding..."
 # TODO see if port forwarding can be automated in OpenWRT and make a script if so
