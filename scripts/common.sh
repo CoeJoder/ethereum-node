@@ -20,6 +20,9 @@ source "$proj_dir/scripts/env.sh"
 # unit tests: test_regex_hex_list()
 regex_hex_csv='^0x[[:xdigit:]]+(,0x[[:xdigit:]]+)*$'
 
+# e.g. "0xAbC123"
+regex_hex='^0x[[:xdigit:]]+$'
+
 # set colors only if tput is available
 if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_red=$(tput setaf 1)
@@ -139,46 +142,11 @@ function continue_or_exit() {
 
 # pause script execution until user presses a key
 function press_any_key_to_continue() {
-	read -n 1 -r -s -p $'Press any key to continue...\n'
+	read -n 1 -r -s -p $'Press any key to continue...'
+	printf "\n\n"
 }
 
 # -------------------------- ASSERTIONS ---------------------------------------
-
-# assert that user doesn't already exist
-function assert_user_doesnt_already_exist() {
-	if [[ $# -ne 1 ]]; then
-		printerr "no user provided"
-		exit 2
-	fi
-	if user_exists "$1"; then
-		printerr "user already exists: $1"
-		exit 1
-	fi
-}
-
-# assert that group doesn't already exist
-function assert_group_doesnt_already_exist() {
-	if [[ $# -ne 1 ]]; then
-		printerr "no group provided"
-		exit 2
-	fi
-	if group_exists "$1"; then
-		printerr "group already exists: $1"
-		exit 1
-	fi
-}
-
-# assert that directory doesn't already exist
-function assert_directory_doesnt_already_exist() {
-	if [[ $# -ne 1 ]]; then
-		printerr "no directory provided"
-		exit 2
-	fi
-	if [[ -d "$1" ]]; then
-		printerr "directory already exists: $1"
-		exit 1
-	fi
-}
 
 # assert sudoer status
 # can prevent auth failures from polluting sudo'd conditional expressions
@@ -202,5 +170,139 @@ function assert_not_on_node_server() {
 	if [[ $(hostname) == $node_server_hostname ]]; then
 		printerr "script must be run on the client PC, not the node server"
 		exit 1
+	fi
+}
+
+# -------------------------- CHECKS -------------------------------------------
+
+_check_failures=()
+
+function reset_checks() {
+	_check_failures=()
+}
+
+function exit_if_failed_checks() {
+	local failcount=${#_check_failures[@]}
+	local i
+	if [[ $failcount -gt 0 ]]; then
+		for ((i = 0; i < failcount; i++)); do
+			printerr "${_check_failures[i]}"
+		done
+		exit 1
+	fi
+}
+
+function check_user_does_not_exist() {
+	if check_is_defined $1; then
+		if user_exists "${!1}"; then
+			_check_failures+=("user already exists: ${!1}")
+		fi
+	fi
+}
+
+function check_user_exists() {
+	if check_is_defined $1; then
+		if ! user_exists "${!1}"; then
+			_check_failures+=("user does not exist: ${!1}")
+		fi
+	fi
+}
+
+function check_group_does_not_exist() {
+	if check_is_defined $1; then
+		if group_exists "${!1}"; then
+			_check_failures+=("group already exists: ${!1}")
+		fi
+	fi
+}
+
+function check_group_exists() {
+	if check_is_defined $1; then
+		if ! group_exists "${!1}"; then
+			_check_failures+=("group does not exist: ${!1}")
+		fi
+	fi
+}
+
+function check_directory_does_not_exist() {
+	if check_is_defined $1; then
+		if [[ -d "${!1}" ]]; then
+			_check_failures+=("directory already exists: ${!1}")
+		fi
+	fi
+}
+
+function check_directory_exists() {
+	if check_is_defined $1; then
+		if [[ ! -d "${!1}" ]]; then
+			_check_failures+=("directory does not exist: ${!1}")
+		fi
+	fi
+}
+
+function check_file_does_not_exist() {
+	if check_is_defined $1; then
+		if [[ -f "${!1}" ]]; then
+			_check_failures+=("file already exists: ${!1}")
+		fi
+	fi
+}
+
+function check_file_exists() {
+	if check_is_defined $1; then
+		if [[ ! -f "${!1}" ]]; then
+			_check_failures+=("file does not exist: ${!1}")
+		fi
+	fi
+}
+
+function check_is_valid_ethereum_network() {
+	if check_is_defined $1; then
+		if [[ ${!1} != 'mainnet' && ${!1} != 'holesky' ]]; then
+			_check_failures+=("invalid Ethereum network: ${!1}")
+		fi
+	fi
+}
+
+function check_is_valid_port() {
+	if check_is_defined $1; then
+		if [[ ${!1} -lt 1 || ${!1} -gt 65535 ]]; then
+			_check_failures+=("invalid port: ${!1}")
+		fi
+	fi
+}
+
+function check_command_exists_on_path() {
+	if check_is_defined $1; then
+		if ! type -P "${!1}" &>/dev/null; then
+			_check_failures+=("command does not exist: ${!1}")
+		fi
+	fi
+}
+
+function check_executable_exists() {
+	if check_is_defined $1; then
+		if [[ ! -x ${!1} ]]; then
+			_check_failures+=("file does not exist or is not executable: ${!1}")
+		fi
+	fi
+}
+
+function check_is_valid_hexadecimal() {
+	if check_is_defined $1; then
+		if [[ ! ${!1} =~ $regex_hex ]]; then
+			_check_failures+=("invalid hexadecimal: ${!1}")
+		fi
+	fi
+}
+
+function check_is_defined() {
+	if [[ $# -ne 1 ]]; then
+		printerr "no argument provided"
+		exit 2
+	fi
+	if [[ -z ${!1} ]]; then
+		_check_failures+=("variable is undefined: $1")
+		return 1
 	fi
 }
