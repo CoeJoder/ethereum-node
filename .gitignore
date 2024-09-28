@@ -8,6 +8,7 @@
 
 !scripts/
 !scripts/env.sh
+!scripts/env-private-template.sh
 !scripts/common.sh
 !scripts/print-env.sh
 !scripts/setup-firewall.sh
