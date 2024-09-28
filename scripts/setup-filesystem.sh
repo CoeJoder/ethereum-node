@@ -18,7 +18,7 @@ EOF
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Creates the users, groups, directories, and unit files required to run a self-
+Creates the users, groups, directories, and storage mounts required to run a self-
 managed Ethereum validator node.
 
 To abort this process, press ${color_green}ctrl + c${color_reset}.
@@ -31,6 +31,8 @@ press_any_key_to_continue
 
 assert_on_node_server
 
+check_directory_exists node_server_secondary_storage
+
 check_user_does_not_exist geth_user
 check_user_does_not_exist prysm_beacon_user
 check_user_does_not_exist prysm_validator_user
@@ -40,11 +42,14 @@ check_group_does_not_exist prysm_beacon_group
 check_group_does_not_exist prysm_validator_group
 
 check_directory_does_not_exist geth_datadir
-check_directory_does_not_exist prysm_dir
 check_directory_does_not_exist prysm_beacon_datadir
 check_directory_does_not_exist prysm_validator_datadir
+check_directory_does_not_exist geth_datadir_ancient
 
 exit_if_failed_checks
+
+# TODO
+# geth_datadir_ancient="$node_server_secondary_storage/geth/chaindata/ancient"
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

@@ -53,7 +53,6 @@ check_group_exists prysm_validator_group
 
 check_directory_exists geth_datadir
 check_directory_exists geth_datadir_ancient
-check_directory_exists prysm_dir
 check_directory_exists prysm_beacon_datadir
 check_directory_exists prysm_validator_datadir
 
