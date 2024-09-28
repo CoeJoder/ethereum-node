@@ -3,7 +3,7 @@
 - headless, always-online computer, running Ubuntu Server and the Ethereum node software
 - Mini PC form factor is ideal for its power efficiency
 - NVMe primary disk is required for its high I/O speed
-- cheaper/slower 2.5" HDD or SSD as secondary disk is sufficient for less-demanding "ancient" blockchain data
+- cheaper/slower 2.5" HDD or SSD as a secondary drive is sufficient for less-demanding "ancient" blockchain data
 - for example:
 	- [Intel NUC 10 Performance Kit – Intel Core i7 Processor (Tall Chassis)](https://www.amazon.com/gp/product/B08357VWB2/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1)
 		- only drawback of this chassis is that, despite being the "tall" model, it will not fit a 15mm 2.5" 5TB HDD, so you're stuck with purchasing an expensive SSD despite not needing SSD speeds, such as the 4TB linked below

@@ -12,6 +12,7 @@
 
 ## Postconditions
 - node server will be running headless Ubuntu Server, with the latest firmware & software
+- node server will auto-mount its ext4-formatted secondary drive upon startup
 - client PC user will be configured for secure login to the server via SSH terminal
 - flash drives will have:
 	- `Ubuntu Server` - the latest Ubuntu Server ISO disk image
@@ -27,7 +28,6 @@ This guide is written using the following configurable values:
 - node server SSH port: `55522`
 - node server hostname: `eth-node-mainnet`
 - node server username: `coejoder`
-- client PC username: `coejoder`
 
 ## Steps
 
@@ -182,7 +182,7 @@ ssh eth-node-mainnet
 # stay logged in and continue to the next step
 ```
 
-- [ ] now that secure key+passphrase authentication is working, disable password and non-passphrase key authentication and change the default SSH port as additional security measures:
+- [ ] now that key+passphrase is configured, tighten up security and use a non-default SSH port:
 
 ```bash
 sudo nano /etc/ssh/sshd_config
@@ -218,35 +218,91 @@ sudo reboot
 # you will be kicked out as it reboots
 # after a minute or so, log back in
 ssh -p 55522 eth-node-mainnet
-# coejoder@eth-node-mainnet's password: <password>
+# Enter passphrase for key '.../.ssh/eth-node-mainnet_ed25519': <passphrase>
 
 # you should now be logged in again
 # the above ssh command is what you will use to login from now on
 # for now, stay logged in and continue to the next step
 ```
 
-- [ ] install the latest system updates and remove orphaned dependencies:
+### 5. Format and Mount Secondary Drive
 
+#### On the Client PC
+- [ ] while logged into the node server via SSH, partition and format the secondary drive:
 ```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt autoremove
+# list all drives on the system and identify the secondary storage
+sudo fdisk -l
+# e.g., /dev/wxy
+
+# find any mounted partitions of the secondary storage and unmount them
+mount -l | grep /dev/wxy
+# e.g., /dev/wxy1 and /dev/wxy2
+sudo umount /dev/wxy1
+sudo umount /dev/wxy2
+
+# wipe the existing partitions & create a new ext4 partition
+sudo fdisk /dev/wxy
+# Command (m for help): g
+# Command (m for help): n
+# Select (default p): <Enter>
+# Partition number (1-128, default 1): <Enter>
+# First sector (2048-120164351, default 2048): <Enter>
+# Last sector (2048-1250164703, default 1250162687): <Enter>
+# Command (m for help): w
+
+# format the new partition
+sudo mkfs.ext4 -L SECONDARY -E lazy_itable_init=0 /dev/wxy1
+```
+- [ ] create a mount point and configure auto-mounting
+```bash
+sudo mkdir -p /mnt/secondary
+sudo nano /etc/fstab
+
+# append this entry to the file, then save and close it (ctrl+s, ctrl+x)
+LABEL=SECONDARY /mnt/secondary ext4 errors=remount-ro 0 1
+```
+- [ ] reboot the node server and confirm that the secondary drive is auto-mounted
+```bash
+sudo reboot
+# wait for node server to reboot
+
+ssh -p 55522 eth-node-mainnet
+# Enter passphrase for key '.../.ssh/eth-node-mainnet_ed25519': <passphrase>
+
+mount -l | grep SECONDARY
+# it should output something like:
+# /dev/wxy1 on /mnt/secondary type ext4 (rw,relatime,errors=remount-ro,stripe=8191) [SECONDARY]
 ```
 
-- [ ] ensure system timezone & time are correct
+### 6. Finish Up
 
-```bash
-sudo timedatectl set-ntp on
-sudo timedatectl set-timezone America/Los_Angeles
-```
+#### On the Client PC
 
-- [ ] shutdown the node server
-
+- [ ] while still logged into the node server via SSH, shutdown the node server
 ```bash
 sudo shutdown now
 ```
 
-### 5. Finish Up
-- [ ] disconnect the mouse, keyboard, and monitor from the node server
+#### On the Node Server
+
+- [ ] disconnect the mouse, keyboard, and monitor
 - [ ] move the node server to its permanent home, likely near the router and UPS battery backup
-- [ ] power-on the node server and try logging in from the client PC again
-- [ ] logout and enjoy a refreshing beverage, you've earned it.  You are now ready to install the Ethereum node software
+- [ ] plug-in the network cable and the power cable, then power it on
+
+#### On the Client PC
+
+- [ ] log into the node server via SSH, install the latest system updates, remove orphaned dependencies, set the timezone, and sync the system clock via NTP:
+
+```bash
+ssh -p 55522 eth-node-mainnet
+# Enter passphrase for key '.../.ssh/eth-node-mainnet_ed25519': <passphrase>
+
+sudo apt update && sudo apt upgrade -y
+sudo apt autoremove
+sudo timedatectl set-ntp on
+sudo timedatectl set-timezone America/Los_Angeles
+```
+- [ ] logout and enjoy a refreshing beverage, you've earned it!
+
+## Next Steps
+You are now ready to install the Ethereum node software.
