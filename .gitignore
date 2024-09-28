@@ -11,6 +11,7 @@
 !scripts/common.sh
 !scripts/setup-firewall.sh
 !scripts/setup-filesystem.sh
+!scripts/generate-unit-files.sh
 !scripts/exit.sh
 
 !test/
