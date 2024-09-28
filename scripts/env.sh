@@ -35,12 +35,10 @@ geth_unit_file="/etc/systemd/system/eth1.service"
 geth_port=30303           # TCP
 geth_discovery_port=30303 # UDP
 
-prysm_dir=/var/lib/prysm
-
 prysm_beacon_user='prysmbeacon'
 prysm_beacon_group='prysmbeacon'
 prysm_beacon_bin='/usr/local/bin/beacon-chain'
-prysm_beacon_datadir="$prysm_dir/beacon"
+prysm_beacon_datadir="/var/lib/prysm/beacon"
 prysm_beacon_unit_file="/etc/systemd/system/eth2-beacon.service"
 prysm_beacon_p2p_tcp_port=13000  # TCP
 prysm_beacon_p2p_quic_port=13000 # UDP
@@ -54,9 +52,9 @@ prysm_beacon_genesis_beacon_api_url='https://holesky.beaconstate.info'
 prysm_validator_user='prysmvalidator'
 prysm_validator_group='prysmvalidator'
 prysm_validator_bin='/usr/local/bin/validator'
-prysm_validator_datadir="$prysm_dir/validator"
-prysm_validator_wallet_dir="$prysm_validator_datadir/prysm-wallet-v2"
-prysm_validator_wallet_password_file="$prysm_validator_datadir/wallet-password.txt"
+prysm_validator_datadir="/var/lib/prysm/validator"
+prysm_validator_wallet_dir="/var/lib/prysm/validator/prysm-wallet-v2"
+prysm_validator_wallet_password_file="/var/lib/prysm/validator/wallet-password.txt"
 prysm_validator_unit_file="/etc/systemd/system/eth2-validator.service"
 
 # -------------------------- END OF ENVIRONMENT VARIABLES ---------------------
