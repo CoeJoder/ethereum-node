@@ -61,8 +61,8 @@ sudo ufw enable
 sudo ufw status numbered
 ${color_reset}"
 
-read -p "Continue? (y/N): " confirm \
-  && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+read -p "Continue? (y/N): " confirm &&
+	[[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 sudo ufw disable
 sudo ufw --force reset
@@ -76,7 +76,7 @@ sudo ufw allow ${prysm_beacon_p2p_quic_port}/udp comment 'Allow Prysm Beacon P2P
 sudo ufw allow ${prysm_beacon_p2p_udp_port}/udp comment 'Allow Prysm Beacon quic port (UDP)'
 sudo ufw logging low
 sudo ufw enable
-sudo ufw status numbered 
+sudo ufw status numbered
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
