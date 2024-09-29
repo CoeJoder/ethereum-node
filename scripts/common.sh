@@ -16,12 +16,11 @@ source "$proj_dir/scripts/env.sh"
 
 # -------------------------- CONSTANTS ----------------------------------------
 
-# e.g. "0xAbC123,0xdEf456"
-# unit tests: test_regex_hex_list()
-regex_hex_csv='^0x[[:xdigit:]]+(,0x[[:xdigit:]]+)*$'
-
 # e.g. "0xAbC123"
-regex_hex='^0x[[:xdigit:]]+$'
+regex_eth_addr='^0x[[:xdigit:]]{40}$'
+
+# e.g. "0xAbC123,0xdEf456"
+regex_eth_addr_csv='^0x[[:xdigit:]]{40}(,0x[[:xdigit:]]{40})*$'
 
 # set colors only if tput is available
 if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then

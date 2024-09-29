@@ -58,7 +58,7 @@ echo -e "\nEnter a comma-separated list of validator public keys (e.g. ${color_l
 read_default "Validators to exit" "all" public_keys
 if [[ $public_keys == "all" ]]; then
 	prysm_param_validators="--exit-all"
-elif [[ $public_keys =~ $regex_hex_csv ]]; then
+elif [[ $public_keys =~ $regex_eth_addr_csv ]]; then
 	prysm_param_validators="--public-keys $public_keys"
 else
 	printerr 'expected "all" or a comma-separated list of hexadecimal numbers'
