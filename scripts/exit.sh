@@ -4,8 +4,7 @@
 
 scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$scripts_dir/common.sh"
-log_start
-log_timestamp
+housekeeping
 
 # -------------------------- BANNER -------------------------------------------
 

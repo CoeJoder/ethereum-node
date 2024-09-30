@@ -4,8 +4,7 @@
 
 scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$scripts_dir/common.sh"
-log_start
-log_timestamp
+housekeeping
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -42,15 +41,10 @@ check_group_does_not_exist prysm_beacon_group
 check_group_does_not_exist prysm_validator_group
 
 check_directory_does_not_exist geth_datadir
+check_directory_does_not_exist geth_datadir_secondary
+check_directory_does_not_exist geth_datadir_secondary_ancient
 check_directory_does_not_exist prysm_beacon_datadir
 check_directory_does_not_exist prysm_validator_datadir
-
-exit_if_failed_checks
-
-geth_datadir_secondary="$node_server_secondary_storage/geth"
-geth_datadir_secondary_ancient="$geth_datadir_secondary/chaindata/ancient"
-check_directory_does_not_exist geth_datadir_secondary
-check_directory_does_not_exist geth_datadir_ancient
 
 exit_if_failed_checks
 

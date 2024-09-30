@@ -6,8 +6,7 @@
 
 scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$scripts_dir/common.sh"
-log_start
-log_timestamp
+housekeeping
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -131,7 +130,7 @@ continue_or_exit 1
 trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
 
 # writing `eth1.service`
-cat <<EOF
+cat <<EOF > 
 [Unit]
 Description=geth EL service
 Wants=network-online.target

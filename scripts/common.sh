@@ -10,10 +10,11 @@ proj_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 scripts_dir="$proj_dir/scripts"
 tools_dir="$proj_dir/tools"
 test_dir="$proj_dir/test"
-log_file="log.txt"
 
-# project environment variables
-source "$proj_dir/scripts/env.sh"
+# project files
+log_file="log.txt"
+env_sh="$scripts_dir/env.sh"
+env_private_sh="$scripts_dir/env-private.sh"
 
 # -------------------------- CONSTANTS ----------------------------------------
 
@@ -42,6 +43,26 @@ errmsg_noretry="\nSomething went wrong.  Send ${color_blue}${bold}log.txt${color
 errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this time ;)"
 
 # -------------------------- UTILITIES ----------------------------------------
+
+# script init tasks
+function housekeeping() {
+	log_start
+	log_timestamp
+	set_env
+}
+
+# set the project environment variables
+function set_env() {
+	check_executable_exists env_sh
+	exit_if_failed_checks
+	source "$env_sh"
+	
+	# warn if private env is missing but don't exit
+	check_executable_exists env_private_sh
+	if warn_if_failed_checks; then
+		source "$env_private_sh"
+	fi
+}
 
 # append to log file
 function log_timestamp() {
@@ -201,6 +222,18 @@ function exit_if_failed_checks() {
 			printerr "${_check_failures[i]}"
 		done
 		exit 1
+	fi
+}
+
+function warn_if_failed_checks() {
+	local failcount=${#_check_failures[@]}
+	local i
+	if [[ $failcount -gt 0 ]]; then
+		for ((i = 0; i < failcount; i++)); do
+			printwarn "${_check_failures[i]}"
+		done
+		reset_checks
+		return 1
 	fi
 }
 
