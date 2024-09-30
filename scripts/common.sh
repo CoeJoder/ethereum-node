@@ -34,10 +34,11 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_white=$(tput setaf 7)
 	color_lightgray=$(tput setaf 245)
 	color_reset=$(tput sgr0)
+	bold=$(tput bold)
 fi
 
 # generic error messages to display on ERR trap
-errmsg_noretry="\nSomething went wrong.  Send screenshots of the terminal to the HGiC (Head Geek-in-Charge)"
+errmsg_noretry="\nSomething went wrong.  Send ${color_blue}${bold}log.txt${color_reset} to the HGiC (Head Geek-in-Charge)"
 errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this time ;)"
 
 # -------------------------- UTILITIES ----------------------------------------
