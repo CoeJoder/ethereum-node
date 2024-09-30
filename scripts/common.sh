@@ -10,6 +10,7 @@ proj_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 scripts_dir="$proj_dir/scripts"
 tools_dir="$proj_dir/tools"
 test_dir="$proj_dir/test"
+log_file="log.txt"
 
 # project environment variables
 source "$proj_dir/scripts/env.sh"
@@ -40,6 +41,16 @@ errmsg_noretry="\nSomething went wrong.  Send screenshots of the terminal to the
 errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this time ;)"
 
 # -------------------------- UTILITIES ----------------------------------------
+
+# append to log file
+function log_timestamp() {
+	echo -en "\n$(date "+%m-%d-%Y, %r")" >> "$log_file"
+}
+
+# tee stdout & stderr to log file
+function log_start() {
+	exec &> >(tee -a "$log_file")
+}
 
 # logs a warning message to terminal
 function printwarn() {
@@ -112,6 +123,7 @@ function read_no_default() {
 	printf -v $outvar "$val"
 }
 
+# get the latest version string/tag name from a github repo
 # source: https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c
 function get_latest_release() {
 	curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
@@ -287,9 +299,9 @@ function check_executable_exists() {
 	fi
 }
 
-function check_is_valid_hexadecimal() {
+function check_is_valid_ethereum_address() {
 	if check_is_defined $1; then
-		if [[ ! ${!1} =~ $regex_hex ]]; then
+		if [[ ! ${!1} =~ $regex_eth_addr ]]; then
 			_check_failures+=("invalid hexadecimal: ${!1}")
 		fi
 	fi

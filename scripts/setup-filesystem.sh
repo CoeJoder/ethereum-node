@@ -4,6 +4,8 @@
 
 scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$scripts_dir/common.sh"
+log_start
+log_timestamp
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -18,10 +20,8 @@ EOF
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Creates the users, groups, directories, and storage mounts required to run a self-
-managed Ethereum validator node.
-
-To abort this process, press ${color_green}ctrl + c${color_reset}.
+Creates the users, groups, directories required to run a self-managed Ethereum
+validator node.
 
 EOF
 
@@ -44,12 +44,15 @@ check_group_does_not_exist prysm_validator_group
 check_directory_does_not_exist geth_datadir
 check_directory_does_not_exist prysm_beacon_datadir
 check_directory_does_not_exist prysm_validator_datadir
-check_directory_does_not_exist geth_datadir_ancient
 
 exit_if_failed_checks
 
-# TODO
-# geth_datadir_ancient="$node_server_secondary_storage/geth/chaindata/ancient"
+geth_datadir_secondary="$node_server_secondary_storage/geth"
+geth_datadir_secondary_ancient="$geth_datadir_secondary/chaindata/ancient"
+check_directory_does_not_exist geth_datadir_secondary
+check_directory_does_not_exist geth_datadir_ancient
+
+exit_if_failed_checks
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
@@ -59,8 +62,11 @@ Ready to invoke the following commands:${color_lightgray}
 # geth setup
 sudo useradd --no-create-home --shell /bin/false "$geth_user"
 sudo mkdir -p "$geth_datadir"
+sudo mkdir -p "$geth_datadir_secondary_ancient"
 sudo chown -R "${geth_user}:${geth_group}" ${geth_datadir}
+sudo chown -R "${geth_user}:${geth_group}" ${geth_datadir_secondary}
 sudo chmod -R 700 "${geth_datadir}"
+sudo chmod -R 700 "${geth_datadir_secondary}"
 
 # prysm-beacon setup
 sudo useradd --no-create-home --shell /bin/false "$prysm_beacon_user"
@@ -85,8 +91,11 @@ trap 'printerr_trap $? "$errmsg_noretry"; exit $?' ERR
 # geth setup
 sudo useradd --no-create-home --shell /bin/false "$geth_user"
 sudo mkdir -p "$geth_datadir"
+sudo mkdir -p "$geth_datadir_secondary_ancient"
 sudo chown -R "${geth_user}:${geth_group}" ${geth_datadir}
+sudo chown -R "${geth_user}:${geth_group}" ${geth_datadir_secondary}
 sudo chmod -R 700 "${geth_datadir}"
+sudo chmod -R 700 "${geth_datadir_secondary}"
 
 # prysm-beacon setup
 sudo useradd --no-create-home --shell /bin/false "$prysm_beacon_user"

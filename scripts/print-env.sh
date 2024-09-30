@@ -2,8 +2,10 @@
 
 # -------------------------- HEADER -------------------------------------------
 
-scripts_dir=$(realpath $(dirname ${BASH_SOURCE[0]}))
-source $scripts_dir/common.sh
+scripts_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
+source "$scripts_dir/common.sh"
+log_start
+log_timestamp
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -46,7 +48,6 @@ geth_user=${color_green}$geth_user${color_reset}
 geth_group=${color_green}$geth_group${color_reset}
 geth_bin=${color_green}$geth_bin${color_reset}
 geth_datadir=${color_green}$geth_datadir${color_reset}
-geth_datadir_ancient=${color_green}$geth_datadir_ancient${color_reset}
 geth_unit_file=${color_green}$geth_unit_file${color_reset}
 geth_port=${color_green}$geth_port${color_reset}           ${color_lightgray}# TCP${color_reset}
 geth_discovery_port=${color_green}$geth_discovery_port${color_reset} ${color_lightgray}# UDP${color_reset}

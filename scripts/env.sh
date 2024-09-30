@@ -25,7 +25,6 @@ geth_user='goeth'
 geth_group='goeth'
 geth_bin='geth'
 geth_datadir='/var/lib/goeth'
-geth_datadir_ancient="$node_server_secondary_storage/geth/chaindata/ancient"
 geth_unit_file="/etc/systemd/system/eth1.service"
 geth_port=30303           # TCP
 geth_discovery_port=30303 # UDP

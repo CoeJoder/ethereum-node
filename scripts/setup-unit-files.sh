@@ -1,11 +1,13 @@
 #!/bin/bash
 
-# TODO tee the output to disk and add a systemctl daemon-reload command
+# TODO tee the output to actual unit files and add a systemctl daemon-reload command
 
 # -------------------------- HEADER -------------------------------------------
 
 scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$scripts_dir/common.sh"
+log_start
+log_timestamp
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -36,7 +38,7 @@ assert_on_node_server
 
 check_is_valid_ethereum_network ethereum_network
 
-check_is_valid_hexadecimal suggested_fee_recipient
+check_is_valid_ethereum_address suggested_fee_recipient
 
 check_command_exists_on_path geth_bin
 
