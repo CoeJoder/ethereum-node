@@ -7,7 +7,7 @@
 !.editorconfig
 
 !scripts/
-!scripts/env.sh
+!scripts/env-base.sh
 !scripts/env-private-template.sh
 !scripts/common.sh
 !scripts/print-env.sh
