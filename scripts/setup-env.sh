@@ -91,6 +91,8 @@ prysm_beacon_genesis_beacon_api_url='$prysm_beacon_genesis_beacon_api_url'
 
 EOF
 
+chmod +x "$env_sh"
+
 # -------------------------- POSTCONDITIONS -----------------------------------
 
 cat <<EOF
