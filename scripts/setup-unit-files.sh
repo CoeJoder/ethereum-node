@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO tee the output to actual unit files and add a systemctl daemon-reload command
-
 # -------------------------- HEADER -------------------------------------------
 
 scripts_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
@@ -51,7 +49,7 @@ check_group_exists prysm_beacon_group
 check_group_exists prysm_validator_group
 
 check_directory_exists geth_datadir
-check_directory_exists geth_datadir_ancient
+check_directory_exists geth_datadir_secondary_ancient
 check_directory_exists prysm_beacon_datadir
 check_directory_exists prysm_validator_datadir
 
@@ -63,7 +61,7 @@ check_is_valid_port prysm_beacon_p2p_udp_port
 check_is_valid_port prysm_beacon_p2p_quic_port
 check_is_valid_port prysm_beacon_p2p_tcp_port
 
-exit_if_failed_checks
+print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
@@ -78,7 +76,7 @@ Geth user: ${color_green}$geth_user${color_reset}
 Geth group: ${color_green}$geth_group${color_reset}
 Geth executable: ${color_green}$geth_bin${color_reset}
 Geth data-dir: ${color_green}$geth_datadir${color_reset}
-Geth data-dir-ancient: ${color_green}$geth_datadir_ancient${color_reset}
+Geth data-dir-ancient: ${color_green}$geth_datadir_secondary_ancient${color_reset}
 Geth port: ${color_green}$geth_port${color_reset}
 Geth discovery port: ${color_green}$geth_discovery_port${color_reset}
 
@@ -96,16 +94,16 @@ EOF
 # see: https://docs.prylabs.network/docs/prysm-usage/checkpoint-sync
 prysm_beacon_cpsync_opts=""
 if [[ $ethereum_network == 'holesky' ]]; then
-	printwarn "holesky network: checkpoint-sync enabled"
-	prysm_beacon_cpsync_opts="--checkpoint-sync-url='$prysm_beacon_checkpoint_sync_url \\'
-	--genesis-beacon-api-url='$prysm_beacon_genesis_beacon_api_url'"
+	printinfo "holesky network detected: checkpoint-sync enabled"
+	prysm_beacon_cpsync_opts="--checkpoint-sync-url=\"$prysm_beacon_checkpoint_sync_url\" \\
+	--genesis-beacon-api-url=\"$prysm_beacon_genesis_beacon_api_url\""
 
 	cat <<-EOF
 	Prysm-beacon checkpoint-sync URL: ${color_green}$prysm_beacon_checkpoint_sync_url${color_reset}
 	Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
 EOF
 else
-	printwarn "non-holesky network: checkpoint-sync disabled"
+	printinfo "non-holesky network detected: checkpoint-sync disabled"
 	prysm_beacon_checkpoint_sync_url=""
 	prysm_beacon_genesis_beacon_api_url=""
 fi
@@ -118,17 +116,28 @@ Prysm-validator executable: ${color_green}$prysm_validator_bin${color_reset}
 Prysm-validator data-dir: ${color_green}$prysm_validator_datadir${color_reset}
 Prysm-validator wallet-dir: ${color_green}$prysm_validator_wallet_dir${color_reset}
 Prysm-validator wallet password file: ${color_green}$prysm_validator_wallet_password_file${color_reset}
-
 EOF
 
 continue_or_exit 1
+
+# if unit files already exist, confirm overwrite
+reset_checks
+check_file_does_not_exist geth_unit_file
+check_file_does_not_exist prysm_beacon_unit_file
+check_file_does_not_exist prysm_validator_unit_file
+if ! print_failed_checks --warn; then
+	continue_or_exit 1 "Overwrite?"
+fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
 trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
 
-# writing `eth1.service`
-cat <<EOF > 
+assert_sudo
+
+# generate geth unit file
+echo -e "\n${color_filename}$geth_unit_file${color_reset}"
+cat <<EOF | sudo tee "$geth_unit_file"
 [Unit]
 Description=geth EL service
 Wants=network-online.target
@@ -141,28 +150,27 @@ User=$geth_user
 Group=$geth_group
 Type=simple
 ExecStart=$geth_bin \\
-	--$ethereum_network
+	--$ethereum_network \\
 	--authrpc.jwtsecret "$eth_jwt_file" \\
 	--datadir "$geth_datadir" \\
-	--datadir.ancient "$geth_datadir_ancient" \\
+	--datadir.ancient "$geth_datadir_secondary_ancient" \\
 	--port $geth_port \\
-	--discovery.port $geth_discovery_port
+	--discovery.port $geth_discovery_port \\
 	--http \\
-	--http.api eth,net,engine,admin \\
+	--http.api eth,net,engine,admin
 Restart=always
 RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
 
-
-# writing `eth2-beacon.service`
-cat <<EOF
+# generate beacon unit file
+echo -e "\n${color_filename}$prysm_beacon_unit_file${color_reset}"
+cat <<EOF | sudo tee "$prysm_beacon_unit_file"
 [Unit]
 Description=prysm beacon CL service
-Wants=network-online.target eth1.service
+Wants=network-online.target $(basename "$geth_unit_file")
 After=network-online.target
 StartLimitInterval=120
 StartLimitBurst=10
@@ -179,7 +187,7 @@ ExecStart=$prysm_beacon_bin \\
 	--jwt-secret="$eth_jwt_file" \\
 	--monitoring-host="0.0.0.0" \\
 	--accept-terms-of-use \\
-	--execution-endpoint=http://localhost:8551 \\
+	--execution-endpoint="http://localhost:8551" \\
 	$prysm_beacon_cpsync_opts \\
 	--p2p-udp-port=$prysm_beacon_p2p_udp_port \\
 	--p2p-quic-port=$prysm_beacon_p2p_quic_port \\
@@ -189,14 +197,14 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
 
-# writing `eth2-validator.service`
-cat <<EOF
+# generate validator unit file
+echo -e "\n${color_filename}$prysm_validator_unit_file${color_reset}"
+cat <<EOF | sudo tee "$prysm_validator_unit_file"
 [Unit]
 Description=prysm validator service
-Wants=network-online.target eth2-beacon.service
+Wants=network-online.target $(basename "$prysm_beacon_unit_file")
 After=network-online.target
 StartLimitInterval=120
 StartLimitBurst=10
@@ -211,19 +219,27 @@ ExecStart=$prysm_validator_bin \\
 	--wallet-dir "$prysm_validator_wallet_dir" \\
 	--wallet-password-file "$prysm_validator_wallet_password_file" \\
 	--suggested-fee-recipient "$suggested_fee_recipient" \\
-	--accept-terms-of-use \\
+	--accept-terms-of-use
 Restart=always
 RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
 
+# reload system services
+echo "Reloading services daemon..."
+sudo systemctl daemon-reload
+
 # -------------------------- POSTCONDITIONS -----------------------------------
+
+reset_checks
+check_file_exists geth_unit_file
+check_file_exists prysm_beacon_unit_file
+check_file_exists prysm_validator_unit_file
+print_failed_checks --error
 
 cat <<EOF
 
 Success!  The Ethereum node services are ready to be enabled.
-
 EOF
