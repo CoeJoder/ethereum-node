@@ -73,6 +73,8 @@ node_server_secondary_storage='$node_server_secondary_storage'
 # external geth ports
 geth_port=$geth_port           # TCP
 geth_discovery_port=$geth_discovery_port # UDP
+
+# geth ancient chaindata location
 geth_datadir_secondary="\$node_server_secondary_storage/geth"
 geth_datadir_secondary_ancient="\$geth_datadir_secondary/chaindata/ancient"
 
