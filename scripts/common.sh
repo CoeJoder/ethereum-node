@@ -36,7 +36,7 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_lightgray=$(tput setaf 245)
 	color_reset=$(tput sgr0)
 	bold=$(tput bold)
-	color_filename="${color_blue}${bold}"
+	color_filename="${color_green}"
 fi
 
 # generic error messages to display on ERR trap
@@ -60,7 +60,7 @@ function set_env() {
 	
 	# warn if private env is missing but don't exit
 	check_executable_exists env_sh
-	if warn_if_failed_checks; then
+	if print_failed_checks --warn; then
 		source "$env_sh"
 	fi
 }
@@ -175,6 +175,7 @@ function continue_or_exit() {
 	fi
 	read -p "$question (y/N): " confirm &&
 		[[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit "$code"
+	printf '\n'
 }
 
 # pause script execution until user presses a key
@@ -218,27 +219,29 @@ function reset_checks() {
 	_check_failures=()
 }
 
-function exit_if_failed_checks() {
-	local failcount=${#_check_failures[@]}
-	local i
-	if [[ $failcount -gt 0 ]]; then
-		for ((i = 0; i < failcount; i++)); do
-			printerr "${_check_failures[i]}"
-		done
-		exit 1
+# print failed checks with given log-level, with error code if failures
+function print_failed_checks() {
+	if [[ $# -ne 1 || ( $1 != "--warn" && $1 != "--error" ) ]]; then
+		printerr "usage: _print_failed_checks [--warn|--error]"
+		exit 2
 	fi
-}
-
-function warn_if_failed_checks() {
 	local failcount=${#_check_failures[@]}
 	local i
 	if [[ $failcount -gt 0 ]]; then
 		for ((i = 0; i < failcount; i++)); do
-			printwarn "${_check_failures[i]}"
+			if [[ $1 == "--warn" ]]; then
+				printwarn "${_check_failures[i]}"
+			else
+				printerr "${_check_failures[i]}"
+			fi
 		done
 		reset_checks
 		return 1
 	fi
+}
+
+function exit_if_failed_checks() {
+	print_failed_checks --error || exit
 }
 
 function check_user_does_not_exist() {
@@ -276,7 +279,7 @@ function check_group_exists() {
 function check_directory_does_not_exist() {
 	if check_is_defined $1; then
 		if [[ -d "${!1}" ]]; then
-			_check_failures+=("directory already exists: ${!1}")
+			_check_failures+=("directory already exists: ${color_filename}${!1}${color_reset}")
 		fi
 	fi
 }
@@ -284,7 +287,7 @@ function check_directory_does_not_exist() {
 function check_directory_exists() {
 	if check_is_defined $1; then
 		if [[ ! -d "${!1}" ]]; then
-			_check_failures+=("directory does not exist: ${!1}")
+			_check_failures+=("directory does not exist: ${color_filename}${!1}${color_reset}")
 		fi
 	fi
 }
@@ -292,7 +295,7 @@ function check_directory_exists() {
 function check_file_does_not_exist() {
 	if check_is_defined $1; then
 		if [[ -f "${!1}" ]]; then
-			_check_failures+=("file already exists: ${!1}")
+			_check_failures+=("file already exists: ${color_filename}${!1}${color_reset}")
 		fi
 	fi
 }
@@ -300,7 +303,7 @@ function check_file_does_not_exist() {
 function check_file_exists() {
 	if check_is_defined $1; then
 		if [[ ! -f "${!1}" ]]; then
-			_check_failures+=("file does not exist: ${!1}")
+			_check_failures+=("file does not exist: ${color_filename}${!1}${color_reset}")
 		fi
 	fi
 }
@@ -332,7 +335,7 @@ function check_command_exists_on_path() {
 function check_executable_exists() {
 	if check_is_defined $1; then
 		if [[ ! -x ${!1} ]]; then
-			_check_failures+=("file does not exist or is not executable: ${!1}")
+			_check_failures+=("file does not exist or is not executable: ${color_filename}${!1}${color_reset}")
 		fi
 	fi
 }

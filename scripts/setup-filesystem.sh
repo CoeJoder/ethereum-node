@@ -107,5 +107,4 @@ sudo chmod -R 700 "$prysm_validator_datadir"
 cat <<EOF
 
 Success!  Now you are ready to install the Ethereum node software.
-
 EOF
