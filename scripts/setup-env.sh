@@ -34,7 +34,7 @@ press_any_key_to_continue
 # -------------------------- PRECONDITIONS ------------------------------------
 
 check_executable_exists env_base_sh
-exit_if_failed_checks
+print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

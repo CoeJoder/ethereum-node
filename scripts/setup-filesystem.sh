@@ -45,7 +45,7 @@ check_directory_does_not_exist geth_datadir_secondary_ancient
 check_directory_does_not_exist prysm_beacon_datadir
 check_directory_does_not_exist prysm_validator_datadir
 
-exit_if_failed_checks
+print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

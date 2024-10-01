@@ -55,7 +55,7 @@ function housekeeping() {
 # set the project environment variables
 function set_env() {
 	check_executable_exists env_base_sh
-	exit_if_failed_checks
+	print_failed_checks --error || exit
 	source "$env_base_sh"
 	
 	# warn if private env is missing but don't exit
@@ -73,6 +73,10 @@ function log_timestamp() {
 # tee stdout & stderr to log file
 function log_start() {
 	exec &> >(tee -a "$log_file")
+}
+
+function printinfo() {
+	echo -e "${color_green}INFO ${color_reset}$@" >&2
 }
 
 # logs a warning message to terminal
@@ -219,7 +223,7 @@ function reset_checks() {
 	_check_failures=()
 }
 
-# print failed checks with given log-level, with error code if failures
+# print failed checks with given log-level, return error code if failures
 function print_failed_checks() {
 	if [[ $# -ne 1 || ( $1 != "--warn" && $1 != "--error" ) ]]; then
 		printerr "usage: _print_failed_checks [--warn|--error]"
@@ -238,10 +242,6 @@ function print_failed_checks() {
 		reset_checks
 		return 1
 	fi
-}
-
-function exit_if_failed_checks() {
-	print_failed_checks --error || exit
 }
 
 function check_user_does_not_exist() {
