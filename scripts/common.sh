@@ -13,8 +13,8 @@ test_dir="$proj_dir/test"
 
 # project files
 log_file="log.txt"
+env_base_sh="$scripts_dir/env-base.sh"
 env_sh="$scripts_dir/env.sh"
-env_private_sh="$scripts_dir/env-private.sh"
 
 # -------------------------- CONSTANTS ----------------------------------------
 
@@ -36,10 +36,11 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_lightgray=$(tput setaf 245)
 	color_reset=$(tput sgr0)
 	bold=$(tput bold)
+	color_filename="${color_blue}${bold}"
 fi
 
 # generic error messages to display on ERR trap
-errmsg_noretry="\nSomething went wrong.  Send ${color_blue}${bold}log.txt${color_reset} to the HGiC (Head Geek-in-Charge)"
+errmsg_noretry="\nSomething went wrong.  Send ${color_filename}log.txt${color_reset} to the HGiC (Head Geek-in-Charge)"
 errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this time ;)"
 
 # -------------------------- UTILITIES ----------------------------------------
@@ -53,14 +54,14 @@ function housekeeping() {
 
 # set the project environment variables
 function set_env() {
-	check_executable_exists env_sh
+	check_executable_exists env_base_sh
 	exit_if_failed_checks
-	source "$env_sh"
+	source "$env_base_sh"
 	
 	# warn if private env is missing but don't exit
-	check_executable_exists env_private_sh
+	check_executable_exists env_sh
 	if warn_if_failed_checks; then
-		source "$env_private_sh"
+		source "$env_sh"
 	fi
 }
 
@@ -163,13 +164,16 @@ function group_exists() {
 	getent group "$1" &>/dev/null
 }
 
-# yes-or-no prompt, exiting on 'no' with given code or 0 by default
+# yes-or-no prompt, defaulting to no, exiting on 'no' with given code or 0 by default
 function continue_or_exit() {
-	local code=0
+	local code=0 question="Continue?" confirm
 	if [[ $# -gt 0 ]]; then
 		code="$1"
 	fi
-	read -p "Continue? (y/N): " confirm &&
+	if [[ $# -gt 1 ]]; then
+		question="$2"
+	fi
+	read -p "$question (y/N): " confirm &&
 		[[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit "$code"
 }
 

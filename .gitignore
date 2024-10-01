@@ -8,12 +8,12 @@
 
 !scripts/
 !scripts/env-base.sh
-!scripts/env-private-template.sh
 !scripts/common.sh
-!scripts/print-env.sh
+!scripts/setup-env.sh
 !scripts/setup-firewall.sh
 !scripts/setup-filesystem.sh
 !scripts/setup-unit-files.sh
+!scripts/print-env.sh
 !scripts/exit.sh
 
 !test/
