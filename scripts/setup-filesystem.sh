@@ -21,7 +21,6 @@ EOF
 cat <<EOF
 Creates the users, groups, directories required to run a self-managed Ethereum
 validator node.
-
 EOF
 
 press_any_key_to_continue

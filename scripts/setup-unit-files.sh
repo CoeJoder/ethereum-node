@@ -24,9 +24,7 @@ EOF
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Generates the systemd unit files for the Ethereum EL, CL, and validator
-services, and reloads the service daemon.
-
+Generates the systemd unit files for the Ethereum EL, CL, and validator services, and reloads the service daemon.
 EOF
 
 press_any_key_to_continue
