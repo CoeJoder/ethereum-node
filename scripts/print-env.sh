@@ -40,7 +40,6 @@ node_server_hostname=${color_green}$node_server_hostname${color_reset}
 node_server_username=${color_green}$node_server_username${color_reset}
 node_server_secondary_storage=${color_green}$node_server_secondary_storage${color_reset}
 
-local_secrets_dir=${color_green}$local_secrets_dir${color_reset}
 eth_jwt_file=${color_green}$eth_jwt_file${color_reset}
 
 geth_user=${color_green}$geth_user${color_reset}
