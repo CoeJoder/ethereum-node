@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# common.sh
+#
+# A library of constants and utility functions used by the other scripts.
+
 # -------------------------- HEADER -------------------------------------------
 
 # propagate top-level ERR traps to subcontexts
 set -E
+
+# -------------------------- CONSTANTS ----------------------------------------
 
 # project directories
 proj_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
@@ -15,8 +21,6 @@ test_dir="$proj_dir/test"
 log_file="log.txt"
 env_base_sh="$scripts_dir/env-base.sh"
 env_sh="$scripts_dir/env.sh"
-
-# -------------------------- CONSTANTS ----------------------------------------
 
 # e.g. "0xAbC123"
 regex_eth_addr='^0x[[:xdigit:]]{40}$'
@@ -166,6 +170,11 @@ function user_exists() {
 # test expression for group existence
 function group_exists() {
 	getent group "$1" &>/dev/null
+}
+
+# test expression for substring existence
+function string_contains() {
+	[[ "$1" == *"$2"* ]] &>/dev/null
 }
 
 # yes-or-no prompt, defaulting to no, exiting on 'no' with given code or 0 by default
@@ -344,6 +353,14 @@ function check_is_valid_ethereum_address() {
 	if check_is_defined $1; then
 		if [[ ! ${!1} =~ $regex_eth_addr ]]; then
 			_check_failures+=("invalid hexadecimal: ${!1}")
+		fi
+	fi
+}
+
+function check_string_contains() {
+	if check_is_defined $1; then
+		if ! string_contains "${!1}" "$2"; then
+			_check_failures+=("$1 does not contain \"$2\"")
 		fi
 	fi
 }
