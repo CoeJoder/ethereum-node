@@ -38,7 +38,6 @@ if [[ $1 == '-h' ]]; then
 	exit 0
 fi
 
-# RSYNC_OPTS='--delete-before'
 RSYNC_OPTS=''
 if [[ $1 == '--dry-run' ]]; then
 	RSYNC_OPTS="$RSYNC_OPTS --dry-run"
@@ -48,8 +47,8 @@ fi
 
 trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
 
-# overwrite non-generated source files and remove deleted files i.e. those 
-# listed in `includes.txt` but not existing in source filesystem
+# overwrite non-generated files and remove deleted files i.e. those listed in 
+# `includes.txt` but not existing in source filesystem
 rsync -avh -e "ssh -p $node_server_ssh_port" \
 	--progress \
 	--delete \
