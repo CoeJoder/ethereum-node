@@ -9,11 +9,11 @@ source "$common_sh"
 
 failures=()
 
-function reset() {
+function reset_test_failures() {
 	failures=()
 }
 
-function print_any_failures() {
+function print_test_failures() {
 	local failcount=${#failures[@]}
 	local i
 	if [[ $failcount -eq 0 ]]; then
@@ -101,12 +101,12 @@ function test_regex_eth_addr_csv() {
 
 # -------------------------- TEST DRIVER --------------------------------------
 
-reset
+reset_test_failures
 echo -n "Running: ${color_lightgray}test_regex_eth_addr${color_reset}..."
 test_regex_eth_addr
-print_any_failures
+print_test_failures
 
-reset
+reset_test_failures
 echo -n "Running: ${color_lightgray}test_regex_eth_addr_csv${color_reset}..."
 test_regex_eth_addr_csv
-print_any_failures
+print_test_failures
