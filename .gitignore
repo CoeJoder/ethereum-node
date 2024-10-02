@@ -3,18 +3,18 @@
 
 !README.md
 !LICENSE
-!.gitignore
 !.editorconfig
+!.gitignore
 
 !scripts/
-!scripts/env-base.sh
 !scripts/common.sh
+!scripts/env-base.sh
+!scripts/exit.sh
+!scripts/print-env.sh
 !scripts/setup-env.sh
 !scripts/setup-firewall.sh
 !scripts/setup-filesystem.sh
 !scripts/setup-unit-files.sh
-!scripts/print-env.sh
-!scripts/exit.sh
 
 !test/
 !test/tests.sh
@@ -25,4 +25,5 @@
 
 !tools/
 !tools/deploy.sh
-!tools/includes.txt
+!tools/generated.txt
+!tools/non-generated.txt
