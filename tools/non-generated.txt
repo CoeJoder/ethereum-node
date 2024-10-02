@@ -1,0 +1,11 @@
+# non-generated source files
+
+*/
+common.sh
+env-base.sh
+print-env
+setup-env
+setup-filesystem.sh
+setup-firewall.sh
+setup-unit-files.sh
+exit.sh
