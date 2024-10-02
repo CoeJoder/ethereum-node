@@ -71,7 +71,6 @@ prysm_validator_datadir=${color_green}$prysm_validator_datadir${color_reset}
 prysm_validator_wallet_dir=${color_green}$prysm_validator_wallet_dir${color_reset}
 prysm_validator_wallet_password_file=${color_green}$prysm_validator_wallet_password_file${color_reset}
 prysm_validator_unit_file=${color_green}$prysm_validator_unit_file${color_reset}
-
 EOF
 
 # -------------------------- EXECUTION ----------------------------------------

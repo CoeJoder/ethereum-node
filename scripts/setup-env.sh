@@ -28,7 +28,6 @@ env_sh_basename="${color_filename}$(basename "$env_sh")${color_reset}"
 cat <<EOF
 Generates $env_sh_basename, an editable config file.
 EOF
-
 press_any_key_to_continue
 
 # -------------------------- PRECONDITIONS ------------------------------------
@@ -44,6 +43,8 @@ if [[ -f $env_sh ]]; then
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
+
+trap 'printerr_trap $? "$errmsg_noretry"; exit $?' ERR
 
 source "$env_base_sh"
 cat <<EOF >"$env_sh"
@@ -96,6 +97,10 @@ EOF
 chmod +x "$env_sh"
 
 # -------------------------- POSTCONDITIONS -----------------------------------
+
+reset_checks
+check_executable_exists "$env_sh"
+print_failed_checks --error
 
 cat <<EOF
 

@@ -19,10 +19,8 @@ EOF
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Creates the users, groups, directories required to run a self-managed Ethereum
-validator node.
+Creates the users, groups, directories required to run a self-managed Ethereum validator node.
 EOF
-
 press_any_key_to_continue
 
 # -------------------------- PRECONDITIONS ------------------------------------
@@ -74,7 +72,6 @@ sudo chown -R "${prysm_validator_user}:${prysm_validator_group}" "$prysm_validat
 sudo chmod -R 700 "$prysm_validator_datadir"
 ${color_reset}
 EOF
-
 continue_or_exit 1
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -103,6 +100,24 @@ sudo chown -R "${prysm_validator_user}:${prysm_validator_group}" "$prysm_validat
 sudo chmod -R 700 "$prysm_validator_datadir"
 
 # -------------------------- POSTCONDITIONS -----------------------------------
+
+check_directory_exists node_server_secondary_storage
+
+check_user_exist geth_user
+check_user_exist prysm_beacon_user
+check_user_exist prysm_validator_user
+
+check_group_exist geth_group
+check_group_exist prysm_beacon_group
+check_group_exist prysm_validator_group
+
+check_directory_exist geth_datadir
+check_directory_exist geth_datadir_secondary
+check_directory_exist geth_datadir_secondary_ancient
+check_directory_exist prysm_beacon_datadir
+check_directory_exist prysm_validator_datadir
+
+print_failed_checks --error
 
 cat <<EOF
 

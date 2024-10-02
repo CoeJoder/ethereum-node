@@ -24,7 +24,6 @@ EOF
 cat <<EOF
 Generates the systemd unit files for the Ethereum EL, CL, and validator services, and reloads the service daemon.
 EOF
-
 press_any_key_to_continue
 
 # -------------------------- PRECONDITIONS ------------------------------------
@@ -117,7 +116,6 @@ Prysm-validator data-dir: ${color_green}$prysm_validator_datadir${color_reset}
 Prysm-validator wallet-dir: ${color_green}$prysm_validator_wallet_dir${color_reset}
 Prysm-validator wallet password file: ${color_green}$prysm_validator_wallet_password_file${color_reset}
 EOF
-
 continue_or_exit 1
 
 # if unit files already exist, confirm overwrite
