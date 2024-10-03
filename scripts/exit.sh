@@ -92,7 +92,7 @@ function on_exit() {
 	echo -e "${color_green}OK${color_reset}"
 }
 
-trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
+trap 'on_err_retry' ERR
 trap 'on_exit' EXIT
 
 echo -e "Downloading prysmctl-$prysm_version..."

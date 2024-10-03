@@ -124,6 +124,19 @@ function printerr_trap() {
 	return "$code"
 }
 
+
+# callback for ERR trap with a 'retry' msg
+function on_err_retry() {
+	printerr_trap $? "$errmsg_retry"
+	exit $?
+}
+
+# callback for ERR trap without a 'retry' msg
+function on_err_noretry() {
+	printerr_trap $? "$errmsg_noretry"
+	exit $?
+}
+
 # `read` but allows a default value
 function read_default() {
 	if [[ $# -ne 3 ]]; then

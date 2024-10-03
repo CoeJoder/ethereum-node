@@ -44,7 +44,7 @@ fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
-trap 'printerr_trap $? "$errmsg_noretry"; exit $?' ERR
+trap 'on_err_noretry' ERR
 
 source "$env_base_sh"
 cat <<EOF >"$env_sh"

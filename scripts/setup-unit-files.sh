@@ -129,7 +129,7 @@ fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
-trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
+trap 'on_err_retry' ERR
 
 assert_sudo
 

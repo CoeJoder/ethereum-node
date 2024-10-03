@@ -45,7 +45,7 @@ fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
-trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
+trap 'on_err_retry' ERR
 
 # overwrite non-generated files and remove deleted files i.e. those listed in 
 # `includes.txt` but not existing in source filesystem

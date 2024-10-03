@@ -66,7 +66,7 @@ continue_or_exit
 
 # -------------------------- EXECUTION ----------------------------------------
 
-trap 'printerr_trap $? "$errmsg_retry"; exit $?' ERR
+trap 'on_err_retry' ERR
 
 sudo ufw disable
 sudo ufw --force reset

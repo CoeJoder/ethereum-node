@@ -76,7 +76,7 @@ continue_or_exit 1
 
 # -------------------------- EXECUTION ----------------------------------------
 
-trap 'printerr_trap $? "$errmsg_noretry"; exit $?' ERR
+trap 'on_err_noretry' ERR
 
 # geth setup
 sudo useradd --no-create-home --shell /bin/false "$geth_user"
