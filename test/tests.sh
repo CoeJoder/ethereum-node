@@ -17,12 +17,14 @@ function print_test_failures() {
 	local i
 	if [[ $failcount -eq 0 ]]; then
 		echo "${color_green}passed${color_reset}"
+		reset_test_failures
 		return 0
 	fi
 	echo "${color_red}failed ($failcount)${color_reset}:"
 	for ((i = 0; i < failcount; i++)); do
 		echo "  ${failures[i]}"
 	done
+	reset_test_failures
 }
 
 # -------------------------- TEST CASES ---------------------------------------
@@ -182,22 +184,18 @@ function test_continue_or_exit() {
 
 # -------------------------- TEST DRIVER --------------------------------------
 
-reset_test_failures
 echo -n "Running: ${color_lightgray}test_regex_eth_addr${color_reset}..."
 test_regex_eth_addr
 print_test_failures
 
-reset_test_failures
 echo -n "Running: ${color_lightgray}test_regex_eth_addr_csv${color_reset}..."
 test_regex_eth_addr_csv
 print_test_failures
 
-reset_test_failures
 echo -n "Running: ${color_lightgray}test_yes_or_no${color_reset}..."
 test_yes_or_no
 print_test_failures
 
-reset_test_failures
 echo -n "Running: ${color_lightgray}test_continue_or_exit${color_reset}..."
 test_continue_or_exit
 print_test_failures
