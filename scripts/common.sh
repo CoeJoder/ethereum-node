@@ -18,9 +18,13 @@ tools_dir="$proj_dir/tools"
 test_dir="$proj_dir/test"
 
 # project files
-log_file="log.txt"
+log_file="$proj_dir/log.txt"
+log_file_previous="$proj_dir/log-previous.txt"
 env_base_sh="$scripts_dir/env-base.sh"
 env_sh="$scripts_dir/env.sh"
+
+# log rotation threshold
+max_log_size=2097152 # 2 MB
 
 # e.g. "0xAbC123"
 regex_eth_addr='^0x[[:xdigit:]]{40}$'
@@ -66,24 +70,35 @@ function set_env() {
 	check_executable_exists env_sh
 	if print_failed_checks --warn; then
 		source "$env_sh"
+	else
+		press_any_key_to_continue
 	fi
 }
 
 # append to log file
 function log_timestamp() {
-	echo -en "\n$(date "+%m-%d-%Y, %r")" >> "$log_file"
+	echo -e "\n$(date "+%m-%d-%Y, %r")" >> "$log_file"
 }
 
 # tee stdout & stderr to log file
 function log_start() {
+	local log_size=$(stat -c %s "$log_file")
+	if [[ $log_size -ge $max_log_size ]]; then
+		printwarn "log file ≥ $max_log_size B"
+		if yes_or_no --default-yes "Rotate log?"; then
+			mv -vf "$log_file" "$log_file_previous"
+			echo -e "Log rotated: $log_file_previous" >> "$log_file"
+		fi
+	fi
 	exec &> >(tee -a "$log_file")
 }
 
+# INFO log-level message to stderr
 function printinfo() {
 	echo -e "${color_green}INFO ${color_reset}$@" >&2
 }
 
-# logs a warning message to terminal
+# WARN log-level message to stderr
 function printwarn() {
 	echo -e "${color_yellow}WARN ${color_reset}$@" >&2
 }
@@ -123,7 +138,6 @@ function printerr_trap() {
 	printerr "$code" "$msg"
 	return "$code"
 }
-
 
 # callback for ERR trap with a 'retry' msg
 function on_err_retry() {
@@ -190,17 +204,37 @@ function string_contains() {
 	[[ "$1" == *"$2"* ]] &>/dev/null
 }
 
-# yes-or-no prompt, defaulting to no, exiting on 'no' with given code or 0 by default
+# yes-or-no prompt
+# 'no' is always falsey (returns 1)
+function yes_or_no() {
+	local confirm
+	if [[ $# -ne 2 || ( $1 != '--default-yes' && $1 != '--default-no' ) ]]; then
+		printerr 'usage: yes_or_no {--default-yes|--default-no} prompt'
+		exit 2
+	fi
+	if [[ $1 == '--default-yes' ]]; then
+		read -p "$2 (Y/n): " confirm
+		if [[ $confirm == [nN] || $confirm == [nN][oO] ]]; then
+			return 1
+		fi
+	else
+		read -p "$2 (y/N): " confirm
+		if [[ $confirm != [yY] && $confirm != [yY][eE][sS] ]]; then
+			return 1
+		fi
+	fi
+}
+
+# "Continue?" prompt, defaulting to no, exiting on 'no' with given code or 0 by default
 function continue_or_exit() {
-	local code=0 question="Continue?" confirm
+	local code=0 prompt="Continue?"
 	if [[ $# -gt 0 ]]; then
 		code="$1"
 	fi
 	if [[ $# -gt 1 ]]; then
-		question="$2"
+		prompt="$2"
 	fi
-	read -p "$question (y/N): " confirm &&
-		[[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit "$code"
+	yes_or_no --default-no "$prompt" || exit "$code"
 	printf '\n'
 }
 
@@ -248,7 +282,7 @@ function reset_checks() {
 # print failed checks with given log-level, return error code if failures
 function print_failed_checks() {
 	if [[ $# -ne 1 || ( $1 != "--warn" && $1 != "--error" ) ]]; then
-		printerr "usage: _print_failed_checks [--warn|--error]"
+		printerr "usage: print_failed_checks {--warn|--error}"
 		exit 2
 	fi
 	local failcount=${#_check_failures[@]}
