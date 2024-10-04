@@ -122,33 +122,34 @@ function printerr() {
 	return "$code"
 }
 
-# logger for ERR trap that propagates and optionally overrides exit code
+# callback for ERR trap
 # examples:
-#   `trap 'printerr_trap; exit $?' ERR
-#   `trap 'printerr_trap $? "failed to launch"; exit 1' ERR`
-function printerr_trap() {
-	local code="$?"
+#   `trap 'on_err' ERR
+#   `trap 'on_err "failed to launch"' ERR`
+#   `trap 'on_err "failed to launch" 2' ERR`
+function on_err() {
+	local exit_status=$?
 	local msg="at line $(caller)"
-	if [[ $# -eq 2 ]]; then
-		code="$1"
-		msg="$msg: $2"
-	elif [[ $# -eq 1 ]]; then
-		code="$1"
+	if [[ $# -gt 0 ]]; then
+		msg="$1"
 	fi
-	printerr "$code" "$msg"
-	return "$code"
+	if [[ $# -gt 1 ]]; then
+		exit_status=$2
+	fi
+	printerr $exit_status "$msg"
+	exit $exit_status
 }
 
 # callback for ERR trap with a 'retry' msg
 function on_err_retry() {
-	printerr_trap $? "$errmsg_retry"
-	exit $?
+	local exit_status=$?
+	on_err "at line $(caller): $errmsg_retry" $exit_status
 }
 
 # callback for ERR trap without a 'retry' msg
 function on_err_noretry() {
-	printerr_trap $? "$errmsg_noretry"
-	exit $?
+	local exit_status=$?
+	on_err "at line $(caller): $errmsg_noretry" $exit_status
 }
 
 # `read` but allows a default value
