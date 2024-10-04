@@ -1,7 +1,7 @@
 #!/bin/bash
 
 this_dir="$(dirname "$(realpath "$0")")"
-common_sh="$this_dir/../scripts/common.sh"
+common_sh="$this_dir/../src/common.sh"
 source "$common_sh"
 
 # -------------------------- TEST FIXTURES ------------------------------------

@@ -2,8 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
-scripts_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
-source "$scripts_dir/common.sh"
+src_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
+source "$src_dir/common.sh"
 housekeeping
 
 # -------------------------- BANNER -------------------------------------------

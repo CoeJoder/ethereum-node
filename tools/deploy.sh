@@ -3,7 +3,7 @@
 # -------------------------- HEADER -------------------------------------------
 
 tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
-source "$tools_dir/../scripts/common.sh"
+source "$tools_dir/../src/common.sh"
 housekeeping
 
 # -------------------------- BANNER -------------------------------------------
@@ -23,7 +23,7 @@ EOF
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Copies the scripts and unit files from the client PC to the node server.
+Copies the source scripts from the client PC to the node server.
 EOF
 press_any_key_to_continue
 
@@ -55,7 +55,7 @@ rsync -avh -e "ssh -p $node_server_ssh_port" \
 	--include-from="$tools_dir/non-generated.txt" \
 	--exclude="*" \
 	$RSYNC_OPTS \
-	"$scripts_dir" ${node_server_username}@${node_server_hostname}:
+	"$src_dir" ${node_server_username}@${node_server_hostname}:
 
 # overwrite generated files only if source copy is newer
 rsync -avhu -e "ssh -p $node_server_ssh_port" \
@@ -63,6 +63,6 @@ rsync -avhu -e "ssh -p $node_server_ssh_port" \
 	--include-from="$tools_dir/generated.txt" \
 	--exclude="*" \
 	$RSYNC_OPTS \
-	"$scripts_dir" ${node_server_username}@${node_server_hostname}:
+	"$src_dir" ${node_server_username}@${node_server_hostname}:
 
 # -------------------------- POSTCONDITIONS -----------------------------------

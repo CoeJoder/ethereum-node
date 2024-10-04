@@ -2,7 +2,7 @@
 
 # common.sh
 #
-# A library of constants and utility functions used by the other scripts.
+# A library of constants and utility functions used throughout the project.
 
 # -------------------------- HEADER -------------------------------------------
 
@@ -13,15 +13,15 @@ set -E
 
 # project directories
 proj_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
-scripts_dir="$proj_dir/scripts"
+src_dir="$proj_dir/src"
 tools_dir="$proj_dir/tools"
 test_dir="$proj_dir/test"
 
 # project files
 log_file="$proj_dir/log.txt"
 log_file_previous="$proj_dir/log-previous.txt"
-env_base_sh="$scripts_dir/env-base.sh"
-env_sh="$scripts_dir/env.sh"
+env_base_sh="$src_dir/env-base.sh"
+env_sh="$src_dir/env.sh"
 
 # log rotation threshold
 max_log_size=2097152 # 2 MB
