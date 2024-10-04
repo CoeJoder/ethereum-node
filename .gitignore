@@ -6,15 +6,15 @@
 !.editorconfig
 !.gitignore
 
-!scripts/
-!scripts/common.sh
-!scripts/env-base.sh
-!scripts/exit.sh
-!scripts/print-env.sh
-!scripts/setup-env.sh
-!scripts/setup-firewall.sh
-!scripts/setup-filesystem.sh
-!scripts/setup-unit-files.sh
+!src/
+!src/common.sh
+!src/env-base.sh
+!src/exit.sh
+!src/print-env.sh
+!src/setup-env.sh
+!src/setup-firewall.sh
+!src/setup-filesystem.sh
+!src/setup-unit-files.sh
 
 !test/
 !test/tests.sh
