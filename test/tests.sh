@@ -27,6 +27,12 @@ function print_test_failures() {
 	reset_test_failures
 }
 
+function run_test() {
+	echo -n "Running: ${color_lightgray}$1${color_reset}..."
+	"$1"
+	print_test_failures
+}
+
 # -------------------------- TEST CASES ---------------------------------------
 
 # tests for `$regex_eth_addr` in common.sh
@@ -184,18 +190,7 @@ function test_continue_or_exit() {
 
 # -------------------------- TEST DRIVER --------------------------------------
 
-echo -n "Running: ${color_lightgray}test_regex_eth_addr${color_reset}..."
-test_regex_eth_addr
-print_test_failures
-
-echo -n "Running: ${color_lightgray}test_regex_eth_addr_csv${color_reset}..."
-test_regex_eth_addr_csv
-print_test_failures
-
-echo -n "Running: ${color_lightgray}test_yes_or_no${color_reset}..."
-test_yes_or_no
-print_test_failures
-
-echo -n "Running: ${color_lightgray}test_continue_or_exit${color_reset}..."
-test_continue_or_exit
-print_test_failures
+run_test test_regex_eth_addr
+run_test test_regex_eth_addr_csv
+run_test test_yes_or_no
+run_test test_continue_or_exit
