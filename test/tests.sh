@@ -163,7 +163,7 @@ function test_continue_or_exit() {
 		''
 		'zebra'
 	)
-	local retval curtest i
+	local curtest i
 
 	for ((i = 0; i < ${#yeses[@]}; i++)); do
 		curtest=${yeses[i]}
