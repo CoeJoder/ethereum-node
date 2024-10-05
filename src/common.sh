@@ -103,38 +103,38 @@ function printwarn() {
 	echo -e "${color_yellow}WARN ${color_reset}$@" >&2
 }
 
-# terminal error logger that propagates and optionally overrides exit code
+# ERROR log-level message, with optional error code, to stderr
 # examples:
-#   `printerr 2 "failed to launch"`
 #   `printerr "failed to launch"`
+#   `printerr 2 "failed to launch"`
 function printerr() {
-	local code="$?" msg
+	local code=$? msg
 	if [[ $# -eq 2 ]]; then
-		code="$1" msg="$2"
+		code=$1
+		msg="$2"
 		echo -e "${color_red}ERROR ${code}${color_reset} $msg" >&2
 	elif [[ $# -eq 1 ]]; then
 		msg="$1"
 		echo -e "${color_red}ERROR${color_reset} $msg" >&2
 	else
-		echo "usage: printerr [code] msg" >&2
-		return 1
+		echo "${color_red}ERROR${color_reset} usage: printerr [code] msg" >&2
+		exit 2
 	fi
-	return "$code"
 }
 
 # callback for ERR trap
 # examples:
 #   `trap 'on_err' ERR
 #   `trap 'on_err "failed to launch"' ERR`
-#   `trap 'on_err "failed to launch" 2' ERR`
+#   `trap 'on_err 2 "failed to launch"' ERR`
 function on_err() {
 	local exit_status=$?
 	local msg="at line $(caller)"
-	if [[ $# -gt 0 ]]; then
-		msg="$1"
-	fi
-	if [[ $# -gt 1 ]]; then
-		exit_status=$2
+	if [[ $# -eq 2 ]]; then
+		exit_status=$1
+		msg="$2"
+	elif [[ $# -eq 1 ]]; then
+		exit_status=$1
 	fi
 	printerr $exit_status "$msg"
 	exit $exit_status
@@ -143,13 +143,13 @@ function on_err() {
 # callback for ERR trap with a 'retry' msg
 function on_err_retry() {
 	local exit_status=$?
-	on_err "at line $(caller): $errmsg_retry" $exit_status
+	on_err $exit_status "at line $(caller): $errmsg_retry"
 }
 
-# callback for ERR trap without a 'retry' msg
+# callback for ERR trap without a 'noretry' msg
 function on_err_noretry() {
 	local exit_status=$?
-	on_err "at line $(caller): $errmsg_noretry" $exit_status
+	on_err $exit_status "at line $(caller): $errmsg_noretry"
 }
 
 # `read` but allows a default value
