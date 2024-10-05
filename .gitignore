@@ -7,6 +7,7 @@
 !.gitignore
 
 !src/
+!src/_script_template.sh
 !src/common.sh
 !src/disable-beacon.sh
 !src/disable-geth.sh
