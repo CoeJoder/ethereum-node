@@ -8,12 +8,18 @@
 
 !src/
 !src/common.sh
+!src/disable-beacon.sh
+!src/disable-geth.sh
+!src/disable-validator.sh
+!src/enable-beacon.sh
+!src/enable-geth.sh
+!src/enable-validator.sh
 !src/env-base.sh
 !src/exit.sh
 !src/print-env.sh
 !src/setup-env.sh
-!src/setup-firewall.sh
 !src/setup-filesystem.sh
+!src/setup-firewall.sh
 !src/setup-unit-files.sh
 
 !test/
