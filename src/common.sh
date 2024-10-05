@@ -230,12 +230,12 @@ function yes_or_no() {
 function continue_or_exit() {
 	local code=0 prompt="Continue?"
 	if [[ $# -gt 0 ]]; then
-		code="$1"
+		code=$1
 	fi
 	if [[ $# -gt 1 ]]; then
 		prompt="$2"
 	fi
-	yes_or_no --default-no "$prompt" || exit "$code"
+	yes_or_no --default-no "$prompt" || exit $code
 	printf '\n'
 }
 
