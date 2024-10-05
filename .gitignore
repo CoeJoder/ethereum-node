@@ -21,6 +21,7 @@
 !src/setup-env.sh
 !src/setup-filesystem.sh
 !src/setup-firewall.sh
+!src/setup-node.sh
 !src/setup-unit-files.sh
 
 !test/
