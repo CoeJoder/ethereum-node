@@ -93,14 +93,27 @@ function log_start() {
 	exec &> >(tee -a "$log_file")
 }
 
+# common logging suffix for INFO messages
+function print_ok() {
+	echo "${color_green}OK${color_reset}" >&2
+}
+
 # INFO log-level message to stderr
 function printinfo() {
-	echo -e "${color_green}INFO ${color_reset}$@" >&2
+	local echo_opts='-e'
+	if [[ $1 == '-n' ]]; then
+		echo_opts='-en'
+	fi
+	echo $echo_opts "${color_green}INFO ${color_reset}$@" >&2
 }
 
 # WARN log-level message to stderr
 function printwarn() {
-	echo -e "${color_yellow}WARN ${color_reset}$@" >&2
+	local echo_opts='-e'
+	if [[ $1 == '-n' ]]; then
+		echo_opts='-en'
+	fi
+	echo $echo_opts "${color_yellow}WARN ${color_reset}$@" >&2
 }
 
 # ERROR log-level message, with optional error code, to stderr
@@ -142,14 +155,12 @@ function on_err() {
 
 # callback for ERR trap with a 'retry' msg
 function on_err_retry() {
-	local exit_status=$?
-	on_err $exit_status "at line $(caller): $errmsg_retry"
+	on_err $? "at line $(caller): $errmsg_retry"
 }
 
 # callback for ERR trap without a 'noretry' msg
 function on_err_noretry() {
-	local exit_status=$?
-	on_err $exit_status "at line $(caller): $errmsg_noretry"
+	on_err $? "at line $(caller): $errmsg_noretry"
 }
 
 # `read` but allows a default value
@@ -188,6 +199,70 @@ function get_latest_release() {
 	curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
 		grep '"tag_name":' |                                             # Get tag line
 		sed -E 's/.*"([^"]+)".*/\1/'                                     # Pluck JSON value
+}
+
+# get the latest prysm release version (vX.Y.Z)
+function get_latest_prysm_version() {
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: get_latest_prysm_version outvar"
+		return 2
+	fi
+	local outvar="$1"
+	echo -en "Looking up latest prysm version..." >&2
+	prysm_version=$(get_latest_release "prysmaticlabs/prysm")
+	if [[ ! "$prysm_version" =~ v[0-9]\.[0-9]\.[0-9] ]]; then
+		echo "${color_red}failed${color_reset}." >&2
+		printerr "malformed version string: \"$prysm_version\""
+		return 1
+	fi
+	echo -e "${color_green}${prysm_version}${color_reset}" >&2
+	printf -v "$outvar" "$prysm_version"
+}
+
+# enables a system service
+function enable_service() {
+	if [[ $# -ne 2 ]]; then
+		printerr "usage: enable_service unit_file_var bin_file_var"
+		exit 2
+	fi
+	local unit_file_var="$1" bin_file_var="$2"
+
+	check_file_exists $unit_file_var
+	check_executable_exists $bin_file_var
+	print_failed_checks --error || exit
+
+	unit_file_basename="$(basename "${!unit_file_var}")"
+	continue_or_exit 0 "Start and enable ${color_lightgray}${unit_file_basename}${color_reset}?"
+
+	trap 'on_err_retry' ERR
+
+	assert_sudo
+	sudo systemctl daemon-reload
+	sudo systemctl start "$unit_file_basename"
+	sudo systemctl enable "$unit_file_basename"
+}
+
+# disables a system service
+function disable_service() {
+	if [[ $# -ne 2 ]]; then
+		printerr "usage: disable_service unit_file_var bin_file_var"
+		exit 2
+	fi
+	local unit_file_var="$1" bin_file_var="$2"
+
+	check_file_exists $unit_file_var
+	check_executable_exists $bin_file_var
+	print_failed_checks --error || exit
+
+	unit_file_basename="$(basename "${!unit_file_var}")"
+	continue_or_exit 0 "Stop and disable ${color_lightgray}${unit_file_basename}${color_reset}?"
+
+	trap 'on_err_retry' ERR
+
+	assert_sudo
+	sudo systemctl daemon-reload
+	sudo systemctl stop "$unit_file_basename"
+	sudo systemctl disable "$unit_file_basename"
 }
 
 # test expression for user existence
@@ -381,10 +456,26 @@ function check_is_valid_port() {
 	fi
 }
 
+function check_command_does_not_exist_on_path() {
+	if check_is_defined $1; then
+		if type -P "${!1}" &>/dev/null; then
+			_check_failures+=("command already exists: ${!1}")
+		fi
+	fi
+}
+
 function check_command_exists_on_path() {
 	if check_is_defined $1; then
 		if ! type -P "${!1}" &>/dev/null; then
 			_check_failures+=("command does not exist: ${!1}")
+		fi
+	fi
+}
+
+function check_executable_does_not_exist() {
+	if check_is_defined $1; then
+		if [[ -x ${!1} ]]; then
+			_check_failures+=("executable already exists: ${color_filename}${!1}${color_reset}")
 		fi
 	fi
 }
@@ -400,7 +491,7 @@ function check_executable_exists() {
 function check_is_valid_ethereum_address() {
 	if check_is_defined $1; then
 		if [[ ! ${!1} =~ $regex_eth_addr ]]; then
-			_check_failures+=("invalid hexadecimal: ${!1}")
+			_check_failures+=("invalid Ethereum address: ${!1}")
 		fi
 	fi
 }

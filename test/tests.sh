@@ -188,9 +188,20 @@ function test_continue_or_exit() {
 	done
 }
 
+# tests for `get_latest_prysm_version()` in common.sh
+function test_get_latest_prysm_version() {
+	local pversion
+	if get_latest_prysm_version pversion; then
+		printinfo "Latest prysm version: $pversion"
+	else
+		failures+=("failed to get latest prysm version")
+	fi
+}
+
 # -------------------------- TEST DRIVER --------------------------------------
 
 run_test test_regex_eth_addr
 run_test test_regex_eth_addr_csv
 run_test test_yes_or_no
 run_test test_continue_or_exit
+run_test test_get_latest_prysm_version
