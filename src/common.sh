@@ -103,6 +103,7 @@ function printinfo() {
 	local echo_opts='-e'
 	if [[ $1 == '-n' ]]; then
 		echo_opts='-en'
+		shift
 	fi
 	echo $echo_opts "${color_green}INFO ${color_reset}$@" >&2
 }
@@ -112,6 +113,7 @@ function printwarn() {
 	local echo_opts='-e'
 	if [[ $1 == '-n' ]]; then
 		echo_opts='-en'
+		shift
 	fi
 	echo $echo_opts "${color_yellow}WARN ${color_reset}$@" >&2
 }
@@ -197,8 +199,8 @@ function read_no_default() {
 # source: https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c
 function get_latest_release() {
 	curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
-		grep '"tag_name":' |                                             # Get tag line
-		sed -E 's/.*"([^"]+)".*/\1/'                                     # Pluck JSON value
+		grep '"tag_name":' |                                            # Get tag line
+		sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
 }
 
 # get the latest prysm release version (vX.Y.Z)
@@ -219,7 +221,38 @@ function get_latest_prysm_version() {
 	printf -v "$outvar" "$prysm_version"
 }
 
-# enables a system service
+# download a file silently (except on error) using `curl`
+function download_file() {
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: download_file url"
+		return 2
+	fi
+	local url="$1"
+	if ! curl -fLOSs "$url"; then
+		printerr "download failed: $url"
+		return 1
+	fi
+}
+
+# download and checksum a prysm program from the GitHub release page,
+# and assign the bin filename to the given `outvar`
+function download_prysm() {
+	if [[ $# -ne 3 ]]; then
+		printerr "usage: download_prysm program version outvar"
+		return 2
+	fi
+	local program="$1" version="$2" outvar="$3"
+	program_bin="${program}-${version}-linux-amd64"
+	program_bin_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin}"
+	program_bin_sha256="${program}-${version}-linux-amd64.sha256"
+	program_bin_sha256_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin_sha256}"
+	download_file "$program_bin_url" || return
+	download_file "$program_bin_sha256_url" || return
+	shasum -a 256 -cq "$program_bin_sha256" || return
+	printf -v "$outvar" "$program_bin"
+}
+
+# enable a system service
 function enable_service() {
 	if [[ $# -ne 2 ]]; then
 		printerr "usage: enable_service unit_file_var bin_file_var"
@@ -242,7 +275,7 @@ function enable_service() {
 	sudo systemctl enable "$unit_file_basename"
 }
 
-# disables a system service
+# disable a system service
 function disable_service() {
 	if [[ $# -ne 2 ]]; then
 		printerr "usage: disable_service unit_file_var bin_file_var"

@@ -61,7 +61,7 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "\nCleaning up..."
+	printinfo -n "Cleaning up..."
 	popd >/dev/null
 	[[ -d $temp_dir ]] && rm -rf --interactive=never "$temp_dir" >/dev/null
 	print_ok

@@ -1,8 +1,22 @@
 #!/bin/bash
 
+# -------------------------- HEADER -------------------------------------------
+
 this_dir="$(dirname "$(realpath "$0")")"
 common_sh="$this_dir/../src/common.sh"
 source "$common_sh"
+
+temp_dir=$(mktemp -d)
+pushd "$temp_dir" >/dev/null
+
+function on_exit() {
+	printinfo -n "Cleaning up..."
+	popd >/dev/null
+	[[ -d $temp_dir ]] && rm -rf --interactive=never "$temp_dir" >/dev/null
+	print_ok
+}
+
+trap 'on_exit' EXIT
 
 # -------------------------- TEST FIXTURES ------------------------------------
 
@@ -28,7 +42,7 @@ function print_test_failures() {
 }
 
 function run_test() {
-	echo -n "Running: ${color_lightgray}$1${color_reset}..."
+	printinfo -n "Running: ${color_lightgray}$1${color_reset}..."
 	"$1"
 	print_test_failures
 }
@@ -191,10 +205,27 @@ function test_continue_or_exit() {
 # tests for `get_latest_prysm_version()` in common.sh
 function test_get_latest_prysm_version() {
 	local pversion
-	if get_latest_prysm_version pversion; then
-		printinfo "Latest prysm version: $pversion"
-	else
+	if ! get_latest_prysm_version pversion &>/dev/null; then
 		failures+=("failed to get latest prysm version")
+	fi
+}
+
+# tests for "download_prysm" in common.sh
+function test_download_prysm() {
+	local program="beacon-chain" version="v5.1.0"
+	local expected="${program}-${version}-linux-amd64" actual
+	if ! download_prysm $program $version actual; then
+		failures+=("failed to download prysm")
+	elif [[ $expected != $actual ]]; then
+		failures+=("expected: $expected, actual: $actual")
+	elif [[ ! -f $expected ]]; then
+		failures+=("downloaded file not found: $expected")
+	fi
+
+	program="non-existent-program"
+	expected="${program}-${version}-linux-amd64"
+	if download_prysm $program $version actual &>/dev/null; then
+		failures+=("failed to err on non-existent program")
 	fi
 }
 
@@ -205,3 +236,4 @@ run_test test_regex_eth_addr_csv
 run_test test_yes_or_no
 run_test test_continue_or_exit
 run_test test_get_latest_prysm_version
+run_test test_download_prysm
