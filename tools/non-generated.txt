@@ -4,7 +4,6 @@
 common.sh
 env-base.sh
 print-env.sh
-setup-env.sh
 setup-filesystem.sh
 setup-firewall.sh
 setup-unit-files.sh
