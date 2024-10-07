@@ -1,4 +1,4 @@
-# Final Setup
+# Node Setup
 
 ## Preconditions
 - the [initial setup](./initial-setup.md) has been completed
@@ -7,10 +7,8 @@
 - ***IMPORTANT: your ISP plan includes unlimited data***
 
 ## Postconditions
-- node server will be running geth (EL), prysm-beacon (CL), and prysm-validator
-- validator(s) will be attesting, aggregating, and proposing blocks, thus earning ETH income over time
-- ETH income will be added to its respective validator's balance as it is earned
-- for any validator, you will be ready to set a withdrawal address at a future time of your choosing, thus beginning automatic, periodic withdrawals of its balance in excess of the staked 32 ETH
+- node server will be running geth (EL), prysm-beacon (CL) as services
+- you will be ready to [setup one or more validators](./validator-setup.md)
 
 ## Configurable Values
 As in the initial setup guide, this guide is written using the following configurable values:
@@ -79,3 +77,6 @@ ssh -p 55522 eth-node-mainnet
 ```bash
 ./ethereum-node/setup-unit-files.sh
 ```
+
+## Next Steps
+You are now ready for [validator setup](./validator-setup.md).

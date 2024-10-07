@@ -29,7 +29,8 @@
 !docs/
 !docs/hardware-requirements.md
 !docs/initial-setup.md
-!docs/final-setup.md
+!docs/node-setup.md
+!docs/validator-setup.md
 
 !tools/
 !tools/deploy.sh

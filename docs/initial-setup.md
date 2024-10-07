@@ -18,7 +18,7 @@
 	- `Ubuntu Server` - the latest Ubuntu Server ISO disk image
 	- `Mint` - the latest the Mint ISO disk image
 	- `Data` - a single bootable FAT32 disk partition
-- you will be ready to setup the Ethereum node software
+- you will be ready to [setup the Ethereum node software](./node-setup.md)
 
 ## Configurable Values
 This guide is written using the following configurable values:
@@ -307,4 +307,4 @@ sudo timedatectl set-timezone America/Los_Angeles
 - [ ] logout and enjoy a refreshing beverage, you've earned it!
 
 ## Next Steps
-You are now ready to install the Ethereum node software.
+You are now ready for [node setup](./node-setup.md).
