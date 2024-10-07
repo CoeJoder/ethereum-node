@@ -48,10 +48,10 @@ get_latest_prysm_version latest_prysm_version || exit 1
 cat <<EOF
 
 Ready to install the following:
+  JWT secret: ${color_green}$eth_jwt_file${color_reset}
   Geth: ${color_green}$geth_bin${color_reset}
   Prysm-beacon ${latest_prysm_version}: ${color_green}$prysm_beacon_bin${color_reset}
   Prysm-validator ${latest_prysm_version}: ${color_green}$prysm_validator_bin${color_reset}
-  JWT secret: ${color_green}$eth_jwt_file${color_reset}
 EOF
 continue_or_exit 1
 
@@ -82,45 +82,23 @@ sudo chmod 644 "$eth_jwt_file"
 # geth
 printinfo "Installing geth..."
 sudo add-apt-repository -y ppa:ethereum/ethereum
-sudo apt-get update
-sudo apt-get install ethereum
+sudo apt-get -y update
+sudo apt-get -y install ethereum
 
 # prysm
-printinfo "Downloading prysm-beacon and prysm-validator..."
-latest_beacon_chain_bin="beacon-chain-${latest_prysm_version}-linux-amd64"
-latest_beacon_chain_bin_sha256="beacon-chain-${latest_prysm_version}-linux-amd64.sha256"
-latest_validator_bin="validator-${latest_prysm_version}-linux-amd64"
-latest_validator_bin_sha256="validator-${latest_prysm_version}-linux-amd64.sha256"
-
-rm -v --interactive=never "$latest_beacon_chain_bin" 2>/dev/null
-rm -v --interactive=never "$latest_beacon_chain_bin_sha256" 2>/dev/null
-rm -v --interactive=never "$latest_validator_bin" 2>/dev/null
-rm -v --interactive=never "$latest_validator_bin_sha256" 2>/dev/null
-
-wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${latest_prysm_version}/${latest_beacon_chain_bin}"
-wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${latest_prysm_version}/${latest_beacon_chain_bin_sha256}"
-wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${latest_prysm_version}/${latest_validator_bin}"
-wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${latest_prysm_version}/${latest_validator_bin_sha256}"
-
-echo "$(cat "$latest_beacon_chain_bin_sha256")" | shasum -a 256 -c - || (
-	printerr $? "prysm-beacon checksum failed; supply-chain may be compromised"
-	exit 1
-)
-echo "$(cat "$latest_validator_bin_sha256")" | shasum -a 256 -c - || (
-	printerr $? "prysm-validator checksum failed; supply-chain may be compromised"
-	exit 1
-)
-
+printinfo "Downloading prysm-beacon..."
+download_prysm beacon-chain "$latest_prysm_version" latest_beacon_chain_bin
 sudo chown -v ${prysm_beacon_user}:${prysm_beacon_group} "$latest_beacon_chain_bin"
-sudo chown -v ${prysm_validator_user}:${prysm_validator_group} "$latest_validator_bin"
 sudo chmod -v 550 "$latest_beacon_chain_bin"
-sudo chmod -v 550 "$latest_validator_bin"
-sudo mv -vf "$latest_beacon_chain_bin" "$prysm_beacon_bin" \
-  && sudo rm -v --interactive=never "$latest_beacon_chain_bin_sha256"
-sudo mv -vf "$latest_validator_bin" "$prysm_validator_bin" \
-  && sudo rm -v --interactive=never "$latest_validator_bin_sha256"
-
+sudo mv -vf "$latest_beacon_chain_bin" "$prysm_beacon_bin"
 sudo "$prysm_beacon_bin" --version
+
+# validator
+printinfo "Downloading prysm-validator..."
+download_prysm validator "$latest_prysm_version" latest_validator_bin
+sudo chown -v ${prysm_validator_user}:${prysm_validator_group} "$latest_validator_bin"
+sudo chmod -v 550 "$latest_validator_bin"
+sudo mv -vf "$latest_validator_bin" "$prysm_validator_bin"
 sudo "$prysm_validator_bin" --version
 
 # -------------------------- POSTCONDITIONS -----------------------------------
