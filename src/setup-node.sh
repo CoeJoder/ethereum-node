@@ -72,6 +72,10 @@ trap 'on_exit' EXIT
 
 assert_sudo
 
+# system and app list updates
+sudo apt-get -y update
+sudo apt-get -y upgrade
+
 # JWT secret
 printinfo -n "Generating JWT secret..."
 openssl rand -hex 32 | tr -d "\n" > "jwt.hex"
