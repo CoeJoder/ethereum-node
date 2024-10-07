@@ -11,11 +11,22 @@ set -E
 
 # -------------------------- CONSTANTS ----------------------------------------
 
-# project directories
-proj_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
-src_dir="$proj_dir/src"
-tools_dir="$proj_dir/tools"
-test_dir="$proj_dir/test"
+# the 'src' folder is renamed to the following on deployment
+dist_dirname='ethereum-node'
+
+# set paths based on dev or prod environment
+common_sh_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+if [[ $(basename "$common_sh_dir") == $dist_dirname ]]; then
+	# prod
+	proj_dir="$common_sh_dir"
+	src_dir="$common_sh_dir"
+else
+	# dev
+	proj_dir="$(realpath "$common_sh_dir/..")"
+	src_dir="$proj_dir/src"
+	tools_dir="$proj_dir/tools"
+	test_dir="$proj_dir/test"
+fi
 
 # project files
 log_file="$proj_dir/log.txt"
@@ -82,12 +93,14 @@ function log_timestamp() {
 
 # tee stdout & stderr to log file
 function log_start() {
-	local log_size=$(stat -c %s "$log_file")
-	if [[ $log_size -ge $max_log_size ]]; then
-		printwarn "log file ≥ $max_log_size B"
-		if yes_or_no --default-yes "Rotate log?"; then
-			mv -vf "$log_file" "$log_file_previous"
-			echo -e "Log rotated: $log_file_previous" >> "$log_file"
+	if [[ -f $log_file ]]; then
+		local log_size=$(stat -c %s "$log_file")
+		if [[ $log_size -ge $max_log_size ]]; then
+			printwarn "log file ≥ $max_log_size B"
+			if yes_or_no --default-yes "Rotate log?"; then
+				mv -vf "$log_file" "$log_file_previous"
+				echo -e "Log rotated: $log_file_previous" >> "$log_file"
+			fi
 		fi
 	fi
 	exec &> >(tee -a "$log_file")

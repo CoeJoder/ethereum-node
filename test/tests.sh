@@ -3,8 +3,7 @@
 # -------------------------- HEADER -------------------------------------------
 
 this_dir="$(dirname "$(realpath "$0")")"
-common_sh="$this_dir/../src/common.sh"
-source "$common_sh"
+source "$this_dir/../src/common.sh"
 
 temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null

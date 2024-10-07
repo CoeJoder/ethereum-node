@@ -2,8 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
-src_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
-source "$src_dir/common.sh"
+this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+source "$this_dir/common.sh"
 housekeeping
 
 # -------------------------- BANNER -------------------------------------------

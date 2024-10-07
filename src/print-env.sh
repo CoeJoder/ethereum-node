@@ -2,9 +2,10 @@
 
 # -------------------------- HEADER -------------------------------------------
 
-src_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
-source "$src_dir/common.sh"
+this_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
+source "$this_dir/common.sh"
 housekeeping
+
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -22,6 +23,11 @@ EOF
 
 # -------------------------- PREAMBLE -----------------------------------------
 
+cat <<EOF
+Prints the project environment variables to the terminal.
+EOF
+press_any_key_to_continue
+
 # -------------------------- PRECONDITIONS ------------------------------------
 
 # -------------------------- RECONNAISSANCE -----------------------------------
@@ -33,7 +39,6 @@ ethereum_network=${color_green}$ethereum_network${color_reset}
 
 router_ip_address=${color_green}$router_ip_address${color_reset}
 
-node_server_ip_address=${color_green}$node_server_ip_address${color_reset}
 node_server_ssh_port=${color_green}$node_server_ssh_port${color_reset} ${color_lightgray}# TCP${color_reset}
 node_server_timezone=${color_green}$node_server_timezone${color_reset}
 node_server_hostname=${color_green}$node_server_hostname${color_reset}

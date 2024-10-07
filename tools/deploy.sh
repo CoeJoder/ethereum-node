@@ -54,14 +54,13 @@ assert_not_on_node_server
 check_is_valid_port node_server_ssh_port
 check_is_defined node_server_username
 check_is_defined node_server_hostname
+check_is_defined dist_dirname
 
 # careful changing these as they are params to rsync
-dist_dirname='ethereum-node'
 includes_non_generated="$tools_dir/non-generated.txt"
 includes_generated="$tools_dir/generated.txt"
 deploy_src_dir="$(realpath "$src_dir")/"
 
-check_is_defined dist_dirname
 check_file_exists includes_non_generated
 check_file_exists includes_generated
 check_directory_exists deploy_src_dir

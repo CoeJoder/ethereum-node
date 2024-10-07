@@ -12,7 +12,6 @@ ethereum_network='holesky'
 router_ip_address='192.168.1.1'
 
 # node server values used during initial setup
-node_server_ip_address='192.168.1.25'
 node_server_ssh_port=55522 # TCP
 node_server_timezone='America/Los_Angeles'
 node_server_hostname='eth-node-mainnet'

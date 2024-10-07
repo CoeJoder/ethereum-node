@@ -64,7 +64,6 @@ ethereum_network='$ethereum_network'
 router_ip_address='$router_ip_address'
 
 # node server values used during initial setup
-node_server_ip_address='$node_server_ip_address'
 node_server_ssh_port=$node_server_ssh_port # TCP
 node_server_timezone='$node_server_timezone'
 node_server_hostname='$node_server_hostname'
