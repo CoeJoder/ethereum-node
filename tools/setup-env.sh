@@ -99,11 +99,10 @@ chmod +x "$env_sh"
 # -------------------------- POSTCONDITIONS -----------------------------------
 
 reset_checks
-check_executable_exists "$env_sh"
+check_executable_exists env_sh
 print_failed_checks --error
 
 cat <<EOF
-
 Success!  Generated ${env_sh_stylized}
 Edit the file with your custom values before proceeding to the next step.
 EOF
