@@ -28,6 +28,7 @@ This guide is written using the following configurable values:
 - node server SSH port: `55522`
 - node server hostname: `eth-node-mainnet`
 - node server username: `coejoder`
+- client PC SSH key: `~/.ssh/eth-node-mainnet_ed25519`
 
 ## Steps
 
@@ -170,6 +171,7 @@ Host eth-node-mainnet
 	IdentitiesOnly yes
 	PreferredAuthentications publickey
 	ForwardAgent yes
+	AddKeysToAgent 1h
 ```
 
 - [ ] try logging into the node server again via SSH, but this time without specifying the username.  Enter the SSH key passphrase when prompted:
