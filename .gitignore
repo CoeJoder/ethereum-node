@@ -29,6 +29,7 @@
 !docs/
 !docs/hardware-requirements.md
 !docs/initial-setup.md
+!docs/final-setup.md
 
 !tools/
 !tools/deploy.sh
