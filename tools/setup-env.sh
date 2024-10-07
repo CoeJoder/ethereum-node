@@ -2,8 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
-src_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
-source "$src_dir/common.sh"
+tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+source "$tools_dir/../src/common.sh"
 # don't load env; it hasn't been generated yet
 log_start
 log_timestamp
