@@ -18,7 +18,6 @@
 !src/env-base.sh
 !src/exit.sh
 !src/print-env.sh
-!src/setup-env.sh
 !src/setup-filesystem.sh
 !src/setup-firewall.sh
 !src/setup-node.sh
@@ -35,3 +34,4 @@
 !tools/deploy.sh
 !tools/generated.txt
 !tools/non-generated.txt
+!tools/setup-env.sh
