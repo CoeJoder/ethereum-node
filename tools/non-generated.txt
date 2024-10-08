@@ -2,9 +2,16 @@
 
 */
 common.sh
+disable-beacon.sh
+disable-geth.sh
+disable-validator.sh
+enable-beacon.sh
+enable-geth.sh
+enable-validator.sh
 env-base.sh
+exit.sh
 print-env.sh
 setup-filesystem.sh
 setup-firewall.sh
-setup-unit-files.sh
-exit.sh
+setup-node.sh
+setup-validator.sh

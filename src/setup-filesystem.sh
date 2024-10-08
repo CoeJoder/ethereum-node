@@ -26,27 +26,24 @@ press_any_key_to_continue
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_on_node_server
+
 assert_sudo
+check_directory_exists --sudo node_server_secondary_storage
+check_user_does_not_exist geth_user
+check_user_does_not_exist prysm_beacon_user
+check_user_does_not_exist prysm_validator_user
 
-sudo check_directory_exists node_server_secondary_storage
+check_group_does_not_exist geth_group
+check_group_does_not_exist prysm_beacon_group
+check_group_does_not_exist prysm_validator_group
 
-sudo check_user_does_not_exist geth_user
-sudo check_user_does_not_exist prysm_beacon_user
-sudo check_user_does_not_exist prysm_validator_user
-
-sudo check_group_does_not_exist geth_group
-sudo check_group_does_not_exist prysm_beacon_group
-sudo check_group_does_not_exist prysm_validator_group
-
-sudo check_directory_does_not_exist geth_datadir
-sudo check_directory_does_not_exist geth_datadir_secondary
-sudo check_directory_does_not_exist geth_datadir_secondary_ancient
-sudo check_directory_does_not_exist prysm_beacon_datadir
-sudo check_directory_does_not_exist prysm_validator_datadir
+check_directory_does_not_exist --sudo geth_datadir
+check_directory_does_not_exist --sudo geth_datadir_secondary
+check_directory_does_not_exist --sudo geth_datadir_secondary_ancient
+check_directory_does_not_exist --sudo prysm_beacon_datadir
+check_directory_does_not_exist --sudo prysm_validator_datadir
 
 print_failed_checks --error || exit
-
-exit 0
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

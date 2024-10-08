@@ -455,33 +455,53 @@ function check_group_exists() {
 }
 
 function check_directory_does_not_exist() {
+	local _sudo=''
+	if [[ $1 == '--sudo' ]]; then
+		_sudo='sudo'
+		shift
+	fi
 	if check_is_defined $1; then
-		if [[ -d "${!1}" ]]; then
-			_check_failures+=("directory already exists: ${color_filename}${!1}${color_reset}")
+		if $_sudo test -d "${!1}"; then
+			_check_failures+=("directory already exists: ${!1}")
 		fi
 	fi
 }
 
 function check_directory_exists() {
+	local _sudo=''
+	if [[ $1 == '--sudo' ]]; then
+		_sudo='sudo'
+		shift
+	fi
 	if check_is_defined $1; then
-		if [[ ! -d "${!1}" ]]; then
-			_check_failures+=("directory does not exist: ${color_filename}${!1}${color_reset}")
+		if $_sudo test ! -d "${!1}"; then
+			_check_failures+=("directory does not exist: ${!1}")
 		fi
 	fi
 }
 
 function check_file_does_not_exist() {
+	local _sudo=''
+	if [[ $1 == '--sudo' ]]; then
+		_sudo='sudo'
+		shift
+	fi
 	if check_is_defined $1; then
-		if [[ -f "${!1}" ]]; then
-			_check_failures+=("file already exists: ${color_filename}${!1}${color_reset}")
+		if $_sudo test -f "${!1}"; then
+			_check_failures+=("file already exists: ${!1}")
 		fi
 	fi
 }
 
 function check_file_exists() {
+	local _sudo=''
+	if [[ $1 == '--sudo' ]]; then
+		_sudo='sudo'
+		shift
+	fi
 	if check_is_defined $1; then
-		if [[ ! -f "${!1}" ]]; then
-			_check_failures+=("file does not exist: ${color_filename}${!1}${color_reset}")
+		if $_sudo test ! -f "${!1}"; then
+			_check_failures+=("file does not exist: ${!1}")
 		fi
 	fi
 }
@@ -519,17 +539,35 @@ function check_command_exists_on_path() {
 }
 
 function check_executable_does_not_exist() {
+	local _sudo=''
+	if [[ $1 == '--sudo' ]]; then
+		_sudo='sudo'
+		shift
+	fi
 	if check_is_defined $1; then
-		if [[ -x ${!1} ]]; then
-			_check_failures+=("executable already exists: ${color_filename}${!1}${color_reset}")
+		if $_sudo test -x ${!1}; then
+			_check_failures+=("executable already exists: ${!1}")
 		fi
 	fi
 }
 
 function check_executable_exists() {
+	local _sudo=''
+	if [[ $1 == '--sudo' ]]; then
+		_sudo='sudo'
+		shift
+	fi
 	if check_is_defined $1; then
-		if [[ ! -x ${!1} ]]; then
-			_check_failures+=("file does not exist or is not executable: ${color_filename}${!1}${color_reset}")
+		if $_sudo test ! -x ${!1}; then
+			_check_failures+=("file does not exist or is not executable: ${!1}")
+		fi
+	fi
+}
+
+function check_is_service_active() {
+	if check_is_defined $1; then
+		if ! systemctl is-active --quiet "${!1}"; then
+			_check_failures+=("service is not active: ${!1}")
 		fi
 	fi
 }

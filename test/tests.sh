@@ -11,7 +11,7 @@ pushd "$temp_dir" >/dev/null
 function on_exit() {
 	printinfo -n "Cleaning up..."
 	popd >/dev/null
-	[[ -d $temp_dir ]] && rm -rf --interactive=never "$temp_dir" >/dev/null
+	[[ -d $temp_dir ]] && sudo rm -rf --interactive=never "$temp_dir" >/dev/null
 	print_ok
 }
 
@@ -44,6 +44,24 @@ function run_test() {
 	printinfo -n "Running: ${color_lightgray}$1${color_reset}..."
 	"$1"
 	print_test_failures
+}
+
+#
+# these functions adapt the `check_` functions to the test fixtures:
+#
+
+function _dont_expect_checkfailures() {
+	if [[ ${#_check_failures[@]} -gt 0 ]]; then
+		failures+=("${_check_failures[@]}")
+	fi
+}
+
+function _expect_checkfailures() {
+	local expected_count=$1
+	local actual_count=${#_check_failures[@]}
+	if [[ $expected_count -ne $actual_count ]]; then
+		failures+=("line $(caller): check-failures expected: ${expected_count}, actual: ${color_red}$actual_count${color_reset}")
+	fi
 }
 
 # -------------------------- TEST CASES ---------------------------------------
@@ -228,7 +246,285 @@ function test_download_prysm() {
 	fi
 }
 
+# test for check_directory_does_not_exist() in common.sh
+function test_check_directory_does_not_exist() {
+	local exists=(
+		'./tempdir1/'
+		'./tempdir2/zebra'
+	)
+	local exists_root=(
+		'./tempdir3/'
+		'./tempdir4/zebra'
+	)
+	local not_exist=(
+		'./tempdir5/'
+		'./tempdir6/zebra'
+	)
+	local not_exist_root=(
+		'./tempdir7/'
+		'./tempdir8/zebra'
+	)
+	local curtest i len
+
+	# exists
+	reset_checks
+	len=${#exists[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${exists[i]}"
+		mkdir -p "$curtest"
+		check_directory_does_not_exist curtest
+	done
+	_expect_checkfailures $len
+
+	# exists, owned by root
+	reset_checks
+	len=${#exists_root[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${exists_root[i]}"
+		sudo mkdir -p "$curtest"
+		check_directory_does_not_exist --sudo curtest
+	done
+	_expect_checkfailures $len
+
+	# not exist
+	reset_checks
+	len=${#not_exist[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${not_exist[i]}"
+		check_directory_does_not_exist curtest
+	done
+	_dont_expect_checkfailures
+
+	# not exist, owned by root
+	reset_checks
+	for ((i = 0; i < ${#not_exist_root[@]}; i++)); do
+		curtest="${not_exist_root[i]}"
+		check_directory_does_not_exist --sudo curtest
+	done
+	_dont_expect_checkfailures
+}
+
+# test for check_directory_exists() in common.sh
+function test_check_directory_exists() {
+	local exists=(
+		'./tempdir1/'
+		'./tempdir2/zebra'
+	)
+	local exists_root=(
+		'./tempdir3/'
+		'./tempdir4/zebra'
+	)
+	local not_exist=(
+		'./tempdir5/'
+		'./tempdir6/zebra'
+	)
+	local not_exist_root=(
+		'./tempdir7/'
+		'./tempdir8/zebra'
+	)
+	local curtest i len
+
+	# exists
+	reset_checks
+	len=${#exists[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${exists[i]}"
+		mkdir -p "$curtest"
+		check_directory_exists curtest
+	done
+	_dont_expect_checkfailures
+
+	# exists, owned by root
+	reset_checks
+	len=${#exists_root[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${exists_root[i]}"
+		sudo mkdir -p "$curtest"
+		check_directory_exists --sudo curtest
+	done
+	_dont_expect_checkfailures
+
+	# not exist
+	reset_checks
+	len=${#not_exist[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${not_exist[i]}"
+		check_directory_exists curtest
+	done
+	_expect_checkfailures $len
+
+	# not exist, owned by root
+	reset_checks
+	for ((i = 0; i < ${#not_exist_root[@]}; i++)); do
+		curtest="${not_exist_root[i]}"
+		check_directory_exists --sudo curtest
+	done
+	_expect_checkfailures $len
+}
+
+# test for check_file_does_not_exist() in common.sh
+function test_check_file_does_not_exist() {
+	local exists='./parent1/child1'
+	local exists_root='./parent2/child2'
+	local not_exist='./parent3/child3'
+	local not_exist_root='./parent4/child4'
+	local curtest
+
+	# exists
+	reset_checks
+	mkdir -p "$exists"
+	curtest="$exists/zebra_exists"
+	touch "$curtest"
+	check_file_does_not_exist curtest
+	_expect_checkfailures 1
+
+	# exists, owned by root
+	reset_checks
+	sudo mkdir -p "$exists_root"
+	curtest="$exists_root/zebra_exists_root"
+	sudo touch "$curtest"
+	check_file_does_not_exist --sudo curtest
+	_expect_checkfailures 1
+
+	# not exist
+	reset_checks
+	mkdir -p "$not_exist"
+	curtest="$not_exist/zebra_not_exist"
+	check_file_does_not_exist curtest
+	_dont_expect_checkfailures
+
+	# not exist, owned by root
+	reset_checks
+	sudo mkdir -p "$not_exist_root"
+	curtest="$not_exist_root/zebra_not_exist_root"
+	check_file_does_not_exist --sudo curtest
+	_dont_expect_checkfailures
+}
+
+# test for check_file_exists() in common.sh
+function test_check_file_exists() {
+	local exists='./parent1/child1'
+	local exists_root='./parent2/child2'
+	local not_exist='./parent3/child3'
+	local not_exist_root='./parent4/child4'
+	local curtest
+
+	# exists
+	reset_checks
+	mkdir -p "$exists"
+	curtest="$exists/zebra_exists"
+	touch "$curtest"
+	check_file_exists curtest
+	_dont_expect_checkfailures
+
+	# exists, owned by root
+	reset_checks
+	sudo mkdir -p "$exists_root"
+	curtest="$exists_root/zebra_exists_root"
+	sudo touch "$curtest"
+	check_file_exists --sudo curtest
+	_dont_expect_checkfailures
+
+	# not exist
+	reset_checks
+	mkdir -p "$not_exist"
+	curtest="$not_exist/zebra_not_exist"
+	check_file_exists curtest
+	_expect_checkfailures 1
+
+	# not exist, owned by root
+	reset_checks
+	sudo mkdir -p "$not_exist_root"
+	curtest="$not_exist_root/zebra_not_exist_root"
+	check_file_exists --sudo curtest
+	_expect_checkfailures 1
+}
+
+# test for check_executable_does_not_exist() in common.sh
+function test_check_executable_does_not_exist() {
+	local exists='./parent1/child1'
+	local exists_root='./parent2/child2'
+	local not_exist='./parent3/child3'
+	local not_exist_root='./parent4/child4'
+	local curtest
+
+	# exists
+	reset_checks
+	mkdir -p "$exists"
+	curtest="$exists/zebra_exists"
+	touch "$curtest"
+	chmod +x "$curtest"
+	check_executable_does_not_exist curtest
+	_expect_checkfailures 1
+
+	# exists, owned by root
+	reset_checks
+	sudo mkdir -p "$exists_root"
+	curtest="$exists_root/zebra_exists_root"
+	sudo touch "$curtest"
+	sudo chmod +x "$curtest"
+	check_executable_does_not_exist --sudo curtest
+	_expect_checkfailures 1
+
+	# not exist
+	reset_checks
+	mkdir -p "$not_exist"
+	curtest="$not_exist/zebra_not_exist"
+	check_executable_does_not_exist curtest
+	_dont_expect_checkfailures
+
+	# not exist, owned by root
+	reset_checks
+	sudo mkdir -p "$not_exist_root"
+	curtest="$not_exist_root/zebra_not_exist_root"
+	check_executable_does_not_exist --sudo curtest
+	_dont_expect_checkfailures
+}
+
+# test for check_executable_exists() in common.sh
+function test_check_executable_exists() {
+	local exists='./parent1/child1'
+	local exists_root='./parent2/child2'
+	local not_exist='./parent3/child3'
+	local not_exist_root='./parent4/child4'
+	local curtest
+
+	# exists
+	reset_checks
+	mkdir -p "$exists"
+	curtest="$exists/zebra_exists"
+	touch "$curtest"
+	chmod +x "$curtest"
+	check_executable_exists curtest
+	_dont_expect_checkfailures
+
+	# exists, owned by root
+	reset_checks
+	sudo mkdir -p "$exists_root"
+	curtest="$exists_root/zebra_exists_root"
+	sudo touch "$curtest"
+	sudo chmod +x "$curtest"
+	check_executable_exists --sudo curtest
+	_dont_expect_checkfailures
+
+	# not exist
+	reset_checks
+	mkdir -p "$not_exist"
+	curtest="$not_exist/zebra_not_exist"
+	check_executable_exists curtest
+	_expect_checkfailures 1
+
+	# not exist, owned by root
+	reset_checks
+	sudo mkdir -p "$not_exist_root"
+	curtest="$not_exist_root/zebra_not_exist_root"
+	check_executable_exists --sudo curtest
+	_expect_checkfailures 1
+}
+
 # -------------------------- TEST DRIVER --------------------------------------
+
+assert_sudo
 
 run_test test_regex_eth_addr
 run_test test_regex_eth_addr_csv
@@ -236,3 +532,9 @@ run_test test_yes_or_no
 run_test test_continue_or_exit
 run_test test_get_latest_prysm_version
 run_test test_download_prysm
+run_test test_check_directory_does_not_exist
+run_test test_check_directory_exists
+run_test test_check_file_does_not_exist
+run_test test_check_file_exists
+run_test test_check_executable_does_not_exist
+run_test test_check_executable_exists
