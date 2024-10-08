@@ -22,6 +22,7 @@
 !src/setup-firewall.sh
 !src/setup-node.sh
 !src/setup-unit-files.sh
+!src/setup-validator.sh
 
 !test/
 !test/tests.sh
