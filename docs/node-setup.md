@@ -47,8 +47,9 @@ nano ./src/env.sh
 
 ```bash
 ssh -p 55522 eth-node-mainnet
+cd ethereum-node
 
-./ethereum-node/print-env.sh
+./print-env.sh
 # after reviewing, stay logged in for the next steps
 ```
 
@@ -56,14 +57,14 @@ ssh -p 55522 eth-node-mainnet
 
 ```bash
 # answer "y" to any continuation prompt
-./ethereum-node/setup-firewall.sh
+./setup-firewall.sh
 ```
 
 - [ ] login to your router via web browser, and manually configure port forwarding using the same configuration described by the output of the previous command
 - [ ] prepare the users, groups, and filesystem for the Ethereum node software:
 
 ```bash
-./ethereum-node/setup-filesystem.sh
+./setup-filesystem.sh
 ```
 
 - [ ] install the Ethereum node software:
