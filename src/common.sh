@@ -267,48 +267,48 @@ function download_prysm() {
 
 # enable a system service
 function enable_service() {
-	if [[ $# -ne 2 ]]; then
-		printerr "usage: enable_service unit_file_var bin_file_var"
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: enable_service unit_file_var"
 		exit 2
 	fi
-	local unit_file_var="$1" bin_file_var="$2"
-
-	check_file_exists $unit_file_var
-	check_executable_exists $bin_file_var
-	print_failed_checks --error || exit
-
-	unit_file_basename="$(basename "${!unit_file_var}")"
-	continue_or_exit 0 "Start and enable ${color_lightgray}${unit_file_basename}${color_reset}?"
-
-	trap 'on_err_retry' ERR
+	local unit_file_var="$1"
+	local service_name
 
 	assert_sudo
 	sudo systemctl daemon-reload
-	sudo systemctl start "$unit_file_basename"
-	sudo systemctl enable "$unit_file_basename"
+
+	check_service_installed $unit_file_var
+	print_failed_checks --error || return
+
+	service_name="$(basename "${!unit_file_var}")"
+	yes_or_no --default-yes "Start and enable ${color_lightgray}${service_name}${color_reset}?" \
+		|| return
+
+	sudo systemctl start "$service_name"
+	sudo systemctl enable "$service_name"
 }
 
 # disable a system service
 function disable_service() {
-	if [[ $# -ne 2 ]]; then
-		printerr "usage: disable_service unit_file_var bin_file_var"
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: disable_service unit_file_var"
 		exit 2
 	fi
-	local unit_file_var="$1" bin_file_var="$2"
-
-	check_file_exists $unit_file_var
-	check_executable_exists $bin_file_var
-	print_failed_checks --error || exit
-
-	unit_file_basename="$(basename "${!unit_file_var}")"
-	continue_or_exit 0 "Stop and disable ${color_lightgray}${unit_file_basename}${color_reset}?"
-
-	trap 'on_err_retry' ERR
+	local unit_file_var="$1"
+	local service_name
 
 	assert_sudo
 	sudo systemctl daemon-reload
-	sudo systemctl stop "$unit_file_basename"
-	sudo systemctl disable "$unit_file_basename"
+
+	check_service_installed $unit_file_var
+	print_failed_checks --error || return
+
+	service_name="$(basename "${!unit_file_var}")"
+	yes_or_no --default-yes "Stop and disable ${color_lightgray}${service_name}${color_reset}?" \
+		|| return
+
+	sudo systemctl stop "$service_name"
+	sudo systemctl disable "$service_name"
 }
 
 # test expression for user existence
@@ -560,6 +560,15 @@ function check_executable_exists() {
 	if check_is_defined $1; then
 		if $_sudo test ! -x ${!1}; then
 			_check_failures+=("file does not exist or is not executable: ${!1}")
+		fi
+	fi
+}
+
+function check_service_installed() {
+	if check_is_defined $1; then
+		local service_name="$(basename "${!1}")"
+		if ! systemctl list-unit-files --full -all | grep -Fq "$service_name"; then
+			_check_failures+=("service is not installed: ${!1}")
 		fi
 	fi
 }

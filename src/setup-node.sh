@@ -32,9 +32,10 @@ press_any_key_to_continue
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_on_node_server
+assert_sudo
 
 check_command_does_not_exist_on_path geth_bin
-check_executable_does_not_exist prysm_beacon_bin
+check_executable_does_not_exist --sudo prysm_beacon_bin
 check_file_does_not_exist --sudo eth_jwt_file
 
 check_is_valid_ethereum_network ethereum_network
@@ -58,9 +59,8 @@ print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-get_latest_prysm_version latest_prysm_version || exit 1
+get_latest_prysm_version latest_prysm_version || exit
 
-# display the env vars used in this script for confirmation
 # display the env vars used in this script for confirmation
 cat <<EOF
 
@@ -109,8 +109,8 @@ continue_or_exit 1
 
 # if unit files already exist, confirm overwrite
 reset_checks
-check_file_does_not_exist geth_unit_file
-check_file_does_not_exist prysm_beacon_unit_file
+check_file_does_not_exist --sudo geth_unit_file
+check_file_does_not_exist --sudo prysm_beacon_unit_file
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
 fi
@@ -133,11 +133,12 @@ trap 'on_exit' EXIT
 assert_sudo
 
 # system and app list updates
+printinfo Running APT update and upgrade...
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
 # JWT secret
-printinfo -n "Generating JWT secret..."
+printinfo "Generating JWT secret..."
 openssl rand -hex 32 | tr -d "\n" > "jwt.hex"
 sudo mkdir -p "$(dirname "$eth_jwt_file")"
 sudo mv -vf jwt.hex "$eth_jwt_file"
@@ -150,7 +151,7 @@ sudo apt-get -y update
 sudo apt-get -y install ethereum
 
 # geth unit file
-echo -e "\n${color_filename}$geth_unit_file${color_reset}"
+printinfo "Generating ${color_filename}$geth_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$geth_unit_file"
 [Unit]
 Description=geth EL service
@@ -188,7 +189,7 @@ sudo mv -vf "$latest_beacon_chain_bin" "$prysm_beacon_bin"
 sudo "$prysm_beacon_bin" --version
 
 # prysm-beacon unit file
-echo -e "\n${color_filename}$prysm_beacon_unit_file${color_reset}"
+printinfo "Generating ${color_filename}$prysm_beacon_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$prysm_beacon_unit_file"
 [Unit]
 Description=prysm beacon CL service
@@ -227,14 +228,14 @@ sudo systemctl daemon-reload
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
+assert_sudo
+
 reset_checks
-
-check_file_exists eth_jwt_file
+check_file_exists --sudo eth_jwt_file
+check_file_exists --sudo geth_unit_file
+check_file_exists --sudo prysm_beacon_unit_file
 check_command_exists_on_path geth_bin
-check_executable_exists prysm_beacon_bin
-
-check_file_exists geth_unit_file
-check_file_exists prysm_beacon_unit_file
+check_executable_exists --sudo prysm_beacon_bin
 
 print_failed_checks --error
 

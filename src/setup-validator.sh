@@ -36,7 +36,6 @@ press_any_key_to_continue
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_on_node_server
-
 assert_sudo
 
 check_is_service_active geth_unit_file

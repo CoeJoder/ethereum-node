@@ -84,7 +84,9 @@ sudo ufw status
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
+assert_sudo
 ufw_status=$(sudo ufw status | awk -F' ' '{print $1" "$2}')
+
 reset_checks
 check_string_contains ufw_status "Status: active"
 check_string_contains ufw_status "${node_server_ssh_port}/tcp LIMIT"
