@@ -56,7 +56,7 @@ cd ethereum-node
 - [ ] configure the software firewall and enable it:
 
 ```bash
-# answer "y" to any continuation prompt
+# answer "y" to any continuation prompts
 ./setup-firewall.sh
 ```
 
@@ -67,16 +67,17 @@ cd ethereum-node
 ./setup-filesystem.sh
 ```
 
-- [ ] install the Ethereum node software:
+- [ ] install the Ethereum node software: **geth** (Execution Layer) and **prysm-beacon** (Consensus Layer):
 
 ```bash
-./ethereum-node/setup-node.sh
+./setup-node.sh
 ```
 
-- [ ] configure Ethereum node software to run as a system service:
+- [ ] enable the EL and CL services:
 
 ```bash
-./ethereum-node/setup-unit-files.sh
+./enable-geth.sh
+./enable-beacon.sh
 ```
 
 ## Next Steps
