@@ -20,11 +20,14 @@ if [[ $(basename "$common_sh_dir") == $dist_dirname ]]; then
 	# prod
 	proj_dir="$common_sh_dir"
 	src_dir="$common_sh_dir"
+	# offline
+	tools_offline_dir="$common_sh_dir"
 else
 	# dev
 	proj_dir="$(realpath "$common_sh_dir/..")"
 	src_dir="$proj_dir/src"
 	tools_dir="$proj_dir/tools"
+	tools_offline_dir="$proj_dir/tools-offline"
 	test_dir="$proj_dir/test"
 fi
 
@@ -55,11 +58,13 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_lightgray=$(tput setaf 245)
 	color_reset=$(tput sgr0)
 	bold=$(tput bold)
-	color_filename="${color_green}"
+	theme_filename="${color_green}"
+	theme_value="${color_green}"
+	theme_url="${color_blue}"
 fi
 
 # generic error messages to display on ERR trap
-errmsg_noretry="\nSomething went wrong.  Send ${color_filename}log.txt${color_reset} to the HGiC (Head Geek-in-Charge)"
+errmsg_noretry="\nSomething went wrong.  Send ${theme_filename}log.txt${color_reset} to the HGiC (Head Geek-in-Charge)"
 errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this time ;)"
 
 # -------------------------- UTILITIES ----------------------------------------
@@ -216,22 +221,42 @@ function get_latest_release() {
 		sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
 }
 
-# get the latest prysm release version (vX.Y.Z)
+# factor; get the latest "vX.Y.Z" version of a GH project
+function _get_latest_version() {
+	if [[ $# -ne 2 ]]; then
+		printerr "expected two arguments: ghproject, outvar"
+		return 2
+	fi
+	local ghproject="$1" outvar="$2" version
+	echo -en "Looking up latest '$ghproject' version..." >&2
+	version="$(get_latest_release "$ghproject")"
+	if [[ ! "$version" =~ v[0-9]\.[0-9]\.[0-9] ]]; then
+		echo "${color_red}failed${color_reset}." >&2
+		printerr "malformed version string: \"$version\""
+		return 1
+	fi
+	echo -e "${theme_value}${version}${color_reset}" >&2
+	printf -v "$outvar" "$version"
+}
+
+# get the latest Ethereum Staking Deposit CLI release version
+function get_latest_deposit_cli_version() {
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: get_latest_deposit_cli_version outvar"
+		return 2
+	fi
+	local outvar="$1"
+	_get_latest_version "ethereum/staking-deposit-cli" "$outvar"
+}
+
+# get the latest prysm release version
 function get_latest_prysm_version() {
 	if [[ $# -ne 1 ]]; then
 		printerr "usage: get_latest_prysm_version outvar"
 		return 2
 	fi
 	local outvar="$1"
-	echo -en "Looking up latest prysm version..." >&2
-	prysm_version=$(get_latest_release "prysmaticlabs/prysm")
-	if [[ ! "$prysm_version" =~ v[0-9]\.[0-9]\.[0-9] ]]; then
-		echo "${color_red}failed${color_reset}." >&2
-		printerr "malformed version string: \"$prysm_version\""
-		return 1
-	fi
-	echo -e "${color_green}${prysm_version}${color_reset}" >&2
-	printf -v "$outvar" "$prysm_version"
+	_get_latest_version "prysmaticlabs/prysm" "$outvar"
 }
 
 # download a file silently (except on error) using `curl`

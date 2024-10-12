@@ -1,0 +1,4 @@
+# offline source files
+
+*/
+run-staking-deposit-cli.sh

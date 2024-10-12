@@ -38,3 +38,7 @@
 !tools/generated.txt
 !tools/non-generated.txt
 !tools/setup-env.sh
+
+!tools-offline
+!tools-offline/offline.txt
+!tools-offline/run-staking-deposit-cli.sh

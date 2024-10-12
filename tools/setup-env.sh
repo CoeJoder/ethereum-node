@@ -23,8 +23,8 @@ EOF
 
 # -------------------------- PREAMBLE -----------------------------------------
 
-env_sh_stylized="${color_filename}$env_sh${color_reset}"
-env_sh_basename="${color_filename}$(basename "$env_sh")${color_reset}"
+env_sh_stylized="${theme_filename}$env_sh${color_reset}"
+env_sh_basename="${theme_filename}$(basename "$env_sh")${color_reset}"
 cat <<EOF
 Generates $env_sh_basename, an editable config file.
 EOF
@@ -70,6 +70,9 @@ node_server_hostname='$node_server_hostname'
 node_server_username='$node_server_username'
 node_server_secondary_storage='$node_server_secondary_storage'
 
+# the location of the 'DATA' drive mount point
+client_pc_usb_data_drive="/media/$USER/DATA"
+
 # external geth ports
 geth_port=$geth_port           # TCP
 geth_discovery_port=$geth_discovery_port # UDP
@@ -90,6 +93,11 @@ prysm_beacon_p2p_max_peers=$prysm_beacon_p2p_max_peers
 # these variables are ignored unless \`ethereum_network\` is set to 'holesky'
 prysm_beacon_checkpoint_sync_url='$prysm_beacon_checkpoint_sync_url'
 prysm_beacon_genesis_beacon_api_url='$prysm_beacon_genesis_beacon_api_url'
+
+# Ethereum Staking Deposit CLI values
+ethereum_staking_deposit_cli_version='v2.7.0'
+ethereum_staking_deposit_cli_sha256_checksum='ac3151843d681c92ae75567a88fbe0e040d53c21368cc1ed1a8c3d9fb29f2a3a'
+ethereum_staking_deposit_cli_url='https://github.com/ethereum/staking-deposit-cli/releases/download/v2.7.0/staking_deposit-cli-fdab65d-linux-amd64.tar.gz'
 
 EOF
 
