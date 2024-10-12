@@ -1,9 +1,9 @@
 # Validator Setup
 
 ## Preconditions
-- the [node setup](./node-setup.md) has been completed
+- [node setup](./node-setup.md) has been completed
 - node server is powered on and running geth (EL) and prysm-beacon (CL) as services
-- the EL and CL are fully synced to the Ethereum network
+- EL and CL are fully synced to the Ethereum network
 - client PC is powered on and able to SSH into the node server
 - you have at least 32 ETH available to stake per validator
 
@@ -15,14 +15,24 @@
 
 ## Configurable Values
 As in the initial setup guide, this guide is written using the following configurable values:
-- router IP address: `192.168.1.1`
-- node server IP address: `192.168.1.25`
-- node server timezone: `America/Los_Angeles`
 - node server SSH port: `55522`
 - node server hostname: `eth-node-mainnet`
 - node server username: `coejoder`
 
 ## Steps
+
+### Generate Validator Keys
+
+#### On the Client PC
+- [ ] plug-in the USB flash drive labeled `DATA` which was formatted to FAT32 during [initial setup](./initial-setup.md)
+- [ ] download the Ethereum Staking Deposit CLI to the `DATA` drive:
+```bash
+# find the mount point of the USB drive
+DATA_DRIVE="/media/$USER/DATA"
+
+cd ethereum-node
+./download-staking-deposit-cli.sh
+```
 
 ### TODO
 
