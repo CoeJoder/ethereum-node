@@ -151,7 +151,7 @@ sudo apt-get -y update
 sudo apt-get -y install ethereum
 
 # geth unit file
-printinfo "Generating ${color_filename}$geth_unit_file${color_reset}:"
+printinfo "Generating ${theme_filename}$geth_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$geth_unit_file"
 [Unit]
 Description=geth EL service
@@ -189,7 +189,7 @@ sudo mv -vf "$latest_beacon_chain_bin" "$prysm_beacon_bin"
 sudo "$prysm_beacon_bin" --version
 
 # prysm-beacon unit file
-printinfo "Generating ${color_filename}$prysm_beacon_unit_file${color_reset}:"
+printinfo "Generating ${theme_filename}$prysm_beacon_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$prysm_beacon_unit_file"
 [Unit]
 Description=prysm beacon CL service

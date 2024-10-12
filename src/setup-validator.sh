@@ -108,7 +108,7 @@ sudo mv -vf "$latest_validator_bin" "$prysm_validator_bin"
 sudo "$prysm_validator_bin" --version
 
 # prysm-validator unit file
-echo -e "\n${color_filename}$prysm_validator_unit_file${color_reset}"
+echo -e "\n${theme_filename}$prysm_validator_unit_file${color_reset}"
 cat <<EOF | sudo tee "$prysm_validator_unit_file"
 [Unit]
 Description=prysm validator service

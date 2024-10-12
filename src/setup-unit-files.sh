@@ -134,7 +134,7 @@ trap 'on_err_retry' ERR
 assert_sudo
 
 # generate geth unit file
-echo -e "\n${color_filename}$geth_unit_file${color_reset}"
+echo -e "\n${theme_filename}$geth_unit_file${color_reset}"
 cat <<EOF | sudo tee "$geth_unit_file"
 [Unit]
 Description=geth EL service
@@ -164,7 +164,7 @@ WantedBy=multi-user.target
 EOF
 
 # generate beacon unit file
-echo -e "\n${color_filename}$prysm_beacon_unit_file${color_reset}"
+echo -e "\n${theme_filename}$prysm_beacon_unit_file${color_reset}"
 cat <<EOF | sudo tee "$prysm_beacon_unit_file"
 [Unit]
 Description=prysm beacon CL service
@@ -198,7 +198,7 @@ WantedBy=multi-user.target
 EOF
 
 # generate validator unit file
-echo -e "\n${color_filename}$prysm_validator_unit_file${color_reset}"
+echo -e "\n${theme_filename}$prysm_validator_unit_file${color_reset}"
 cat <<EOF | sudo tee "$prysm_validator_unit_file"
 [Unit]
 Description=prysm validator service
