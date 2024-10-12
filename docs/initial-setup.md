@@ -65,14 +65,15 @@ sudo fdisk /dev/xyz
 # Select (default p): <Enter>
 # Partition number (1-4, default 1): <Enter>
 # First sector (2048-120164351, default 2048): <Enter>
+# Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-120164351, default 120164351): <Enter>
 # Do you want to remove the signature? [Y]es/[N]o: y
 # Command (m for help): t
 # Hex code or alias (type L to list all): b
 # Command (m for help): a
 # Command (m for help): w
 
-# format the new partition
-sudo mkfs.vfat /dev/xyz1
+# format the new partition and label it "DATA"
+sudo mkfs.vfat -n DATA /dev/xyz1
 
 # safely eject the drive
 sudo eject /dev/xyz
