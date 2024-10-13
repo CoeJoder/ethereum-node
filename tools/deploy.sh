@@ -49,7 +49,7 @@ fi
 # -------------------------- BANNER -------------------------------------------
 
 cat <<EOF
-${color_blue}
+${color_blue}${bold}
       :::::::::  :::::::::: :::::::::  :::        ::::::::  :::   :::
      :+:    :+: :+:        :+:    :+: :+:       :+:    :+: :+:   :+: 
     +:+    +:+ +:+        +:+    +:+ +:+       +:+    +:+  +:+ +:+   
@@ -126,10 +126,10 @@ if [[ $offline_mode == true ]]; then
 	printf '%s' \
 		"Please navigate to " \
 		"${color_blue}https://github.com/ethereum/staking-deposit-cli/releases/tag/${ethereum_staking_deposit_cli_version}${color_reset} " \
-		"and verify the ${color_lightgray}SHA256 Checksum${color_reset} of ${theme_filename}$deposit_cli_basename${color_reset}"
+		"and verify the ${theme_value}SHA256 Checksum${color_reset} of ${theme_filename}$deposit_cli_basename${color_reset}"
 	printf '\n\n'
-	if ! yes_or_no --default-no "Does it match this? ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_lightgray}"; then
-		printerr "unexpected checksum; ensure that ${color_lightgray}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
+	if ! yes_or_no --default-no "Does it match this? ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"; then
+		printerr "unexpected checksum; ensure that ${theme_value}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		exit 1
 	fi
 	
@@ -168,7 +168,7 @@ if [[ $offline_mode == true ]]; then
 	sudo cp -vf "$deposit_cli_basename" "$client_pc_usb_data_drive/$dist_dirname"
 	${color_reset}
 	EOF
-	yes_or_no --default-yes "Continue?" || exit 0
+	yes_or_no --default-yes "Continue?" || exit 1
 else
 	# ---------- NORMAL MODE
 	printinfo "Ready to deploy with the following commands:"
@@ -193,7 +193,7 @@ else
 		"$deploy_src_dir" "${node_server_username}@${node_server_hostname}:$dist_dirname"
 	${color_reset}
 	EOF
-	yes_or_no --default-yes "Continue?" || exit 0
+	yes_or_no --default-yes "Continue?" || exit 1
 fi
 
 # -------------------------- EXECUTION ----------------------------------------

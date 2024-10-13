@@ -9,7 +9,7 @@ housekeeping
 # -------------------------- BANNER -------------------------------------------
 
 cat <<EOF
-${color_green}
+${color_green}${bold}
             _____                                         
 ______________  /____  _________                          
 __  ___/  _ \  __/  / / /__  __ \_______                  
@@ -23,8 +23,6 @@ __ |/ // /_/ /_  / _  / / /_/ / / /_/ // /_ / /_/ /  /
 _____/ \__,_/ /_/  /_/  \__,_/  \__,_/ \__/ \____//_/     
 ${color_reset}
 EOF
-
-exit 0
 
 # -------------------------- PREAMBLE -----------------------------------------
 
@@ -144,7 +142,7 @@ sudo systemctl daemon-reload
 reset_checks
 
 check_executable_exists --sudo prysm_validator_bin
-check_file_exists prysm_validator_unit_file
+check_file_exists --sudo prysm_validator_unit_file
 
 print_failed_checks --error
 

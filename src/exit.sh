@@ -8,7 +8,7 @@ housekeeping
 
 # -------------------------- BANNER -------------------------------------------
 
-echo "${color_green}"
+echo "${color_green}${bold}"
 cat <<'EOF'
                     $$\   $$\     
                     \__|  $$ |    
@@ -126,7 +126,7 @@ echo -e "${color_lightgray}sudo -u \"${prysm_validator_user}\" \"./${prysmctl_bi
   $prysm_param_validators \n${color_reset}"
 
 read -p "Continue? (y/N): " confirm &&
-	[[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 0
+	[[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 assert_sudo
 sudo -u "${prysm_validator_user}" "./${prysmctl_bin}" validator exit \
