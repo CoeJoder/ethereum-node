@@ -1,10 +1,10 @@
 # Node Setup
 
 ## Preconditions
-- the [initial setup](./initial-setup.md) has been completed
-- node server is powered on and connected to the network
-- client PC is powered on and able to SSH into the node server
-- ***IMPORTANT: your ISP plan includes unlimited data***
+- [ ] [initial setup](./initial-setup.md) has been completed
+- [ ] node server is powered on and connected to the network
+- [ ] client PC is powered on and able to SSH into the node server
+- [ ] ***IMPORTANT: your ISP plan includes unlimited data***
 
 ## Postconditions
 - node server will be running geth (EL), prysm-beacon (CL) as services
@@ -12,50 +12,50 @@
 
 ## Configurable Values
 As in the initial setup guide, this guide is written using the following configurable values:
-- router IP address: `192.168.1.1`
-- node server IP address: `192.168.1.25`
-- node server timezone: `America/Los_Angeles`
 - node server SSH port: `55522`
 - node server hostname: `eth-node-mainnet`
 - node server username: `coejoder`
 
 ## Steps
 
-As the node server is now running headless (no mouse, keyboard, monitor), all of these steps are performed on the client PC.
+All of these steps are performed on the client PC.  Most of the work is performed by helper scripts; you just need to run them in the correct order.
 
 - [ ] configure the project environment variables:
 
 ```bash
 cd ethereum-node
 
-# generate the configurable env vars
+# generate `env.sh`
 ./tools/setup-env.sh
 
-# now change its default values as needed
+# change the default values as needed
+# for example, you may need to customize the ports if multiple nodes are connected to the same router
+# these values will be used throughout the rest of the project and should only be set once
 nano ./src/env.sh
-# these values will be used throughout the rest of the project and should only
-# be set once
 ```
 
-- [ ] deploy the scripts to the node server:
+- [ ] deploy the helper scripts to the node server:
 
 ```bash
+# copy the scripts to the node server, in directory `~/ethereum-node`
 ./tools/deploy.sh
 ```
 
-- [ ] login to the node server via SSH, and review the full list of project environment variables, including your configured values:
+- [ ] login to the node server via SSH, and review the full list of project environment variables, including any customized values:
 
 ```bash
 ssh -p 55522 eth-node-mainnet
 cd ethereum-node
 
-./print-env.sh
+# display all environment variables
 # after reviewing, stay logged in for the next steps
+./print-env.sh
 ```
 
 - [ ] configure the software firewall and enable it:
 
 ```bash
+# set firewall's rules and enable it
 # answer "y" to any continuation prompts
 ./setup-firewall.sh
 ```
@@ -64,18 +64,22 @@ cd ethereum-node
 - [ ] prepare the users, groups, and filesystem for the Ethereum node software:
 
 ```bash
+# setup users, groups, directories
 ./setup-filesystem.sh
 ```
 
 - [ ] install the Ethereum node software: **geth** (Execution Layer) and **prysm-beacon** (Consensus Layer):
 
 ```bash
+# install EL and CL, and configure them to run as services
 ./setup-node.sh
 ```
 
 - [ ] enable the EL and CL services:
 
 ```bash
+# start each service and follow its log
+# press `ctrl + c` to exit the log
 ./enable-geth.sh
 ./enable-beacon.sh
 ```

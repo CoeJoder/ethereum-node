@@ -1,14 +1,14 @@
 # Initial Setup
 
 ## Preconditions
-- all [required hardware](./hardware-requirements.md) is obtained
-- router has [OpenWRT](https://openwrt.org/) installed and is connected to the internet
-- LAN is secured by a strong WiFi encryption protocol and a strong password, or Wifi is disabled
-- client PC has [Mint](https://linuxmint.com/) installed and is connected to the router by ethernet cable or WiFi
-- client PC has a password manager installed, such as [KeePassXC](https://keepassxc.org/)
-- node server is fully assembled with a mouse, keyboard, and monitor attached
-- node server is connected to the router by ethernet cable
-- node server is powered off (not just hibernating or sleeping)
+- [ ] all [required hardware](./hardware-requirements.md) is obtained
+- [ ] router has [OpenWRT](https://openwrt.org/) installed and is connected to the internet
+- [ ] LAN is secured by a strong WiFi encryption protocol and a strong password, or Wifi is disabled
+- [ ] client PC has [Mint](https://linuxmint.com/) installed and is connected to the router by ethernet cable or WiFi
+- [ ] client PC has a password manager installed, such as [KeePassXC](https://keepassxc.org/)
+- [ ] node server is fully assembled with a mouse, keyboard, and monitor attached
+- [ ] node server is connected to the router by ethernet cable
+- [ ] node server is powered off (not just hibernating or sleeping)
 
 ## Postconditions
 - node server will be running headless Ubuntu Server, with the latest firmware & software

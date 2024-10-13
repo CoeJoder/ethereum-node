@@ -7,7 +7,7 @@
 - for example:
 	- [Intel NUC 10 Performance Kit – Intel Core i7 Processor (Tall Chassis)](https://www.amazon.com/gp/product/B08357VWB2/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1)
 		- only drawback of this chassis is that, despite being the "tall" model, it will not fit a 15mm 2.5" 5TB HDD, so you're stuck with purchasing an expensive SSD despite not needing SSD speeds, such as the 4TB linked below
-	- [32 GB (2 x16 GB) DDR4 2666 RAM](https://www.amazon.com/CORSAIR-Vengeance-Performance-260-Pin-CMSX32GX4M2A2666C18/dp/B01BGZEVHU)
+	- [32 GB (2 x 16 GB) DDR4 2666 RAM](https://www.amazon.com/CORSAIR-Vengeance-Performance-260-Pin-CMSX32GX4M2A2666C18/dp/B01BGZEVHU)
 	- [Western Digital SN750 2TB](https://www.amazon.com/Black-SN750-NVMe-Internal-Gaming/dp/B07M9VXSXG)
 	- [SAMSUNG 870 EVO 4TB 2.5 Inch SATA III Internal SSD](https://www.amazon.com/gp/product/B08QBL36GF/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1)
 		- 2.5" SSDs > 4TB are astronomically more expensive, but 4TB as secondary is plenty for the foreseeable future.  Worst-case scenario: switching to external USB secondary storage in a few years (inelegant, but the I/O reqs are low enough where this would work)
@@ -21,7 +21,7 @@
 
 ## Air-Gapped PC
 - will be used to generate seed phrases, and to sign transactions by typing in seed phrases
-- any old, retired PC will do so long as it can run [the Ethereum staking deposit CLI](https://github.com/ethereum/staking-deposit-cli)
+- any old, retired PC will do so long as it can run Linux Mint
 - once commissioned, must *NEVER* be connected to the internet or any networked device
 - should not have a storage disk installed; a live Linux USB flash drive will be used to boot into RAM
 - should not have wireless capabilities (e.g. WiFi/4G/5G), or should at least have these functions disabled in the BIOS or by physical toggle/removal if available
@@ -46,6 +46,6 @@
 ## A Few Cheap Flash Drives
 - one for the server ISO (Ubuntu Server)
 - one for the desktop ISO (Mint)
-- one for transferring files between devices
+- one for transferring files between the client PC and the air-gapped PC
 - for example:
 	- [SanDisk 32GB 3-Pack Ultra USB 3.0 Flash Drive 32GB](https://www.amazon.com/SanDisk-3-Pack-Ultra-Flash-3x32GB/dp/B08HSS37H7?th=1)
