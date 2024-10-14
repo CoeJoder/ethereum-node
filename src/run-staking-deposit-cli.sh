@@ -2,8 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
-tools_offline_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
-source "$tools_offline_dir/../src/common.sh"
+this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+source "$this_dir/common.sh"
 housekeeping
 
 # -------------------------- BANNER -------------------------------------------
@@ -29,16 +29,15 @@ EOF
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Runs the Etehereum Staking Deposit CLI on the offline PC.
+Runs the Ethereum Staking Deposit CLI on the air-gapped PC.
 EOF
 press_any_key_to_continue
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+assert_offline
 assert_not_on_node_server
 assert_sudo
-
-check_directory_exists --sudo client_pc_usb_data_drive
 
 check_is_defined ethereum_staking_deposit_cli_version
 check_is_defined ethereum_staking_deposit_cli_sha256_checksum
@@ -46,8 +45,8 @@ check_is_defined ethereum_staking_deposit_cli_url
 
 deposit_cli_basename="$(basename "$ethereum_staking_deposit_cli_url")"
 deposit_cli_basename_sha256="${deposit_cli_basename}.sha256"
-deposit_cli="$client_pc_usb_data_drive/$deposit_cli_basename"
-deposit_cli_sha256="$client_pc_usb_data_drive/$deposit_cli_basename_sha256"
+deposit_cli="$this_dir/$deposit_cli_basename"
+deposit_cli_sha256="$this_dir/$deposit_cli_basename_sha256"
 
 check_file_exists --sudo deposit_cli
 check_file_exists --sudo deposit_cli_sha256
@@ -79,11 +78,11 @@ trap 'on_err_noretry' ERR
 
 assert_sudo
 
+# change to same directory as the tarball and this script
+cd "$this_dir"
+
 # checksum using the included .sha256 file
 sha256sum -c "$deposit_cli_sha256" # trapped
-
-# should be here anyways; no need to pushd/popd
-cd "$client_pc_usb_data_drive"
 
 # chown the tarball, unpack it
 sudo chown -v "$USER:$USER" "$deposit_cli_basename"

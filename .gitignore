@@ -18,6 +18,7 @@
 !src/env-base.sh
 !src/exit.sh
 !src/print-env.sh
+!src/run-staking-deposit-cli.sh
 !src/setup-filesystem.sh
 !src/setup-firewall.sh
 !src/setup-node.sh
@@ -37,8 +38,5 @@
 !tools/deploy.sh
 !tools/generated.txt
 !tools/non-generated.txt
+!tools/offline.txt
 !tools/setup-env.sh
-
-!tools-offline
-!tools-offline/offline.txt
-!tools-offline/run-staking-deposit-cli.sh

@@ -81,7 +81,6 @@ check_is_defined dist_dirname
 if [[ $offline_mode == true ]]; then
 	# ---------- NORMAL MODE
 	check_directory_exists --sudo client_pc_usb_data_drive
-	check_directory_exists --sudo tools_offline_dir
 	check_is_defined ethereum_staking_deposit_cli_version
 	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
 	check_is_defined ethereum_staking_deposit_cli_url
@@ -95,15 +94,13 @@ fi
 # careful changing these as they are params to rsync
 includes_non_generated="$tools_dir/non-generated.txt"
 includes_generated="$tools_dir/generated.txt"
-includes_offline="$tools_offline_dir/offline.txt"
+includes_offline="$tools_dir/offline.txt"
 deploy_src_dir="$(realpath "$src_dir")/"
-deploy_tools_offline_dir="$(realpath "$tools_offline_dir")/"
 
 check_file_exists includes_non_generated
 check_file_exists includes_generated
 check_file_exists includes_offline
 check_directory_exists deploy_src_dir
-check_directory_exists deploy_tools_offline_dir
 
 print_failed_checks --error || exit
 
@@ -142,6 +139,7 @@ if [[ $offline_mode == true ]]; then
 		--progress \\
 		--delete \\
 		--include-from="$includes_non_generated" \\
+		--include-from="$includes_offline" \\
 		--exclude="*" \\
 		$rsync_opts \\
 		"$deploy_src_dir" "$client_pc_usb_data_drive/$dist_dirname"
@@ -153,15 +151,6 @@ if [[ $offline_mode == true ]]; then
 		--exclude="*" \\
 		$rsync_opts \\
 		"$deploy_src_dir" "$client_pc_usb_data_drive/$dist_dirname"
-
-	# copy offline files over
-	rsync -avh \\
-		--progress \\
-		--delete \\
-		--include-from="$includes_offline" \\
-		--exclude="*" \\
-		$rsync_opts \\
-		"$deploy_tools_offline_dir" "$client_pc_usb_data_drive/$dist_dirname"
 
 	# now that destination dir exists, copy the .sha256 and the tarball over
 	sudo cp -vf "$deposit_cli_basename_sha256" "$client_pc_usb_data_drive/$dist_dirname"
@@ -227,15 +216,23 @@ if [[ $offline_mode == true ]]; then
 
 	printinfo "Deploying..."
 
+	# create the dist dir if necessary and copy over the tarball and .sha256
+	dist_dir="$client_pc_usb_data_drive/$dist_dirname"
+	sudo mkdir -p "$dist_dir"
+	sudo chown -R "$USER:$USER" "$dist_dir"
+	cp -vf "$deposit_cli_basename" "$dist_dir"
+	cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
+
 	# overwrite non-generated files and remove deleted files i.e. those listed in 
 	# includes-file but not existing in source filesystem
 	rsync -avh \
 		--progress \
 		--delete \
 		--include-from="$includes_non_generated" \
+		--include-from="$includes_offline" \
 		--exclude="*" \
 		$rsync_opts \
-		"$deploy_src_dir" "$client_pc_usb_data_drive/$dist_dirname"
+		"$deploy_src_dir" "$dist_dir"
 
 	# overwrite generated files only if source copy is newer
 	rsync -avhu \
@@ -243,20 +240,7 @@ if [[ $offline_mode == true ]]; then
 		--include-from="$includes_generated" \
 		--exclude="*" \
 		$rsync_opts \
-		"$deploy_src_dir" "$client_pc_usb_data_drive/$dist_dirname"
-
-	# copy offline files over
-	rsync -avh \
-		--progress \
-		--delete \
-		--include-from="$includes_offline" \
-		--exclude="*" \
-		$rsync_opts \
-		"$deploy_tools_offline_dir" "$client_pc_usb_data_drive/$dist_dirname"
-
-	# now that destination dir exists, copy the .sha256 and the tarball over
-	sudo cp -vf "$deposit_cli_basename_sha256" "$client_pc_usb_data_drive/$dist_dirname"
-	sudo cp -vf "$deposit_cli_basename" "$client_pc_usb_data_drive/$dist_dirname"
+		"$deploy_src_dir" "$dist_dir"
 else
 	# ---------- NORMAL MODE
 	trap 'on_err_retry' ERR
@@ -286,8 +270,8 @@ fi
 
 if [[ $offline_mode == true ]]; then
 	reset_checks
-	deposit_cli_dest="$client_pc_usb_data_drive/$dist_dirname/$deposit_cli_basename"
-	deposit_cli_sha256_dest="$client_pc_usb_data_drive/$dist_dirname/$deposit_cli_basename_sha256"
+	deposit_cli_dest="$dist_dir/$deposit_cli_basename"
+	deposit_cli_sha256_dest="$dist_dir/$deposit_cli_basename_sha256"
 	check_file_exists --sudo deposit_cli_dest
 	check_file_exists --sudo deposit_cli_sha256_dest
 	print_failed_checks --error

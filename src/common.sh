@@ -20,14 +20,11 @@ if [[ $(basename "$common_sh_dir") == $dist_dirname ]]; then
 	# prod
 	proj_dir="$common_sh_dir"
 	src_dir="$common_sh_dir"
-	# offline
-	tools_offline_dir="$common_sh_dir"
 else
 	# dev
 	proj_dir="$(realpath "$common_sh_dir/..")"
 	src_dir="$proj_dir/src"
 	tools_dir="$proj_dir/tools"
-	tools_offline_dir="$proj_dir/tools-offline"
 	test_dir="$proj_dir/test"
 fi
 
@@ -351,6 +348,17 @@ function string_contains() {
 	[[ "$1" == *"$2"* ]] &>/dev/null
 }
 
+# test expression for network connectivity
+# source: https://stackoverflow.com/a/14939373/159570
+function is_online() {
+	for interface in $(ls /sys/class/net/ | grep -v lo); do
+		if [[ $(cat /sys/class/net/$interface/carrier 2>/dev/null) == 1 ]]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
 # yes-or-no prompt
 # 'no' is always falsey (returns 1)
 function yes_or_no() {
@@ -414,6 +422,14 @@ function assert_on_node_server() {
 function assert_not_on_node_server() {
 	if [[ $(hostname) == $node_server_hostname ]]; then
 		printerr "script must be run on the client PC, not the node server"
+		exit 1
+	fi
+}
+
+# assert that script process does not have access to the internet
+function assert_offline() {
+	if is_online; then
+  	printerr "script must be run on the air-gapped PC"
 		exit 1
 	fi
 }
