@@ -86,12 +86,26 @@ printf '\n'
 
 # -------------------------- EXECUTION ----------------------------------------
 
+temp_dir=$(mktemp -d)
+pushd "$temp_dir" >/dev/null
+
+function on_exit() {
+	printinfo -n "Cleaning up..."
+	popd >/dev/null
+	[[ -d $temp_dir ]] && rm -rf --interactive=never "$temp_dir" >/dev/null
+	print_ok
+}
+
 trap 'on_err_noretry' ERR
+trap 'on_exit' EXIT
 
 assert_sudo
 
-# change to the dist directory and chown it
-cd "$this_dir"
+# # change to the dist directory and chown it
+# cd "$this_dir"
+# copy to the temp dir and chown it all
+cp -f "$deposit_cli" ./
+cp -f "$deposit_cli_sha256" ./
 sudo chown -R "$USER:$USER" ./
 
 # checksum using the included .sha256 file
@@ -99,9 +113,9 @@ printinfo "Verifying SHA256 checksum..."
 sha256sum -c "$deposit_cli_sha256" # trapped
 printf '\n'
 
-# chown the tarball, unpack it
+# unpack tarball
 printinfo "Unpacking tarball..."
-sudo tar xvzf "$deposit_cli_basename"
+tar xvzf "$deposit_cli_basename"
 printf '\n'
 
 deposit_cli_dir="${deposit_cli_basename%%.*}"
@@ -126,7 +140,7 @@ EOF
 continue_or_exit 1
 
 # remove any existing keystore
-rm -rf "$validator_keys_dir" &>/dev/null
+rm -rfv "$validator_keys_dir" &>/dev/null
 
 # generate the key(s)
 $deposit_cli_bin --language=English new-mnemonic \
