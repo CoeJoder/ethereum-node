@@ -71,7 +71,7 @@ node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
 # The file transfer and other tasks require elevated remote permissions, but we
 # don't want to compromise security with passwordless SSH root creds or altered
 # sudoer rules.  Thus we will perform the copy in multiple steps. Despite
-# requiring multiple sessions, ssh-agent makes this approach seemless.
+# requiring multiple sessions, ssh-agent makes this approach seamless.
 #
 # ALGORITHM
 # 1. create a non-root tempdir in the remote filesystem
