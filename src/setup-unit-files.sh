@@ -117,6 +117,7 @@ Prysm-validator wallet-dir: ${color_green}$prysm_validator_wallet_dir${color_res
 Prysm-validator wallet password file: ${color_green}$prysm_validator_wallet_password_file${color_reset}
 EOF
 continue_or_exit 1
+printf '\n'
 
 # if unit files already exist, confirm overwrite
 reset_checks
@@ -125,6 +126,7 @@ check_file_does_not_exist prysm_beacon_unit_file
 check_file_does_not_exist prysm_validator_unit_file
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
+	printf '\n'
 fi
 
 # -------------------------- EXECUTION ----------------------------------------

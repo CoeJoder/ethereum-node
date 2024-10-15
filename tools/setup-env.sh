@@ -40,6 +40,7 @@ print_failed_checks --error || exit
 if [[ -f $env_sh ]]; then
 	printwarn "found existing $env_sh_stylized"
 	continue_or_exit 1 "Overwrite?"
+	printf '\n'
 fi
 
 # -------------------------- EXECUTION ----------------------------------------

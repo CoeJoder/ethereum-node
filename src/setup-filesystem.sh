@@ -73,6 +73,7 @@ sudo chmod -R 700 "$prysm_validator_datadir"
 ${color_reset}
 EOF
 continue_or_exit 1
+printf '\n'
 
 # -------------------------- EXECUTION ----------------------------------------
 

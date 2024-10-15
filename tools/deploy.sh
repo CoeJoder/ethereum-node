@@ -79,13 +79,13 @@ assert_not_on_node_server
 check_is_defined dist_dirname
 
 if [[ $offline_mode == true ]]; then
-	# ---------- NORMAL MODE
+	# ---------- OFFLINE MODE
 	check_directory_exists --sudo client_pc_usb_data_drive
 	check_is_defined ethereum_staking_deposit_cli_version
 	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
 	check_is_defined ethereum_staking_deposit_cli_url
 else
-	# ---------- OFFLINE MODE
+	# ---------- NORMAL MODE
 	check_is_valid_port node_server_ssh_port
 	check_is_defined node_server_username
 	check_is_defined node_server_hostname

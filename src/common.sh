@@ -64,6 +64,9 @@ fi
 errmsg_noretry="\nSomething went wrong.  Send ${theme_filename}log.txt${color_reset} to the HGiC (Head Geek-in-Charge)"
 errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this time ;)"
 
+# custom sudo-prompt which includes hostname
+sudo_prompt_with_hostname='[sudo] password for %u@%H: '
+
 # -------------------------- UTILITIES ----------------------------------------
 
 # script init tasks
@@ -299,7 +302,7 @@ function enable_service() {
 	assert_sudo
 	sudo systemctl daemon-reload
 
-	check_service_installed $unit_file_var
+	check_is_service_installed $unit_file_var
 	print_failed_checks --error || return
 
 	service_name="$(basename "${!unit_file_var}")"
@@ -322,7 +325,7 @@ function disable_service() {
 	assert_sudo
 	sudo systemctl daemon-reload
 
-	check_service_installed $unit_file_var
+	check_is_service_installed $unit_file_var
 	print_failed_checks --error || return
 
 	service_name="$(basename "${!unit_file_var}")"
@@ -390,7 +393,6 @@ function continue_or_exit() {
 		prompt="$2"
 	fi
 	yes_or_no --default-no "$prompt" || exit $code
-	printf '\n'
 }
 
 # pause script execution until user presses a key
@@ -401,10 +403,10 @@ function press_any_key_to_continue() {
 
 # -------------------------- ASSERTIONS ---------------------------------------
 
-# assert sudoer status
+# assert sudoer status, and include hostname in prompt
 # can prevent auth failures from polluting sudo'd conditional expressions
 function assert_sudo() {
-	if ! sudo true; then
+	if ! sudo -p "$sudo_prompt_with_hostname" true; then
 		printerr "failed to authenticate"
 		exit 1
 	fi
@@ -605,7 +607,7 @@ function check_executable_exists() {
 	fi
 }
 
-function check_service_installed() {
+function check_is_service_installed() {
 	if check_is_defined $1; then
 		local service_name="$(basename "${!1}")"
 		if ! systemctl list-unit-files --full -all | grep -Fq "$service_name"; then
@@ -616,8 +618,9 @@ function check_service_installed() {
 
 function check_is_service_active() {
 	if check_is_defined $1; then
-		if ! systemctl is-active --quiet "${!1}"; then
-			_check_failures+=("service is not active: ${!1}")
+		local service_name="$(basename "${!1}")"
+		if ! systemctl is-active --quiet "$service_name"; then
+			_check_failures+=("service is not active: $service_name")
 		fi
 	fi
 }

@@ -87,6 +87,7 @@ Prysm-beacon P2P quic port: ${color_green}$prysm_beacon_p2p_quic_port${color_res
 Prysm-beacon P2P TCP port: ${color_green}$prysm_beacon_p2p_tcp_port${color_reset}
 EOF
 continue_or_exit 1
+printf '\n'
 
 # only use checkpoint-sync on 'holesky' testnet, due to trust required
 # see: https://docs.prylabs.network/docs/prysm-usage/checkpoint-sync
@@ -106,6 +107,7 @@ else
 	prysm_beacon_genesis_beacon_api_url=""
 fi
 continue_or_exit 1
+printf '\n'
 
 # if unit files already exist, confirm overwrite
 reset_checks
@@ -113,6 +115,7 @@ check_file_does_not_exist --sudo geth_unit_file
 check_file_does_not_exist --sudo prysm_beacon_unit_file
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
+	printf '\n'
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
