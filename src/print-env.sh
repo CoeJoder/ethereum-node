@@ -73,6 +73,7 @@ prysm_validator_user=${color_green}$prysm_validator_user${color_reset}
 prysm_validator_group=${color_green}$prysm_validator_group${color_reset}
 prysm_validator_bin=${color_green}$prysm_validator_bin${color_reset}
 prysm_validator_datadir=${color_green}$prysm_validator_datadir${color_reset}
+prysm_validator_keys_dir=${color_green}$prysm_validator_keys_dir${color_reset}
 prysm_validator_wallet_dir=${color_green}$prysm_validator_wallet_dir${color_reset}
 prysm_validator_wallet_password_file=${color_green}$prysm_validator_wallet_password_file${color_reset}
 prysm_validator_unit_file=${color_green}$prysm_validator_unit_file${color_reset}

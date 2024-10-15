@@ -37,6 +37,7 @@
 !tools/
 !tools/deploy.sh
 !tools/generated.txt
+!tools/import-keys.sh
 !tools/non-generated.txt
 !tools/offline.txt
 !tools/setup-env.sh

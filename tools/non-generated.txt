@@ -10,6 +10,7 @@ enable-geth.sh
 enable-validator.sh
 env-base.sh
 exit.sh
+import-keys.sh
 print-env.sh
 setup-filesystem.sh
 setup-firewall.sh
