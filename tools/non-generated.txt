@@ -12,6 +12,7 @@ env-base.sh
 exit.sh
 import-keys.sh
 print-env.sh
+set-wallet-password.sh
 setup-filesystem.sh
 setup-firewall.sh
 setup-node.sh

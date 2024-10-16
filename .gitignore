@@ -19,6 +19,7 @@
 !src/exit.sh
 !src/print-env.sh
 !src/run-staking-deposit-cli.sh
+!src/set-wallet-password.sh
 !src/setup-filesystem.sh
 !src/setup-firewall.sh
 !src/setup-node.sh
