@@ -1,7 +1,7 @@
 # Validator Setup
 
 ## Preconditions
-- [ ] you have at least 32 ETH available to stake per validator
+- [ ] you have at least 32 ETH available to stake per validator in your MetaMask wallet
 - [ ] [node setup](./node-setup.md) has been completed
 - [ ] node server is powered on and running geth (EL) and prysm-beacon (CL) as services
 - [ ] EL and CL are fully synced to the Ethereum network
@@ -98,15 +98,39 @@ sudo chown -R $USER:$USER ./
 ```
 - [ ] safely eject the flash drive and unplug it
 
-### 3. Import Validator Keys
+### 3. Import Validator Keys and Create Wallet
 
 #### On the Client PC:
 - [ ] plug-in the flash drive
-- [ ] open a terminal and import the validator keys
+- [ ] open a terminal and import the validator keys:
 ```bash
 cd ethereum-node
+
 ./tools/import-keys.sh
+# ignore any warnings that appear
+# when prompted to create a wallet password, also save it in your password manager, e.g. KeePassXC
+# when prompted for the account password, enter the passphrase created in the previous step
 ```
+- [ ] login to the node server via SSH and set the wallet password:
+```bash
+ssh -p 55522 eth-node-mainnet
+cd ethereum-node
+
+./set-wallet-password.sh
+# when prompted, enter the wallet password you just created
+
+# logout and continue to next step (type `exit` or press `ctrl+d`)
+exit
+```
+
+### 4. Deposit 32 ETH Per Validator
+
+- [ ] browse to the Ethereum Staking Launchpad page:
+	- [mainnet](https://launchpad.ethereum.org/en/overview) or [holesky](https://holesky.launchpad.ethereum.org/en/overview)
+- [ ] keep clicking <button>Continue</button> and <button>I Accept</button> until you reach the `Upload deposit data` page (no need to fill out the webpage forms along the way)
+- [ ] follow the website instructions to upload the `deposit_data-XYZ.json` file from the `validator_keys` directory on the `DATA` USB flash drive
+- [ ] follow the website instructions to connect your MetaMask wallet and complete the deposits: one for each validator
+	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the `ethstaker` Discord server if needed.
 
 ## Next Steps
 
