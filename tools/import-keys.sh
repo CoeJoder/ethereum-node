@@ -39,6 +39,7 @@ press_any_key_to_continue
 assert_not_on_node_server
 assert_sudo
 
+check_is_defined ethereum_network
 check_is_defined dist_dirname
 
 check_is_valid_port node_server_ssh_port
@@ -114,8 +115,9 @@ rsync -avh -e "ssh -p $node_server_ssh_port" \
 	--progress \
 	"$usb_validator_keys" "${node_server_ssh_endpoint}:${remote_temp_dir}"
 
-# 3. elevated-copy to the target dir, set ownership, set permissions
+# 3. copy to the target dir, set ownership, set permissions, and import
 ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
+	set -e
 	source \"\$HOME/$dist_dirname/common.sh\"
 	printinfo \"Logged into node server.\"
 	
@@ -127,13 +129,20 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 	fi
 
 	printinfo \"Copying validator keys from tempdir to prysm-validator dir...\"
-	sudo cp -fv \"$remote_temp_dir\" \"$prysm_validator_keys_dir\"
+	sudo cp -rfv \"$remote_temp_dir\" \"$prysm_validator_keys_dir\"
 
 	printinfo \"Setting validator keys ownership...\"
 	sudo chown -R \"${prysm_validator_user}:${prysm_validator_group}\" \"$prysm_validator_keys_dir\"
 
 	printinfo \"Setting validator keys permission bits...\"
 	sudo chmod -R 700 \"$prysm_validator_keys_dir\"
+
+	printinfo \"Importing validator keys...\"
+	sudo -u \"$prysm_validator_user\" validator accounts import \\
+		--keys-dir=\"$prysm_validator_keys_dir\" \\
+		--wallet-dir=\"$prysm_validator_wallet_dir\" \\
+		--accept-terms-of-use \\
+		--${ethereum_network}
 "
 
 # -------------------------- POSTCONDITIONS -----------------------------------
@@ -141,5 +150,4 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 cat <<-EOF
 
 Success!  Validator keys have been imported to the node server.  Now you are ready to upload your deposit data.
-See: https://launchpad.ethereum.org/en/upload-deposit-data
 EOF
