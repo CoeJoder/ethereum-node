@@ -7,6 +7,8 @@
 - [ ] ***IMPORTANT: your ISP plan includes unlimited data***
 
 ## Postconditions
+- client PC will have the [ethereum-node](https://github.com/CoeJoder/ethereum-node) helper scripts installed and configured
+- node server will also have the helper scripts installed and configured
 - node server will be running geth (EL), prysm-beacon (CL) as services
 - you will be ready to [setup one or more validators](./validator-setup.md)
 
@@ -20,6 +22,13 @@ As in the initial setup guide, this guide is written using the following configu
 
 All of these steps are performed on the client PC.  Most of the work is performed by helper scripts; you just need to run them in the correct order.
 
+- [ ] download the `ethereum-node` helper scripts:
+```bash
+sudo apt install -y git
+cd
+git clone https://github.com/CoeJoder/ethereum-node.git
+```
+
 - [ ] configure the project environment variables:
 
 ```bash
@@ -30,7 +39,7 @@ cd ethereum-node
 
 # change the default values as needed
 # for example, you may need to customize the ports if multiple nodes are connected to the same router
-# these values will be used throughout the rest of the project and should only be set once
+# these values will be used throughout the rest of the project and should only be set this once
 nano ./src/env.sh
 ```
 
