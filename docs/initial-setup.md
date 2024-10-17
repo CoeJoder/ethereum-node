@@ -175,19 +175,12 @@ Host eth-node-mainnet
 	AddKeysToAgent 1h
 ```
 
-- [ ] try logging into the node server again via SSH, but this time without specifying the username.  Enter the SSH key passphrase when prompted:
+- [ ] login to the node server again, and update the SSH server settings:
 
 ```bash
-ssh eth-node-mainnet
+ssh coejoder@eth-node-mainnet
 # coejoder@eth-node-mainnet's password: <password>
 
-# you should be logged into the node server again
-# stay logged in and continue to the next step
-```
-
-- [ ] now that key+passphrase is configured, tighten up security and use a non-default SSH port:
-
-```bash
 sudo nano /etc/ssh/sshd_config
 
 # find and change these options:
@@ -203,9 +196,10 @@ sudo nano /etc/ssh/sshd_config
 	PermitEmptyPasswords no
 
 # then save and close the file (ctrl+s, ctrl+x)
+# stay logged in for the next step
 ```
 
-- [ ] uninstall `cloud-init` and delete its configuration files, as it interferes with SSH settings:
+- [ ] while still logged into the node server, uninstall `cloud-init` and delete its configuration files:
 
 ```bash
 sudo apt purge cloud-init
@@ -213,7 +207,7 @@ sudo rm -rf /etc/cloud/ && sudo rm -rf /var/lib/cloud/
 sudo rm -f /etc/ssh/sshd_config.d/50-cloud-init.conf
 ```
 
-- [ ] restart the node server
+- [ ] restart the node server, wait one minute, then try logging in using key+passphrase:
 
 ```bash
 sudo reboot
