@@ -46,7 +46,7 @@ nano ./src/env.sh
 - [ ] deploy the helper scripts to the node server:
 
 ```bash
-# copy the scripts to the node server, in directory `~/ethereum-node`
+# copy the scripts to the node server, in directory `~/ethereum-node/`
 ./tools/deploy.sh
 ```
 
@@ -56,9 +56,10 @@ nano ./src/env.sh
 ssh -p 55522 eth-node-mainnet
 cd ethereum-node
 
-# display all environment variables
-# after reviewing, stay logged in for the next steps
+# display all environment variables and confirm they are correct
+# if changes are needed, logout and make the changes in the client PC's `env.sh` and run `deploy.sh` again
 ./print-env.sh
+# after reviewing, stay logged in for the next steps
 ```
 
 - [ ] configure the software firewall and enable it:
