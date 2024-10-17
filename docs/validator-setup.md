@@ -42,7 +42,7 @@ exit
 
 #### On the Client PC:
 - [ ] plug-in the USB flash drive labeled `DATA` which was formatted to FAT32 during [initial setup](./initial-setup.md)
-- [ ] wipe the drive and create an `EXT4` partition:
+- [ ] wipe the drive and create an EXT4 partition:
 
 ```bash
 # list all drives on the system and identify the USB flash drive
@@ -91,7 +91,7 @@ cd /media/mint/DATA/ethereum-node/
 sudo chown -R $USER:$USER ./
 
 # generate the validator key(s)
-./ethereum-node/run-staking-deposit-cli.sh
+./run-staking-deposit-cli.sh
 
 # save the passphrase in a password manager, e.g. KeePassXC on the client PC
 # save the seedphrase offline, e.g. engraved on metal plates in a fireproof safe, with encrypted off-site backups
@@ -117,7 +117,7 @@ ssh -p 55522 eth-node-mainnet
 cd ethereum-node
 
 ./set-wallet-password.sh
-# when prompted, enter the wallet password you just created
+# when prompted, enter the wallet password created in the previous step
 
 # logout and continue to next step (type `exit` or press `ctrl+d`)
 exit
@@ -127,10 +127,10 @@ exit
 
 - [ ] browse to the Ethereum Staking Launchpad page:
 	- [mainnet](https://launchpad.ethereum.org/en/overview) or [holesky](https://holesky.launchpad.ethereum.org/en/overview)
-- [ ] keep clicking <button>Continue</button> and <button>I Accept</button> until you reach the `Upload deposit data` page (no need to fill out the webpage forms along the way)
-- [ ] follow the website instructions to upload the `deposit_data-XYZ.json` file from the `validator_keys` directory on the `DATA` USB flash drive
+- [ ] keep clicking <kbd>Continue</kbd> and <kbd>I Accept</kbd> until you reach the `Upload deposit data` page (no need to fill out the forms along the way)
+- [ ] follow the website instructions to upload the `deposit_data-XYZ.json` file from the `validator_keys` directory of the `DATA` USB flash drive
 - [ ] follow the website instructions to connect your MetaMask wallet and complete the deposits: one for each validator
-	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the `ethstaker` Discord server if needed.
+	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the "ethstaker" Discord server if needed.
 
 ## Next Steps
 

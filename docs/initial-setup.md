@@ -12,7 +12,7 @@
 
 ## Postconditions
 - node server will be running headless Ubuntu Server, with the latest firmware & software
-- node server will auto-mount its ext4-formatted secondary drive upon startup
+- node server will auto-mount its EXT4-formatted secondary drive upon startup
 - client PC user will be configured for secure login to the server via SSH terminal
 - flash drives will have:
 	- `Ubuntu Server` - the latest Ubuntu Server ISO disk image
@@ -34,7 +34,7 @@ This guide is written using the following configurable values:
 
 ### 1. Download Mint and Ubuntu Server
 
-#### On the Client PC
+#### On the Client PC:
 - [ ] browse to the [Linux Mint download page](https://www.linuxmint.com/download.php) and download an .iso file of your choice
 - [ ] plug-in a USB flash drive, launch the program `USB Image Writer`, select the .iso image, and select the flash drive.  Click `Verify` to verify the integrity of the .iso, and then click `Write`
 - [ ] safely eject the flash drive, unplug it, and label it as `Mint`
@@ -44,9 +44,9 @@ This guide is written using the following configurable values:
 ### 2. Update BIOS of the Node Server
 These are the steps for updating the BIOS of the `NUC10i7FNH`, the recommended node server device in [Full-Node Hardware Requirements](./hardware-requirements.md).
 
-#### On the Client PC
+#### On the Client PC:
 - [ ] plug-in the next USB flash drive 
-- [ ] wipe the drive and create a bootable `FAT32` partition:
+- [ ] wipe the drive and create a bootable FAT32 partition:
 ```bash
 # list all drives on the system and identify the USB flash drive
 sudo fdisk -l
@@ -84,7 +84,7 @@ sudo eject /dev/xyz
 - [ ] extract the .zip file, open the extracted folder `Capsule File for BIOS Flash through F7` and copy the .CAP file to the flash drive
 - [ ] safely eject the flash drive, unplug it, and label it as `Data`
 
-#### On the Node Server
+#### On the Node Server:
 - [ ] plug the `Data` flash drive into the front USB port
 - [ ] power-on the node server and immediately press <kbd>F7</kbd> repeatedly until the BIOS flash screen is displayed
 - [ ] select the flash drive from the list, and select the .CAP file
@@ -92,7 +92,7 @@ sudo eject /dev/xyz
 
 ### 3. Install Ubuntu Server
 
-#### On the Node Server
+#### On the Node Server:
 - [ ] plug the `Ubuntu Server` flash drive into the front USB port
 - [ ] power-on the node server and immediately press <kbd>F10</kbd> repeatedly until the Boot Menu appears
 - [ ] select the USB flash drive from the options
@@ -106,7 +106,7 @@ sudo eject /dev/xyz
 	- Name servers: `192.168.1.1`
 - [ ] keep accepting the default options until you arrive at storage configuration
 - [ ] on the storage configuration screen, **select** `Use Entire Disk`, choose the NVMe disk, **deselect** `Setup this disk as an LVM group`, then go to the next screen
-- [ ] confirm that the `Used Devices` section shows the NVMe disk with two partitions: a `FAT32` partition mounted at `/boot/efi`, and an `ext4` partition mounted at `/`, then go to next screen
+- [ ] confirm that the `Used Devices` section shows the NVMe disk with two partitions: a FAT32 partition mounted at `/boot/efi`, and an EXT4 partition mounted at `/`, then go to next screen
 - [ ] pick a username, password, and server name.  Save the password in your client PC's password manager, then go to next screen:
 ```
 Your name: coejoder
@@ -118,11 +118,11 @@ Confirm your password: ********
 - [ ] decline to use `Ubuntu Pro` when prompted and go to next screen
 - [ ] **select**  `Install OpenSSH Server` and `Allow password authentication over SSH` and go to next screen
 - [ ] decline to install additional software when prompted and go to next screen
-- [ ] when installation is complete, follow the on-screen instructions. It will reboot and present a terminal command prompt.  Leave it there and begin the setup of the client PC.
+- [ ] when installation is complete, follow the on-screen instructions. It will reboot and present a terminal command prompt.  Leave it there and begin the setup of the client PC
 
 ### 4. Configure SSH
 
-#### On the Client PC
+#### On the Client PC:
 - [ ] login as the local user that will be interacting with the node server.  If this PC is your main Desktop computer, your existing user account is fine to use
 - [ ] edit `/etc/hosts` and add an entry at the bottom which associates the node server's static IP address to its hostname:
 
@@ -145,7 +145,7 @@ ssh coejoder@eth-node-mainnet
 exit
 ```
 
-- [ ] simple password authentication is not secure.  Create a SSH public/private keypair secured with a passphrase and save the passphrase in your password manager:
+- [ ] create a SSH public/private keypair secured with a passphrase and save the passphrase in your password manager:
 
 ```bash
 ssh-keygen -t ed25519 -a 100 -f ~/.ssh/eth-node-mainnet_ed25519
@@ -230,7 +230,7 @@ ssh -p 55522 eth-node-mainnet
 
 ### 5. Format and Mount Secondary Drive
 
-#### On the Client PC
+#### On the Client PC:
 - [ ] while logged into the node server via SSH, partition and format the secondary drive:
 ```bash
 # list all drives on the system and identify the secondary storage
@@ -243,7 +243,7 @@ mount -l | grep /dev/wxy
 sudo umount /dev/wxy1
 sudo umount /dev/wxy2
 
-# wipe the existing partitions & create a new ext4 partition
+# wipe the existing partitions & create a new EXT4 partition
 sudo fdisk /dev/wxy
 # Command (m for help): g
 # Command (m for help): n
@@ -279,20 +279,20 @@ mount -l | grep SECONDARY
 
 ### 6. Finish Up
 
-#### On the Client PC
+#### On the Client PC:
 
 - [ ] while still logged into the node server via SSH, shutdown the node server
 ```bash
 sudo shutdown now
 ```
 
-#### On the Node Server
+#### On the Node Server:
 
 - [ ] disconnect the mouse, keyboard, and monitor
 - [ ] move the node server to its permanent home, likely near the router and UPS battery backup
 - [ ] plug-in the network cable and the power cable, then power it on
 
-#### On the Client PC
+#### On the Client PC:
 
 - [ ] log into the node server via SSH, install the latest system updates, remove orphaned dependencies, set the timezone, and sync the system clock via NTP:
 
