@@ -2,4 +2,4 @@
 
 */
 create-new-keys.sh
-staking_deposit_cli.sh
+_staking-deposit-cli.sh

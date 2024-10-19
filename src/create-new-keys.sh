@@ -4,7 +4,7 @@
 
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
-source "$this_dir/staking_deposit_cli.sh"
+source "$this_dir/_staking-deposit-cli.sh"
 housekeeping
 
 function _show_usage() {

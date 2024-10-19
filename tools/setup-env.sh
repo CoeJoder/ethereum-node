@@ -55,10 +55,11 @@ cat <<EOF >"$env_sh"
 #
 # Custom variable values which will override the defaults in $(basename "$env_base_sh")
 
-# your Ethereum wallet address
+# your Ethereum wallet addresses
 suggested_fee_recipient=''
+withdrawal=''
 
-# the ethereum network to use (holesky or mainnet)
+# the Ethereum network to use (holesky or mainnet)
 ethereum_network='$ethereum_network'
 
 # the local IP address of your router

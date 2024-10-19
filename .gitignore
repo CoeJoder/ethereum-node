@@ -8,6 +8,7 @@
 
 !src/
 !src/_script_template.sh
+!src/_staking-deposit-cli.sh
 !src/common.sh
 !src/disable-beacon.sh
 !src/disable-geth.sh
@@ -25,7 +26,6 @@
 !src/setup-node.sh
 !src/setup-unit-files.sh
 !src/setup-validator.sh
-!src/staking_deposit_cli.sh
 
 !test/
 !test/tests.sh
