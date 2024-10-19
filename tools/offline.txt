@@ -2,3 +2,4 @@
 
 */
 run-staking-deposit-cli.sh
+staking_deposit_cli.sh

@@ -133,6 +133,13 @@ if [[ $offline_mode == true ]]; then
 	printinfo "Ready to deploy with the following commands:"
 	cat <<-EOF
 	${color_lightgray}
+	# create the dist dir if necessary and copy over the tarball and .sha256
+	dist_dir="$client_pc_usb_data_drive/$dist_dirname"
+	sudo mkdir -p "$dist_dir"
+	sudo chown -R "$USER:$USER" "$dist_dir"
+	cp -vf "$deposit_cli_basename" "$dist_dir"
+	cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
+
 	# overwrite non-generated files and remove deleted files i.e. those listed in 
 	# includes-file but not existing in source filesystem
 	rsync -avh \\
@@ -142,7 +149,7 @@ if [[ $offline_mode == true ]]; then
 		--include-from="$includes_offline" \\
 		--exclude="*" \\
 		$rsync_opts \\
-		"$deploy_src_dir" "$client_pc_usb_data_drive/$dist_dirname"
+		"$deploy_src_dir" "$dist_dir"
 
 	# overwrite generated files only if source copy is newer
 	rsync -avhu \\
@@ -150,11 +157,7 @@ if [[ $offline_mode == true ]]; then
 		--include-from="$includes_generated" \\
 		--exclude="*" \\
 		$rsync_opts \\
-		"$deploy_src_dir" "$client_pc_usb_data_drive/$dist_dirname"
-
-	# now that destination dir exists, copy the .sha256 and the tarball over
-	sudo cp -vf "$deposit_cli_basename_sha256" "$client_pc_usb_data_drive/$dist_dirname"
-	sudo cp -vf "$deposit_cli_basename" "$client_pc_usb_data_drive/$dist_dirname"
+		"$deploy_src_dir" "$dist_dir"
 	${color_reset}
 	EOF
 	yes_or_no --default-yes "Continue?" || exit 1

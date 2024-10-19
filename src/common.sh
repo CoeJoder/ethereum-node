@@ -336,6 +336,12 @@ function disable_service() {
 	sudo systemctl disable "$service_name"
 }
 
+# count the number of files in the given directory (or . if ommitted)
+function number_of_files() {
+	local dir=${1:-.}
+	find "$dir" -maxdepth 1 -type f -printf "." | wc -c
+}
+
 # test expression for user existence
 function user_exists() {
 	id "$1" &>/dev/null
