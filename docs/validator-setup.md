@@ -45,18 +45,18 @@ exit
 - [ ] wipe the drive and create an EXT4 partition:
 
 ```bash
-# list all drives on the system and identify the USB flash drive
-sudo fdisk -l
-# e.g., /dev/xyz
+# list all USB drives and identify the intended USB flash drive
+lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
 
-# find any mounted partitions of the USB drive and unmount them
-mount -l | grep /dev/xyz
-# e.g., /dev/xyz1 and /dev/xyz2
-sudo umount /dev/xyz1
-sudo umount /dev/xyz2
+# once identified, assign its device path to the variable `flashdrive`
+# e.g., /dev/xyz
+flashdrive=/dev/xyz
+
+# unmount any mounted partitions of the USB flash drive
+sudo umount ${flashdrive}?*
 
 # wipe the existing partitions & create a new EXT4 partition
-sudo fdisk /dev/xyz
+sudo fdisk $flashdrive
 # Command (m for help): g
 # Command (m for help): n
 # Select (default p): <Enter>
@@ -67,10 +67,10 @@ sudo fdisk /dev/xyz
 # Command (m for help): w
 
 # format the new partition and label it "DATA"
-sudo mkfs.ext4 -L DATA -E lazy_itable_init=0 /dev/xyz1
+sudo mkfs.ext4 -L DATA -E lazy_itable_init=0 ${flashdrive}1
 
 # safely eject the drive
-sudo eject /dev/xyz
+sudo eject $flashdrive
 ```
 
 - [ ] unplug the flash drive and plug it back in.  It should be auto-mounted by the operating system

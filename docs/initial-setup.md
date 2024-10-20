@@ -48,18 +48,18 @@ These are the steps for updating the BIOS of the `NUC10i7FNH`, the recommended n
 - [ ] plug-in the next USB flash drive 
 - [ ] wipe the drive and create a bootable FAT32 partition:
 ```bash
-# list all drives on the system and identify the USB flash drive
-sudo fdisk -l
-# e.g., /dev/xyz
+# list all USB drives and identify the intended USB flash drive
+lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
 
-# find any mounted partitions of the USB drive and unmount them
-mount -l | grep /dev/xyz
-# e.g., /dev/xyz1 and /dev/xyz2
-sudo umount /dev/xyz1
-sudo umount /dev/xyz2
+# once identified, assign its device path to the variable `flashdrive`
+# e.g., /dev/xyz
+flashdrive=/dev/xyz
+
+# unmount any mounted partitions of the USB flash drive
+sudo umount ${flashdrive}?*
 
 # wipe the existing partitions & create a new bootable FAT32 partition
-sudo fdisk /dev/xyz
+sudo fdisk $flashdrive
 # Command (m for help): o
 # Command (m for help): n
 # Select (default p): <Enter>
@@ -73,10 +73,10 @@ sudo fdisk /dev/xyz
 # Command (m for help): w
 
 # format the new partition and label it "DATA"
-sudo mkfs.vfat -n DATA /dev/xyz1
+sudo mkfs.vfat -n DATA ${flashdrive}1
 
 # safely eject the drive
-sudo eject /dev/xyz
+sudo eject $flashdrive
 ```
 
 - [ ] unplug the flash drive and plug it back in.  It should be auto-mounted by the operating system
@@ -227,18 +227,18 @@ ssh -p 55522 eth-node-mainnet
 #### On the Client PC:
 - [ ] while logged into the node server via SSH, partition and format the secondary drive:
 ```bash
-# list all drives on the system and identify the secondary storage
-sudo fdisk -l
-# e.g., /dev/wxy
+# list all USB drives and identify the intended USB flash drive
+lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
 
-# find any mounted partitions of the secondary storage and unmount them
-mount -l | grep /dev/wxy
-# e.g., /dev/wxy1 and /dev/wxy2
-sudo umount /dev/wxy1
-sudo umount /dev/wxy2
+# once identified, assign its device path to the variable `flashdrive`
+# e.g., /dev/xyz
+flashdrive=/dev/xyz
+
+# unmount any mounted partitions of the USB flash drive
+sudo umount ${flashdrive}?*
 
 # wipe the existing partitions & create a new EXT4 partition
-sudo fdisk /dev/wxy
+sudo fdisk $flashdrive
 # Command (m for help): g
 # Command (m for help): n
 # Select (default p): <Enter>
@@ -248,7 +248,7 @@ sudo fdisk /dev/wxy
 # Command (m for help): w
 
 # format the new partition
-sudo mkfs.ext4 -L SECONDARY -E lazy_itable_init=0 /dev/wxy1
+sudo mkfs.ext4 -L SECONDARY -E lazy_itable_init=0 ${flashdrive}1
 ```
 - [ ] create a mount point and configure auto-mounting
 ```bash
