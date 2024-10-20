@@ -38,7 +38,7 @@ cd ethereum-node
 exit
 ```
 
-### 2. Generate Validator Keys
+### 2. Generate Mnemonic and Validator Keys
 
 #### On the Client PC:
 - [ ] plug-in the USB flash drive labeled `DATA` which was formatted to FAT32 during [initial setup](./initial-setup.md)
@@ -90,11 +90,11 @@ cd ethereum-node
 cd /media/mint/DATA/ethereum-node/
 sudo chown -R $USER:$USER ./
 
-# generate the validator key(s)
-./run-staking-deposit-cli.sh
+# generate the mnemonic and validator key(s)
+./generate-keys.sh --new-mnemonic
 
 # save the passphrase in a password manager, e.g. KeePassXC on the client PC
-# save the seedphrase offline, e.g. engraved on metal plates in a fireproof safe, with encrypted off-site backups
+# save the seedphrase/mnemonic offline, e.g. engraved on metal plates in a fireproof safe, with encrypted off-site backups
 ```
 - [ ] safely eject the flash drive and unplug it
 
