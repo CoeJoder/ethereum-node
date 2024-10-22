@@ -46,8 +46,9 @@ check_is_valid_port node_server_ssh_port
 check_is_defined node_server_username
 check_is_defined node_server_hostname
 
-check_is_defined prysm_validator_datadir
 check_is_defined prysm_validator_keys_dir
+check_is_defined prysm_validator_wallet_dir
+check_is_defined prysm_validator_wallet_password_file
 check_is_defined prysm_validator_user
 check_is_defined prysm_validator_group
 
@@ -93,10 +94,10 @@ printinfo "Creating remote tempdir..."
 remote_temp_dir="$(ssh -p $node_server_ssh_port $node_server_ssh_endpoint "echo \"\$(mktemp -d)\"")"
 
 function on_exit() {
+	printinfo -n "Cleaning up..."
 	popd >/dev/null
 
 	# 4. delete the remote tempdir if it exists
-	printinfo -n "Cleaning up..."
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
 		temp_dir=\"$remote_temp_dir\"
 		[[ -d \$temp_dir ]] && rm -rf --interactive=never \"\$temp_dir\" >/dev/null"
@@ -147,7 +148,16 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
+printinfo "Verify that the new accounts are listed here:"
+ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
+	sudo -u \"$prysm_validator_user\" validator accounts list \\
+		--wallet-dir=\"$prysm_validator_wallet_dir\" \\
+		--wallet-password-file=\"$prysm_validator_wallet_password_file\" \\
+		--accept-terms-of-use \\
+		--${ethereum_network}
+"
+
 cat <<-EOF
 
-Success!  Validator keys have been imported to the node server.  Now you are ready to upload your deposit data.
+After verifying the above, you are ready to upload your deposit data.
 EOF
