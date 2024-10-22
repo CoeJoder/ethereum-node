@@ -24,8 +24,8 @@ eth_jwt_file='/usr/local/secrets/eth_jwt.hex'
 # the location of the 'DATA' drive mount point
 client_pc_usb_data_drive="/media/$USER/DATA"
 
-# the filename of the exported validator accounts list
-validator_accounts_txt="validator_accounts.txt"
+# the location of the exported validator statuses
+validator_statuses_json="$client_pc_usb_data_drive/$dist_dirname/validator_statuses.json"
 
 # geth values
 geth_user='goeth'

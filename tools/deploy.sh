@@ -281,7 +281,6 @@ if [[ $offline_mode == true ]]; then
 
 	cat <<-EOF
 
-	Success!  Downloaded the Ethereum Staking Deposit CLI and verified its checksum, and copied to USB 'DATA' drive.
-	Now you are ready to generate your validator key(s) on the offline PC.
+	Success!  Downloaded the offline tools to the USB 'DATA' drive.
 	EOF
 fi
