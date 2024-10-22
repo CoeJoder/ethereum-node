@@ -160,6 +160,11 @@ ssh-copy-id -i ~/.ssh/eth-node-mainnet_ed25519.pub coejoder@eth-node-mainnet
 # coejoder@eth-node-mainnet's password: <password>
 ```
 
+- [ ] create a directory for SSH sockets
+```bash
+mkdir -p ~/.ssh/sockets/
+```
+
 - [ ] create or edit `~/.ssh/config` and add a section to the bottom of the file:
 
 ```bash
@@ -168,11 +173,14 @@ nano ~/.ssh/config
 # append this entry to the file, then save and close it (ctrl+s, ctrl+x)
 Host eth-node-mainnet
 	User coejoder
+	AddKeysToAgent 1h
+	ControlMaster auto
+	ControlPath ~/.ssh/sockets/%C
+	ControlPersist 600
+	ForwardAgent yes
 	IdentityFile ~/.ssh/eth-node-mainnet_ed25519
 	IdentitiesOnly yes
 	PreferredAuthentications publickey
-	ForwardAgent yes
-	AddKeysToAgent 1h
 ```
 
 - [ ] login to the node server again, and update the SSH server settings:
