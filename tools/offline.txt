@@ -2,4 +2,5 @@
 
 */
 generate-keys.sh
+partial-withdrawal.sh
 _staking-deposit-cli.sh

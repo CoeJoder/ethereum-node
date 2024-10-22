@@ -19,6 +19,7 @@
 !src/env-base.sh
 !src/exit.sh
 !src/generate-keys.sh
+!src/partial-withdrawal.sh
 !src/print-env.sh
 !src/set-wallet-password.sh
 !src/setup-filesystem.sh
