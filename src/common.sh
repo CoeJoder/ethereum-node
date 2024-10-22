@@ -58,6 +58,7 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	theme_filename="${color_green}"
 	theme_value="${color_green}"
 	theme_url="${color_blue}"
+	theme_command="${color_lightgray}"
 fi
 
 # generic error messages to display on ERR trap
@@ -93,7 +94,11 @@ function set_env() {
 
 # append to log file
 function log_timestamp() {
-	echo -e "\n$(date "+%m-%d-%Y, %r")" >> "$log_file"
+	local _file="$log_file"
+	if [[ $# -gt 0 ]]; then
+		_file="$1"
+	fi
+	echo -e "\n$(date "+%m-%d-%Y, %r")" >> "$_file"
 }
 
 # tee stdout & stderr to log file

@@ -38,6 +38,7 @@
 
 !tools/
 !tools/deploy.sh
+!tools/export.sh
 !tools/generated.txt
 !tools/import-keys.sh
 !tools/non-generated.txt
