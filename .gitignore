@@ -7,7 +7,7 @@
 !.gitignore
 
 !src/
-!src/_script_template.sh
+!src/__script_template.sh
 !src/_staking-deposit-cli.sh
 !src/common.sh
 !src/disable-beacon.sh
@@ -19,6 +19,7 @@
 !src/env-base.sh
 !src/exit.sh
 !src/generate-keys.sh
+!src/get-validator-statuses.sh
 !src/partial-withdrawal.sh
 !src/print-env.sh
 !src/set-wallet-password.sh
