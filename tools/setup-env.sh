@@ -76,7 +76,7 @@ node_server_secondary_storage='$node_server_secondary_storage'
 client_pc_usb_data_drive="/media/$USER/DATA"
 
 # the location of the exported validator accounts list
-validator_statuses_json="$client_pc_usb_data_drive/$dist_dirname/validator_accounts.txt"
+validator_statuses_json="$client_pc_usb_data_drive/$dist_dirname/validator_statuses.json"
 
 # external geth ports
 geth_port=$geth_port           # TCP
