@@ -10,6 +10,7 @@ enable-geth.sh
 enable-validator.sh
 env-base.sh
 exit.sh
+get-validator-statuses.sh
 import-keys.sh
 print-env.sh
 set-wallet-password.sh
