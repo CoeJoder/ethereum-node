@@ -80,16 +80,6 @@ staking_deposit_cli__preconditions || exit
 validator_keys_parent_dir="$this_dir"
 validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 
-if [[ $_mode_new == true ]]; then
-	# if validator_keys directory already exists, confirm overwrite
-	reset_checks
-	check_directory_does_not_exist --sudo validator_keys_dir
-	if ! print_failed_checks --warn; then
-		continue_or_exit 1 "Overwrite?"
-		printf '\n'
-	fi
-fi
-
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 staking_deposit_cli__reconnaissance || exit
@@ -102,7 +92,7 @@ fi
 printf '\n'
 
 if [[ $_mode_existing == true ]]; then
-	read_default "Validator start index (0-based)" 1 validator_start_index
+	read_default "Validator start index (0-based)" 0 validator_start_index
 	if [[ ! $validator_start_index =~ ^[[:digit:]]+$ || ! $validator_start_index -ge 0 ]]; then
 		printerr "must choose an integer ≥ 0"
 		exit 1
@@ -112,6 +102,7 @@ fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
+set -e
 temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
@@ -140,9 +131,6 @@ if [[ $_mode_new == true ]]; then
 	${color_reset}
 	EOF
 	continue_or_exit 1
-
-	# remove any existing keystore
-	rm -rfv "$validator_keys_dir" &>/dev/null
 
 	# generate the key(s)
 	$deposit_cli_bin --language=English new-mnemonic \
@@ -173,10 +161,6 @@ fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
-reset_checks
-check_directory_exists --sudo validator_keys_dir
-print_failed_checks --error
-
 cat <<EOF
-Now you are ready to import your validator keys to the node server.
+You are now ready to import your validator keys to the node server.
 EOF

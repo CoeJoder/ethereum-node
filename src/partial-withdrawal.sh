@@ -70,6 +70,7 @@ printf '\n'
 
 # -------------------------- EXECUTION ----------------------------------------
 
+set -e
 temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
@@ -96,7 +97,7 @@ $deposit_cli_bin --language=English generate-bls-to-execution-change \\
 	--validator_start_index=$validator_start_index \\
 	--validator_indices="$validator_indices" \\
 	--chain="$ethereum_network" \\
-	--folder="$bls_to_execution_changes_parent_dir"
+	--bls_to_execution_changes_folder="$bls_to_execution_changes_parent_dir"
 ${color_reset}
 EOF
 continue_or_exit 1
@@ -107,8 +108,7 @@ $deposit_cli_bin --language=English generate-bls-to-execution-change \
 	--bls_withdrawal_credentials_list="$bls_withdrawal_credentials_list" \
 	--validator_start_index=$validator_start_index \
 	--validator_indices="$validator_indices" \
-	--chain="$ethereum_network" \
-	--folder="$bls_to_execution_changes_parent_dir"
+	--chain="$ethereum_network"
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
@@ -117,5 +117,5 @@ check_directory_exists --sudo bls_to_execution_changes_dir
 print_failed_checks --error
 
 cat <<EOF
-Now you are ready to broadcast the generated message through a beacon node.
+You are now ready to broadcast the generated message through a beacon node.
 EOF
