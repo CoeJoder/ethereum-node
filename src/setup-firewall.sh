@@ -32,8 +32,8 @@ press_any_key_to_continue
 
 assert_on_node_server
 
-for command in ufw awk; do
-	check_command_exists_on_path command
+for _command in ufw awk; do
+	check_command_exists_on_path _command
 done
 check_is_valid_port node_server_ssh_port
 check_is_valid_port geth_port

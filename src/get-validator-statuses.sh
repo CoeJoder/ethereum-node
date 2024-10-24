@@ -40,8 +40,8 @@ check_is_defined prysm_validator_wallet_dir
 check_is_defined prysm_validator_wallet_password_file
 check_is_defined prysm_validator_user
 
-for command in tee awk curl jq; do
-	check_command_exists_on_path command
+for _command in tee awk curl jq; do
+	check_command_exists_on_path _command
 done
 
 check_executable_exists --sudo prysm_validator_bin
