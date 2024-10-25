@@ -477,7 +477,7 @@ function print_failed_checks() {
 }
 
 function check_user_does_not_exist() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if user_exists "${!1}"; then
 			_check_failures+=("user already exists: ${!1}")
 		fi
@@ -485,7 +485,7 @@ function check_user_does_not_exist() {
 }
 
 function check_user_exists() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if ! user_exists "${!1}"; then
 			_check_failures+=("user does not exist: ${!1}")
 		fi
@@ -493,7 +493,7 @@ function check_user_exists() {
 }
 
 function check_group_does_not_exist() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if group_exists "${!1}"; then
 			_check_failures+=("group already exists: ${!1}")
 		fi
@@ -501,7 +501,7 @@ function check_group_does_not_exist() {
 }
 
 function check_group_exists() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if ! group_exists "${!1}"; then
 			_check_failures+=("group does not exist: ${!1}")
 		fi
@@ -514,7 +514,7 @@ function check_directory_does_not_exist() {
 		_sudo='sudo'
 		shift
 	fi
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if $_sudo test -d "${!1}"; then
 			_check_failures+=("directory already exists: ${!1}")
 		fi
@@ -527,7 +527,7 @@ function check_directory_exists() {
 		_sudo='sudo'
 		shift
 	fi
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if $_sudo test ! -d "${!1}"; then
 			_check_failures+=("directory does not exist: ${!1}")
 		fi
@@ -540,7 +540,7 @@ function check_file_does_not_exist() {
 		_sudo='sudo'
 		shift
 	fi
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if $_sudo test -f "${!1}"; then
 			_check_failures+=("file already exists: ${!1}")
 		fi
@@ -553,7 +553,7 @@ function check_file_exists() {
 		_sudo='sudo'
 		shift
 	fi
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if $_sudo test ! -f "${!1}"; then
 			_check_failures+=("file does not exist: ${!1}")
 		fi
@@ -561,7 +561,7 @@ function check_file_exists() {
 }
 
 function check_is_valid_ethereum_network() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if [[ ${!1} != 'mainnet' && ${!1} != 'holesky' ]]; then
 			_check_failures+=("invalid Ethereum network: ${!1}")
 		fi
@@ -569,7 +569,7 @@ function check_is_valid_ethereum_network() {
 }
 
 function check_is_valid_port() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if [[ ${!1} -lt 1 || ${!1} -gt 65535 ]]; then
 			_check_failures+=("invalid port: ${!1}")
 		fi
@@ -577,7 +577,7 @@ function check_is_valid_port() {
 }
 
 function check_command_does_not_exist_on_path() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if type -P "${!1}" &>/dev/null; then
 			_check_failures+=("command already exists: ${!1}")
 		fi
@@ -585,7 +585,7 @@ function check_command_does_not_exist_on_path() {
 }
 
 function check_command_exists_on_path() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if ! type -P "${!1}" &>/dev/null; then
 			_check_failures+=("command does not exist: ${!1}")
 		fi
@@ -598,7 +598,7 @@ function check_executable_does_not_exist() {
 		_sudo='sudo'
 		shift
 	fi
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if $_sudo test -x ${!1}; then
 			_check_failures+=("executable already exists: ${!1}")
 		fi
@@ -611,7 +611,7 @@ function check_executable_exists() {
 		_sudo='sudo'
 		shift
 	fi
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if $_sudo test ! -x ${!1}; then
 			_check_failures+=("file does not exist or is not executable: ${!1}")
 		fi
@@ -619,7 +619,7 @@ function check_executable_exists() {
 }
 
 function check_is_service_installed() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		local service_name="$(basename "${!1}")"
 		if ! systemctl list-unit-files --full -all | grep -Fq "$service_name"; then
 			_check_failures+=("service is not installed: ${!1}")
@@ -628,7 +628,7 @@ function check_is_service_installed() {
 }
 
 function check_is_service_active() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		local service_name="$(basename "${!1}")"
 		if ! systemctl is-active --quiet "$service_name"; then
 			_check_failures+=("service is not active: $service_name")
@@ -637,7 +637,7 @@ function check_is_service_active() {
 }
 
 function check_is_valid_ethereum_address() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if [[ ! ${!1} =~ $regex_eth_addr ]]; then
 			_check_failures+=("invalid Ethereum address: ${!1}")
 		fi
@@ -645,14 +645,15 @@ function check_is_valid_ethereum_address() {
 }
 
 function check_string_contains() {
-	if check_is_defined $1; then
+	if _check_is_defined $1; then
 		if ! string_contains "${!1}" "$2"; then
 			_check_failures+=("$1 does not contain \"$2\"")
 		fi
 	fi
 }
 
-function check_is_defined() {
+# predicate (may return non-zero)
+function _check_is_defined() {
 	if [[ $# -ne 1 ]]; then
 		printerr "no argument provided"
 		exit 2
@@ -660,5 +661,20 @@ function check_is_defined() {
 	if [[ -z ${!1} ]]; then
 		_check_failures+=("variable is undefined: $1")
 		return 1
+	fi
+}
+
+# non-predicate (avoids triggering errexit)
+function check_is_defined() {
+	_check_is_defined && true
+}
+
+function check_argument_not_missing() {
+	if [[ $# -ne 1 ]]; then
+		printerr "no argument name provided"
+		exit 2
+	fi
+	if [[ -z ${!1} ]]; then
+		_check_failures+=("missing argument: $1")
 	fi
 }
