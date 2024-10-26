@@ -2,51 +2,59 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 source "$this_dir/_staking-deposit-cli.sh"
 housekeeping
 
-function _show_usage() {
-	cat >&2 <<-EOF 
-	usage:
-	generate-keys.sh [-h|--help] {--new-mnemonic|--existing-mnemonic}
+function show_usage() {
+	cat >&2 <<-EOF
+		Usage:
+		  $(basename ${BASH_SOURCE[0]}) [-h|--help] command
+
+		Commands:
+		  n, new-mnemonic
+		  e, existing-mnemonic
 	EOF
 }
 
 _mode_new=false
 _mode_existing=false
 
-function _parse_arg() {
-	if [[ $1 == '-h' || $1 == '--help' ]]; then
-		_show_usage
-		exit 0
-	elif [[ $1 == '--new-mnemonic' ]]; then
+# since we want to parse all arguments, not just '-' and '--' options,
+# we omit `getopt` and loop over all arguments:
+while (($#)); do
+	case $1 in
+	n | new-mnemonic=*)
+		# _mode_new="${1#*=}"
+		# shift 2
 		_mode_new=true
-	elif [[ $1 == '--existing-mnemonic' ]]; then
+		shift 1
+		;;
+	e | existing-mnemonic=*)
+		# _mode_existing="${1#*=}"
+		# shift 2
 		_mode_existing=true
-	else
+		shift 1
+		;;
+	--help | -h)
+		show_usage
+		exit 0
+		;;
+	*)
 		printerr "unknown argument: $1"
-		_show_usage
 		exit 1
-	fi
-}
+		;;
+	esac
+done
 
-function _validate() {
-	[[ $_mode_new == true || $_mode_existing == true ]]
-}
-
-if [[ $# -gt 0 ]]; then
-	_parse_arg "$1"
-	shift
-	if ! _validate && [[ $# -gt 0 ]]; then
-		_parse_arg "$1"
-		shift
-	fi
-fi
-
-if ! _validate; then
-	_show_usage
+if [[ $_mode_new == false && $_mode_existing == false ]]; then
+	printerr "command missing"
+	exit 1
+elif [[ $_mode_new == true && $_mode_existing == true ]]; then
+	printerr "multiple commands"
 	exit 1
 fi
 
@@ -102,7 +110,6 @@ fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
-set -e
 temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
@@ -122,13 +129,13 @@ staking_deposit_cli__unpack_tarball
 if [[ $_mode_new == true ]]; then
 	# confirmation message
 	cat <<-EOF
-	Ready to run the following command:${color_lightgray}
-	$deposit_cli_bin --language=English new-mnemonic \\
-		--num_validators=$num_validators \\
-		--mnemonic_language=English \\
-		--chain="$ethereum_network" \\
-		--folder="$validator_keys_parent_dir"
-	${color_reset}
+		Ready to run the following command:${color_lightgray}
+		$deposit_cli_bin --language=English new-mnemonic \\
+			--num_validators=$num_validators \\
+			--mnemonic_language=English \\
+			--chain="$ethereum_network" \\
+			--folder="$validator_keys_parent_dir"
+		${color_reset}
 	EOF
 	continue_or_exit 1
 
@@ -141,13 +148,13 @@ if [[ $_mode_new == true ]]; then
 else
 	# confirmation message
 	cat <<-EOF
-	Ready to run the following command:${color_lightgray}
-	$deposit_cli_bin --language=English existing-mnemonic \\
-		--validator_start_index=$validator_start_index \\
-		--num_validators=$num_validators \\
-		--chain="$ethereum_network" \\
-		--folder="$validator_keys_parent_dir"
-	${color_reset}
+		Ready to run the following command:${color_lightgray}
+		$deposit_cli_bin --language=English existing-mnemonic \\
+			--validator_start_index=$validator_start_index \\
+			--num_validators=$num_validators \\
+			--chain="$ethereum_network" \\
+			--folder="$validator_keys_parent_dir"
+		${color_reset}
 	EOF
 	continue_or_exit 1
 
