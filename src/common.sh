@@ -43,6 +43,13 @@ regex_eth_addr='^0x[[:xdigit:]]{40}$'
 # e.g. "0xAbC123,0xdEf456"
 regex_eth_addr_csv='^0x[[:xdigit:]]{40}(,0x[[:xdigit:]]{40})*$'
 
+regex_eth_validator_pubkey='^0x[[:xdigit:]]{96}$'
+
+regex_eth_validator_pubkey_csv='^0x[[:xdigit:]]{96}(,0x[[:xdigit:]]{96})*$'
+
+# the `jq` version to download
+jq_version='jq-1.7.1'
+
 # set colors only if tput is available
 if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_red=$(tput setaf 1)
@@ -277,6 +284,27 @@ function download_file() {
 	fi
 }
 
+function download_jq() {
+	if [[ $# -ne 3 ]]; then
+		printerr "usage: download_jq version outvar outvar_sha256"
+		return 3
+	fi
+	local version="$1" outvar="$2" outvar_sha256="$3"
+	local program_bin="jq-linux-amd64"
+	local program_bin_sha256="${program_bin}.sha256"
+	local program_bin_url="https://github.com/jqlang/jq/releases/download/${version}/${program_bin}"
+	local all_sha256="sha256sum.txt"
+	local all_sha256_url="https://github.com/jqlang/jq/releases/download/${version}/${all_sha256}"
+	download_file "$program_bin_url" || return
+	download_file "$all_sha256_url" || return
+	
+	# all checksums are in a single file; we will filter it
+	grep --color=never "$program_bin" "$all_sha256" > "$program_bin_sha256"
+	shasum -a 256 -c "$program_bin_sha256" || return
+	printf -v "$outvar" "$program_bin"
+	printf -v "$outvar_sha256" "$program_bin_sha256"
+}
+
 # download and checksum a prysm program from the GitHub release page,
 # and assign the bin filename to the given `outvar`
 function download_prysm() {
@@ -285,10 +313,10 @@ function download_prysm() {
 		return 2
 	fi
 	local program="$1" version="$2" outvar="$3"
-	program_bin="${program}-${version}-linux-amd64"
-	program_bin_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin}"
-	program_bin_sha256="${program}-${version}-linux-amd64.sha256"
-	program_bin_sha256_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin_sha256}"
+	local program_bin="${program}-${version}-linux-amd64"
+	local program_bin_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin}"
+	local program_bin_sha256="${program}-${version}-linux-amd64.sha256"
+	local program_bin_sha256_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin_sha256}"
 	download_file "$program_bin_url" || return
 	download_file "$program_bin_sha256_url" || return
 	shasum -a 256 -cq "$program_bin_sha256" || return

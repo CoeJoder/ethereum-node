@@ -100,6 +100,39 @@ function test_regex_eth_addr() {
 	done
 }
 
+# tests for `$regex_eth_validator_pubkey` in common.sh
+function test_regex_eth_validator_pubkey() {
+	local valids=(
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270b'
+		'0x0123456789abcdefABCDEF01234567890abcdef00123456789abcdefABCDEF01234567890abcdef00123456789abcdef'
+		'0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+		'0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
+	)
+	local invalids=(
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0123456789abcdefABCDEF01234567890abcdef00123456789abcdefABCDEF01234567890abcdef00123456789abcdef' # csv
+		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f' # too short
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540ZEBRA' # invalid characters
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B1' # too long
+		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # missing 0x
+	)
+	local curtest
+	local i
+
+	for ((i = 0; i < ${#valids[@]}; i++)); do
+		curtest=${valids[i]}
+		if [[ ! $curtest =~ $regex_eth_validator_pubkey ]]; then
+			failures+=("Expected valid: $curtest")
+		fi
+	done
+
+	for ((i = 0; i < ${#invalids[@]}; i++)); do
+		curtest=${invalids[i]}
+		if [[ $curtest =~ $regex_eth_validator_pubkey ]]; then
+			failures+=("Expected invalid: $curtest")
+		fi
+	done
+}
+
 # tests for `$regex_eth_addr_csv` in common.sh
 function test_regex_eth_addr_csv() {
 	local valids=(
@@ -132,6 +165,43 @@ function test_regex_eth_addr_csv() {
 	for ((i = 0; i < ${#invalids[@]}; i++)); do
 		curtest=${invalids[i]}
 		if [[ $curtest =~ $regex_eth_addr_csv ]]; then
+			failures+=("Expected invalid: $curtest")
+		fi
+	done
+}
+
+# tests for `$regex_eth_validator_pubkey_csv` in common.sh
+function test_regex_eth_validator_pubkey_csv() {
+	local valids=(
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B'
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0123456789abcdefABCDEF01234567890abcdef00123456789abcdefABCDEF01234567890abcdef00123456789abcdef'
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0123456789abcdefABCDEF01234567890abcdef00123456789abcdefABCDEF01234567890abcdef00123456789abcdef'
+	)
+	local invalids=(
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270' # too short
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270,0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270' # too short csv
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540ZEBRA' # invalid characters
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B1' # too long
+		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # missing 0x
+		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # missing 0x csv
+		'0x0x0fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0x0fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # too many 0x
+		',0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # leading comma
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B 0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # spaced not csv
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B, 0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # csv plus space
+	)
+	local curtest
+	local i
+
+	for ((i = 0; i < ${#valids[@]}; i++)); do
+		curtest=${valids[i]}
+		if [[ ! $curtest =~ $regex_eth_validator_pubkey_csv ]]; then
+			failures+=("Expected valid: $curtest")
+		fi
+	done
+
+	for ((i = 0; i < ${#invalids[@]}; i++)); do
+		curtest=${invalids[i]}
+		if [[ $curtest =~ $regex_eth_validator_pubkey_csv ]]; then
 			failures+=("Expected invalid: $curtest")
 		fi
 	done
@@ -528,6 +598,8 @@ assert_sudo
 
 run_test test_regex_eth_addr
 run_test test_regex_eth_addr_csv
+run_test test_regex_eth_validator_pubkey
+run_test test_regex_eth_validator_pubkey_csv
 run_test test_yes_or_no
 run_test test_continue_or_exit
 run_test test_get_latest_prysm_version
