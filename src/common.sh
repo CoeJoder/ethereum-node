@@ -666,7 +666,7 @@ function _check_is_defined() {
 
 # non-predicate (avoids triggering errexit)
 function check_is_defined() {
-	_check_is_defined && true
+	_check_is_defined "$1" && true
 }
 
 function check_argument_not_missing() {
