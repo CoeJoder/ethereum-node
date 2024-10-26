@@ -19,6 +19,7 @@
 !src/env-base.sh
 !src/exit.sh
 !src/generate-keys.sh
+!src/get-validator-indices.sh
 !src/get-validator-statuses.sh
 !src/partial-withdrawal.sh
 !src/print-env.sh
