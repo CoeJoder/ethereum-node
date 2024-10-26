@@ -2,49 +2,54 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$tools_dir/../src/common.sh"
 housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF 
-	usage: deploy.sh [-h|--help] [--dry-run] [--offline]
-	
-	Default mode deploys to node server via SSH.
-	Offline mode deploys to USB 'DATA' drive.
+	Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		--dry-run   Perform a dry-run of the rsync transfers
+		--offline   Deploy to the USB 'DATA' drive for the air-gapped PC;
+		            omit to deploy to the node server instead
+		--help, -h  Show this message
 	EOF
 }
+
+_parsed_args=$(getopt --options='h' --longoptions='help,dry-run,offline' \
+	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
+eval set -- "$_parsed_args"
+unset _parsed_args
 
 offline_mode=false
 rsync_opts=''
 
-function parse_arg() {
-	if [[ $1 == '--dry-run' ]]; then
-		rsync_opts='--dry-run'
-	elif [[ $1 == '--offline' ]]; then
-		offline_mode=true
-	elif [[ $1 == '-h' || $1 == '--help' ]]; then
+while true; do
+	case "$1" in
+	-h | --help)
 		show_usage
 		exit 0
-	else
-		printerr "unknown argument: $1"
-		show_usage
-		exit 1
-	fi
-}
-
-if [[ $# -gt 0 ]]; then
-	parse_arg "$1"
-	shift
-	if [[ $# -gt 0 ]]; then
-		parse_arg "$1"
+		;;
+	--dry-run)
+		rsync_opts='--dry-run'
 		shift
-		if [[ $# -gt 0 ]]; then
-			show_usage
-			exit 1
-		fi
-	fi
-fi
+		;;
+	--offline)
+		offline_mode=true
+		shift
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		printerr "unknown argument: $1"
+		exit 1
+		;;
+	esac
+done
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -79,13 +84,11 @@ assert_not_on_node_server
 check_is_defined dist_dirname
 
 if [[ $offline_mode == true ]]; then
-	# ---------- OFFLINE MODE
 	check_directory_exists --sudo client_pc_usb_data_drive
 	check_is_defined ethereum_staking_deposit_cli_version
 	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
 	check_is_defined ethereum_staking_deposit_cli_url
 else
-	# ---------- NORMAL MODE
 	check_is_valid_port node_server_ssh_port
 	check_is_defined node_server_username
 	check_is_defined node_server_hostname
@@ -107,8 +110,7 @@ print_failed_checks --error || exit
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 if [[ $offline_mode == true ]]; then
-	# ---------- OFFLINE MODE
-	get_latest_deposit_cli_version latest_deposit_cli_version || exit 1
+	get_latest_deposit_cli_version latest_deposit_cli_version
 
 	if [[ $latest_deposit_cli_version != $ethereum_staking_deposit_cli_version ]]; then
 		printerr "latest version is different than expected ($ethereum_staking_deposit_cli_version)"
@@ -129,69 +131,12 @@ if [[ $offline_mode == true ]]; then
 		printerr "unexpected checksum; ensure that ${theme_value}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		exit 1
 	fi
-	
-	printinfo "Ready to deploy with the following commands:"
-	cat <<-EOF
-	${color_lightgray}
-	# create the dist dir if necessary and copy over the tarball and .sha256
-	dist_dir="$client_pc_usb_data_drive/$dist_dirname"
-	sudo mkdir -p "$dist_dir"
-	sudo chown -R "$USER:$USER" "$dist_dir"
-	cp -vf "$deposit_cli_basename" "$dist_dir"
-	cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
-
-	# overwrite non-generated files and remove deleted files i.e. those listed in 
-	# includes-file but not existing in source filesystem
-	rsync -avh \\
-		--progress \\
-		--delete \\
-		--include-from="$includes_non_generated" \\
-		--include-from="$includes_offline" \\
-		--exclude="*" \\
-		$rsync_opts \\
-		"$deploy_src_dir" "$dist_dir"
-
-	# overwrite generated files only if source copy is newer
-	rsync -avhu \\
-		--progress \\
-		--include-from="$includes_generated" \\
-		--exclude="*" \\
-		$rsync_opts \\
-		"$deploy_src_dir" "$dist_dir"
-	${color_reset}
-	EOF
-	yes_or_no --default-yes "Continue?" || exit 1
-else
-	# ---------- NORMAL MODE
-	printinfo "Ready to deploy with the following commands:"
-	cat <<-EOF
-	${color_lightgray}
-	# overwrite non-generated files and remove deleted files i.e. those listed in 
-	# includes-file but not existing in source filesystem
-	rsync -avh -e "ssh -p $node_server_ssh_port" \\
-		--progress \\
-		--delete \\
-		--include-from="$includes_non_generated" \\
-		--exclude="*" \\
-		$rsync_opts \\
-		"$deploy_src_dir" "${node_server_username}@${node_server_hostname}:$dist_dirname"
-
-	# overwrite generated files only if source copy is newer
-	rsync -avhu -e "ssh -p $node_server_ssh_port" \\
-		--progress \\
-		--include-from="$includes_generated" \\
-		--exclude="*" \\
-		$rsync_opts \\
-		"$deploy_src_dir" "${node_server_username}@${node_server_hostname}:$dist_dirname"
-	${color_reset}
-	EOF
-	yes_or_no --default-yes "Continue?" || exit 1
+	printf '\n'
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
 if [[ $offline_mode == true ]]; then
-	# ---------- OFFLINE MODE
 	temp_dir=$(mktemp -d)
 	pushd "$temp_dir" >/dev/null
 
@@ -216,15 +161,24 @@ if [[ $offline_mode == true ]]; then
 		printerr "checksum failed; expected: ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"
 		exit 1
 	fi
+	sudo chmod 0 "$deposit_cli_basename"
+	sudo chmod 0 "$deposit_cli_basename_sha256"
+
+	printinfo "Downloading ${jq_version}..."
+	download_jq "$jq_version" jq_bin jq_bin_sha256
+	sudo chmod 0 "$jq_bin"
+	sudo chmod 0 "$jq_bin_sha256"
 
 	printinfo "Deploying..."
 
-	# create the dist dir if necessary and copy over the tarball and .sha256
+	# create the dist dir if necessary and copy over the tarball, jq, and the .sha256 files
 	dist_dir="$client_pc_usb_data_drive/$dist_dirname"
 	sudo mkdir -p "$dist_dir"
 	sudo chown -R "$USER:$USER" "$dist_dir"
-	cp -vf "$deposit_cli_basename" "$dist_dir"
-	cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
+	sudo cp -vf "$deposit_cli_basename" "$dist_dir"
+	sudo cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
+	sudo cp -vf "$jq_bin" "$dist_dir"
+	sudo cp -vf "$jq_bin_sha256" "$dist_dir"
 
 	# overwrite non-generated files and remove deleted files i.e. those listed in 
 	# includes-file but not existing in source filesystem
@@ -245,7 +199,6 @@ if [[ $offline_mode == true ]]; then
 		$rsync_opts \
 		"$deploy_src_dir" "$dist_dir"
 else
-	# ---------- NORMAL MODE
 	trap 'on_err_retry' ERR
 
 	printinfo "Deploying..."
@@ -275,8 +228,12 @@ if [[ $offline_mode == true ]]; then
 	reset_checks
 	deposit_cli_dest="$dist_dir/$deposit_cli_basename"
 	deposit_cli_sha256_dest="$dist_dir/$deposit_cli_basename_sha256"
+	jq_bin_dest="$dist_dir/$jq_bin"
+	jq_bin_sha256_dest="$dist_dir/$jq_bin_sha256"
 	check_file_exists --sudo deposit_cli_dest
 	check_file_exists --sudo deposit_cli_sha256_dest
+	check_file_exists --sudo jq_bin_dest
+	check_file_exists --sudo jq_bin_sha256_dest
 	print_failed_checks --error
 
 	cat <<-EOF
