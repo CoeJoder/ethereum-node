@@ -3,25 +3,26 @@
 # get-validator-statuses.sh
 #
 # Queries the status of imported validator accounts.
-# Typically called from the client PC's `export.sh` script, but can be run
-# directly.
+#
+# Meant to be run on the node server.  Typically called remotely from the
+# client PC `export.sh` script but can be run directly.
 
 # -------------------------- HEADER -------------------------------------------
 
 set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
-function _show_usage() {
-	cat >&2 <<-EOF 
-	usage:
-	$(basename ${BASH_SOURCE[0]}) outfile
+function show_usage() {
+	cat >&2 <<-EOF
+		Usage: $(basename ${BASH_SOURCE[0]}) outfile
 	EOF
 }
 
 if [[ $# -ne 1 ]]; then
-	_show_usage
+	show_usage
 	exit 1
 fi
 _outfile="$1"
@@ -66,8 +67,8 @@ validator_indices_csv="${validator_indices//$'\n'/,}"
 printinfo "Querying beacon chain for validator statuses..."
 api_url="http://localhost:3500/eth/v1/beacon/states/head/validators?id=$validator_indices_csv"
 printinfo "curl -X 'GET' \"$api_url\" -H 'accept: application/json' --no-progress-meter"
-curl -X 'GET' "$api_url" -H 'accept: application/json' --no-progress-meter | 
+curl -X 'GET' "$api_url" -H 'accept: application/json' --no-progress-meter |
 	tee >(cat 1>&2) |
-	jq '.data' > "$_outfile"
-	
+	jq '.data' >"$_outfile"
+
 # -------------------------- POSTCONDITIONS -----------------------------------
