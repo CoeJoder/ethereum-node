@@ -47,9 +47,6 @@ regex_eth_validator_pubkey='^0x[[:xdigit:]]{96}$'
 
 regex_eth_validator_pubkey_csv='^0x[[:xdigit:]]{96}(,0x[[:xdigit:]]{96})*$'
 
-# the `jq` version to download
-jq_version='jq-1.7.1'
-
 # set colors only if tput is available
 if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_red=$(tput setaf 1)
@@ -286,12 +283,10 @@ function download_file() {
 
 function download_jq() {
 	if [[ $# -ne 3 ]]; then
-		printerr "usage: download_jq version outvar outvar_sha256"
+		printerr "usage: download_jq jq_bin jq_bin_sha256 version"
 		return 3
 	fi
-	local version="$1" outvar="$2" outvar_sha256="$3"
-	local program_bin="jq-linux-amd64"
-	local program_bin_sha256="${program_bin}.sha256"
+	local program_bin="$1" program_bin_sha256="$2" version="$3"
 	local program_bin_url="https://github.com/jqlang/jq/releases/download/${version}/${program_bin}"
 	local all_sha256="sha256sum.txt"
 	local all_sha256_url="https://github.com/jqlang/jq/releases/download/${version}/${all_sha256}"
@@ -301,8 +296,6 @@ function download_jq() {
 	# all checksums are in a single file; we will filter it
 	grep --color=never "$program_bin" "$all_sha256" > "$program_bin_sha256"
 	shasum -a 256 -c "$program_bin_sha256" || return
-	printf -v "$outvar" "$program_bin"
-	printf -v "$outvar_sha256" "$program_bin_sha256"
 }
 
 # download and checksum a prysm program from the GitHub release page,
@@ -676,6 +669,24 @@ function check_string_contains() {
 	if _check_is_defined $1; then
 		if ! string_contains "${!1}" "$2"; then
 			_check_failures+=("$1 does not contain \"$2\"")
+		fi
+	fi
+}
+
+function check_current_directory_is() {
+	if _check_is_defined $1; then
+		resolved_dir="$(realpath "${!1}")"
+		if [[ $(pwd) != $resolved_dir ]]; then
+			_check_failures+=("current directory is not $resolved_dir")
+		fi
+	fi
+}
+
+function check_current_directory_is_not() {
+	if _check_is_defined $1; then
+		resolved_dir="$(realpath "${!1}")"
+		if [[ $(pwd) == $resolved_dir ]]; then
+			_check_failures+=("current directory is $resolved_dir")
 		fi
 	fi
 }

@@ -15,7 +15,9 @@ set -e
 
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
+source "$this_dir/_offline_utils.sh"
 source "$this_dir/_staking-deposit-cli.sh"
+source "$this_dir/_portable_jq.sh"
 housekeeping
 
 function show_usage() {
@@ -72,11 +74,14 @@ EOF
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+offline__preconditions
 staking_deposit_cli__preconditions
+portable_jq__preconditions
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 staking_deposit_cli__reconnaissance
+portable_jq__reconnaissance
 
 if [[ -z $mnemonic ]]; then
 	read_no_default "Please enter your mnemonic separated by spaces (\" \"). \
@@ -113,6 +118,7 @@ trap 'on_err_retry' ERR
 trap 'on_exit' EXIT
 
 assert_sudo
+offline__deploy_usb_dist_to_current_dir
 staking_deposit_cli__unpack_tarball
 
 # -------------------------- POSTCONDITIONS -----------------------------------

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# staking_deposit_cli.sh
+# _staking_deposit_cli.sh
 #
 # Common subroutines used with the Ethereum Staking Deposit CLI.
 # Not meant to be run as a top-level script.
@@ -45,7 +45,7 @@ function staking_deposit_cli__unpack_tarball() {
 	sudo chown -R "$USER:$USER" ./
 
 	# checksum using the included .sha256 file
-	printinfo "Verifying SHA256 checksum..."
+	printinfo "Verifying deposit-cli SHA256 checksum..."
 	sha256sum -c "$deposit_cli_sha256" || return
 	printf '\n'
 

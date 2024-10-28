@@ -37,7 +37,6 @@ check_is_defined node_server_username
 check_is_defined node_server_hostname
 
 check_is_defined dist_dirname
-check_is_defined client_pc_usb_data_drive
 check_is_defined validator_statuses_json
 
 print_failed_checks --error || exit

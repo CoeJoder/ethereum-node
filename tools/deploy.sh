@@ -88,6 +88,8 @@ if [[ $offline_mode == true ]]; then
 	check_is_defined ethereum_staking_deposit_cli_version
 	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
 	check_is_defined ethereum_staking_deposit_cli_url
+	check_is_defined jq_bin
+	check_is_defined jq_bin_sha256
 else
 	check_is_valid_port node_server_ssh_port
 	check_is_defined node_server_username
@@ -161,24 +163,20 @@ if [[ $offline_mode == true ]]; then
 		printerr "checksum failed; expected: ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"
 		exit 1
 	fi
-	sudo chmod 0 "$deposit_cli_basename"
-	sudo chmod 0 "$deposit_cli_basename_sha256"
 
 	printinfo "Downloading ${jq_version}..."
-	download_jq "$jq_version" jq_bin jq_bin_sha256
-	sudo chmod 0 "$jq_bin"
-	sudo chmod 0 "$jq_bin_sha256"
+	download_jq "$jq_bin" "$jq_bin_sha256" "$jq_version"
 
 	printinfo "Deploying..."
 
-	# create the dist dir if necessary and copy over the tarball, jq, and the .sha256 files
+	# create the dist dir if necessary and copy over 3rd party software and checksums
 	dist_dir="$client_pc_usb_data_drive/$dist_dirname"
 	sudo mkdir -p "$dist_dir"
 	sudo chown -R "$USER:$USER" "$dist_dir"
-	sudo cp -vf "$deposit_cli_basename" "$dist_dir"
-	sudo cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
-	sudo cp -vf "$jq_bin" "$dist_dir"
-	sudo cp -vf "$jq_bin_sha256" "$dist_dir"
+	cp -vf "$deposit_cli_basename" "$dist_dir"
+	cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
+	cp -vf "$jq_bin" "$dist_dir"
+	cp -vf "$jq_bin_sha256" "$dist_dir"
 
 	# overwrite non-generated files and remove deleted files i.e. those listed in 
 	# includes-file but not existing in source filesystem
@@ -198,6 +196,10 @@ if [[ $offline_mode == true ]]; then
 		--exclude="*" \
 		$rsync_opts \
 		"$deploy_src_dir" "$dist_dir"
+	
+	# seal the directory
+	sudo chown root:root "$dist_dir"
+	sudo chmod 0 "$dist_dir"
 else
 	trap 'on_err_retry' ERR
 

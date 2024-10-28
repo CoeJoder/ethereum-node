@@ -68,3 +68,8 @@ prysm_validator_unit_file='/etc/systemd/system/eth2-validator.service'
 ethereum_staking_deposit_cli_version='v2.7.0'
 ethereum_staking_deposit_cli_sha256_checksum='ac3151843d681c92ae75567a88fbe0e040d53c21368cc1ed1a8c3d9fb29f2a3a'
 ethereum_staking_deposit_cli_url='https://github.com/ethereum/staking-deposit-cli/releases/download/v2.7.0/staking_deposit-cli-fdab65d-linux-amd64.tar.gz'
+
+# Portable `jq` values
+jq_version='jq-1.7.1'
+jq_bin='jq-linux-amd64'
+jq_bin_sha256='jq-linux-amd64.sha256'
