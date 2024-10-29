@@ -7,6 +7,7 @@
 - [ ] EL and CL are fully synced to the Ethereum network
 - [ ] client PC is powered on and able to SSH into the node server
 - [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](./initial-setup.md)
+- [ ] the `Data` USB flash drive created during initial setup is on-hand
 
 ## Postconditions
 - node server will be running the EL, the CL, and prysm-validator (validator(s)) as a service
@@ -38,7 +39,7 @@ cd ethereum-node
 exit
 ```
 
-### 2. Generate Mnemonic and Validator Keys
+### 2. Format the `Data` flash drive to EXT4 and Deploy to it
 
 #### On the Client PC:
 - [ ] plug-in the USB flash drive labeled `DATA` which was formatted to FAT32 during [initial setup](./initial-setup.md)
@@ -74,12 +75,14 @@ sudo eject $flashdrive
 ```
 
 - [ ] unplug the flash drive and plug it back in.  It should be auto-mounted by the operating system
-- [ ] deploy to the flash drive:
+- [ ] change into the project directory and deploy to the flash drive:
 ```bash
 cd ethereum-node
 ./tools/deploy.sh --offline
 ```
 - [ ] safely eject the flash drive and unplug it
+
+### 3. Generate Mnemonic and Validator Keys
 
 #### On the Air-Gapped PC:
 - [ ] plug-in the flash drive
@@ -98,7 +101,7 @@ source ./unseal.sh
 ```
 - [ ] safely eject the flash drive and unplug it
 
-### 3. Import Validator Keys and Create Wallet
+### 4. Import Validator Keys and Create Wallet
 
 #### On the Client PC:
 - [ ] plug-in the flash drive
@@ -123,7 +126,7 @@ cd ethereum-node
 exit
 ```
 
-### 4. Deposit 32 ETH Per Validator
+### 5. Deposit 32 ETH Per Validator
 
 - [ ] browse to the Ethereum Staking Launchpad page:
 	- [mainnet](https://launchpad.ethereum.org/en/overview) or [holesky](https://holesky.launchpad.ethereum.org/en/overview)
@@ -132,7 +135,7 @@ exit
 - [ ] follow the website instructions to connect your MetaMask wallet and complete the deposits: one for each validator
 	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the "ethstaker" Discord server if needed.
 
-### 4. Enable Validator Service
+### 6. Enable Validator Service
 
 It can take over a week for the deposit(s) to arrive in the balance of your validator(s), signaling your official entry as a validating Ethereum node.  At the moment of entry, your validator(s) will be expected to be up-and-running, along with your EL & CL, so start the validator service now and leave it running.
 
@@ -148,9 +151,7 @@ cd ethereum-node
 ./enable-validator.sh
 ```
 
-(optional) You can monitor the balance of your validator(s) by running the following script:
-```bash
-TODO TODO TODO TODO
-```
+### Next Steps
 
-### TODO
+- [Partial Withdrawal](./partial-withdrawal.md)
+
