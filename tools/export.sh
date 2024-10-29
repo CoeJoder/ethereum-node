@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$tools_dir/../src/common.sh"
 housekeeping
@@ -39,13 +41,13 @@ check_is_defined node_server_hostname
 check_is_defined dist_dirname
 check_is_defined validator_statuses_json
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
 
-# if validator accounts file already exists, confirm overwrite
+# if validator statuses file already exists, confirm overwrite
 reset_checks
 check_file_does_not_exist --sudo validator_statuses_json
 if ! print_failed_checks --warn; then

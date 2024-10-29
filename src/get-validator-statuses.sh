@@ -47,7 +47,7 @@ done
 
 check_executable_exists --sudo prysm_validator_bin
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

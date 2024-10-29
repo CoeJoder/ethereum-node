@@ -89,6 +89,9 @@ assert_sudo
 staking_deposit_cli__unpack_tarball
 
 # confirmation message
+printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withdrawal wallet address!!!'
+printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withdrawal wallet address!!!'
+printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withdrawal wallet address!!!'
 cat <<EOF
 Ready to run the following command:${color_lightgray}
 $deposit_cli_bin --language=English generate-bls-to-execution-change \\
