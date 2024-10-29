@@ -44,8 +44,13 @@ regex_eth_addr='^0x[[:xdigit:]]{40}$'
 regex_eth_addr_csv='^0x[[:xdigit:]]{40}(,0x[[:xdigit:]]{40})*$'
 
 regex_eth_validator_pubkey='^0x[[:xdigit:]]{96}$'
+regex_eth_validator_pubkey_v2='^[[:xdigit:]]{96}$'
 
 regex_eth_validator_pubkey_csv='^0x[[:xdigit:]]{96}(,0x[[:xdigit:]]{96})*$'
+regex_eth_validator_pubkey_csv_v2='^[[:xdigit:]]{96}(,[[:xdigit:]]{96})*$'
+
+# see: https://eips.ethereum.org/EIPS/eip-2334#validator-keys
+regex_eth_validator_signing_key_path='m/12381/3600/([[:digit:]]+)/0/0'
 
 # set colors only if tput is available
 if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
@@ -360,6 +365,27 @@ function disable_service() {
 
 	sudo systemctl stop "$service_name"
 	sudo systemctl disable "$service_name"
+}
+
+# parses the index number from a validator signing key path per EIP-2334
+# e.g. 'm/12381/3600/4/0/0' yields '4'
+function parse_index_from_signing_key_path() {
+	if [[ $# -ne 2 ]]; then
+		printerr "usage: parse_index_from_signing_key_path signing_key_path outvar"
+		return 2
+	fi
+	local signing_key_path="$1" outvar="$2"
+	if [[ ! $signing_key_path =~ $regex_eth_validator_signing_key_path ]]; then
+			printerr "unrecognized signing key path: $signing_key_path" >&2
+			return 1
+	fi
+	printf -v $outvar "${BASH_REMATCH[1]}"
+}
+
+function join_arr() {
+	local IFS="$1"
+	shift
+	echo "$*"
 }
 
 # count the number of files in the given directory (or . if ommitted)

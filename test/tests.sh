@@ -66,6 +66,47 @@ function _expect_checkfailures() {
 
 # -------------------------- TEST CASES ---------------------------------------
 
+# tests for `$parse_index_from_signing_key_path` in common.sh
+function test_parse_index_from_signing_key_path() {
+	local valids=(
+		'm/12381/3600/0/0/0'
+		'm/12381/3600/1/0/0'
+		'm/12381/3600/2/0/0'
+	)
+	local invalids=(
+		'm/12381/3600/a/0/0' # invalid index
+		'm/12382/3600/1/0/0' # wrong prefix
+		'm/12381/3600/2/0' # too short
+		'm/12381/3600/42/0/0' # wrong index
+		'zebra' # not a zoo
+	)
+	local curtest
+	local i
+	local actual_index
+
+	for ((i = 0; i < ${#valids[@]}; i++)); do
+		curtest=${valids[i]}
+		if ! parse_index_from_signing_key_path "$curtest" actual_index; then
+			failures+=("Expected valid: $curtest")
+		else
+			expected_index="$i"
+			if [[ $actual_index -ne $i ]]; then
+				failures+=("Expected index $expected_index but found $actual_index [$curtest]")
+			fi
+		fi
+	done
+
+	for ((i = 0; i < ${#invalids[@]}; i++)); do
+		curtest=${invalids[i]}
+		if parse_index_from_signing_key_path "$curtest" actual_index 2>/dev/null; then
+			expected_index="$i"
+			if [[ $actual_index -eq $i ]]; then
+				failures+=("Invalid path [$curtest] found unexpectedly valid index of $actual_index")
+			fi
+		fi
+	done
+}
+
 # tests for `$regex_eth_addr` in common.sh
 function test_regex_eth_addr() {
 	local valids=(
@@ -600,6 +641,7 @@ run_test test_regex_eth_addr
 run_test test_regex_eth_addr_csv
 run_test test_regex_eth_validator_pubkey
 run_test test_regex_eth_validator_pubkey_csv
+run_test test_parse_index_from_signing_key_path
 run_test test_yes_or_no
 run_test test_continue_or_exit
 run_test test_get_latest_prysm_version

@@ -8,6 +8,7 @@
 function portable_jq__preconditions() {
 	assert_sudo
 
+	check_is_defined this_dir
 	check_is_defined jq_bin
 	check_is_defined jq_bin_sha256
 
@@ -16,7 +17,6 @@ function portable_jq__preconditions() {
 
 	check_file_exists --sudo jq_bin_path
 	check_file_exists --sudo jq_bin_sha256_path
-
 	print_failed_checks --error || return
 
 	# checksum using the included .sha256 file
@@ -25,11 +25,6 @@ function portable_jq__preconditions() {
 	printf '\n'
 }
 
-function portable_jq__reconnaissance() {
-	sudo chown "$USER:$USER" "$jq_bin_path"
-	sudo chown "$USER:$USER" "$jq_bin_sha256_path"	
-	sudo chmod ug+rwx "$jq_bin_path"
-	sudo chmod ug+rw "$jq_bin_sha256_path"
-
-
+function jq() {
+	"$jq_bin_path" "$@"
 }

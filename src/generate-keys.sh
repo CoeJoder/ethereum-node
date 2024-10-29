@@ -83,7 +83,7 @@ press_any_key_to_continue
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
-staking_deposit_cli__preconditions || exit
+staking_deposit_cli__preconditions
 
 validator_keys_parent_dir="$this_dir"
 validator_keys_dir="$validator_keys_parent_dir/validator_keys"

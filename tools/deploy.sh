@@ -128,7 +128,7 @@ if [[ $offline_mode == true ]]; then
 		"Please navigate to " \
 		"${color_blue}https://github.com/ethereum/staking-deposit-cli/releases/tag/${ethereum_staking_deposit_cli_version}${color_reset} " \
 		"and verify the ${theme_value}SHA256 Checksum${color_reset} of ${theme_filename}$deposit_cli_basename${color_reset}"
-	printf '\n\n'
+	printf '\n'
 	if ! yes_or_no --default-no "Does it match this? ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"; then
 		printerr "unexpected checksum; ensure that ${theme_value}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		exit 1
@@ -166,6 +166,7 @@ if [[ $offline_mode == true ]]; then
 
 	printinfo "Downloading ${jq_version}..."
 	download_jq "$jq_bin" "$jq_bin_sha256" "$jq_version"
+	chmod +x "$jq_bin"
 
 	printinfo "Deploying..."
 
@@ -173,6 +174,7 @@ if [[ $offline_mode == true ]]; then
 	dist_dir="$client_pc_usb_data_drive/$dist_dirname"
 	sudo mkdir -p "$dist_dir"
 	sudo chown -R "$USER:$USER" "$dist_dir"
+	sudo chmod 775 "$dist_dir"
 	cp -vf "$deposit_cli_basename" "$dist_dir"
 	cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
 	cp -vf "$jq_bin" "$dist_dir"
@@ -196,10 +198,16 @@ if [[ $offline_mode == true ]]; then
 		--exclude="*" \
 		$rsync_opts \
 		"$deploy_src_dir" "$dist_dir"
+
+	# deploy the unseal.sh script to the dist parent dir
+	unseal_dest="$client_pc_usb_data_drive/unseal.sh"
+	sudo cp -fv "$tools_dir/unseal.sh" "$unseal_dest"
 	
-	# seal the directory
+	# seal the deployment
 	sudo chown root:root "$dist_dir"
+	sudo chown root:root "$unseal_dest"
 	sudo chmod 0 "$dist_dir"
+	sudo chmod +rx "$unseal_dest"
 else
 	trap 'on_err_retry' ERR
 
@@ -236,6 +244,7 @@ if [[ $offline_mode == true ]]; then
 	check_file_exists --sudo deposit_cli_sha256_dest
 	check_file_exists --sudo jq_bin_dest
 	check_file_exists --sudo jq_bin_sha256_dest
+	check_file_exists --sudo unseal_dest
 	print_failed_checks --error
 
 	cat <<-EOF

@@ -1,6 +1,8 @@
 # offline source files
 
 */
-generate-keys.sh
-partial-withdrawal.sh
+_portable_jq.sh
 _staking-deposit-cli.sh
+generate-keys.sh
+get-validator-indices.sh
+partial-withdrawal.sh

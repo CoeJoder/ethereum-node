@@ -8,7 +8,6 @@
 
 !src/
 !src/__script_template.sh
-!src/_offline_utils.sh
 !src/_portable_jq.sh
 !src/_staking-deposit-cli.sh
 !src/common.sh
@@ -49,3 +48,4 @@
 !tools/non-generated.txt
 !tools/offline.txt
 !tools/setup-env.sh
+!tools/unseal.sh
