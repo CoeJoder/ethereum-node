@@ -92,6 +92,7 @@ staking_deposit_cli__unpack_tarball
 cat <<EOF
 Ready to run the following command:${color_lightgray}
 $deposit_cli_bin --language=English generate-bls-to-execution-change \\
+	--execution_address="$withdrawal" \\
 	--bls_to_execution_changes_folder="$bls_to_execution_changes_parent_dir" \\
 	--bls_withdrawal_credentials_list="$bls_withdrawal_credentials_list" \\
 	--validator_start_index=$validator_start_index \\
@@ -104,6 +105,7 @@ continue_or_exit 1
 
 # generate the message
 $deposit_cli_bin --language=English generate-bls-to-execution-change \
+	--execution_address="$withdrawal" \
 	--bls_to_execution_changes_folder="$bls_to_execution_changes_parent_dir" \
 	--bls_withdrawal_credentials_list="$bls_withdrawal_credentials_list" \
 	--validator_start_index=$validator_start_index \
