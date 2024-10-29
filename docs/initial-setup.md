@@ -48,7 +48,7 @@ These are the steps for updating the BIOS of the `NUC10i7FNH`, the recommended n
 - [ ] plug-in the next USB flash drive 
 - [ ] wipe the drive and create a bootable FAT32 partition:
 ```bash
-# list all USB drives and identify the intended USB flash drive
+# list all SCSI drives and identify the intended USB flash drive
 lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
 
 # once identified, assign its device path to the variable `flashdrive`
@@ -235,18 +235,18 @@ ssh -p 55522 eth-node-mainnet
 #### On the Client PC:
 - [ ] while logged into the node server via SSH, partition and format the secondary drive:
 ```bash
-# list all USB drives and identify the intended USB flash drive
+# list all SCSI drives and identify the secondary drive
 lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
 
-# once identified, assign its device path to the variable `flashdrive`
+# once identified, assign its device path to the variable `secondary_drive`
 # e.g., /dev/xyz
-flashdrive=/dev/xyz
+secondary_drive=/dev/xyz
 
-# unmount any mounted partitions of the USB flash drive
-sudo umount ${flashdrive}?*
+# unmount any mounted partitions of the secondary drive
+sudo umount ${secondary_drive}?*
 
 # wipe the existing partitions & create a new EXT4 partition
-sudo fdisk $flashdrive
+sudo fdisk $secondary_drive
 # Command (m for help): g
 # Command (m for help): n
 # Select (default p): <Enter>
@@ -256,7 +256,7 @@ sudo fdisk $flashdrive
 # Command (m for help): w
 
 # format the new partition
-sudo mkfs.ext4 -L SECONDARY -E lazy_itable_init=0 ${flashdrive}1
+sudo mkfs.ext4 -L SECONDARY -E lazy_itable_init=0 ${secondary_drive}1
 ```
 - [ ] create a mount point and configure auto-mounting
 ```bash

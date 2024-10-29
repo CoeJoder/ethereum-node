@@ -45,7 +45,7 @@ exit
 - [ ] wipe the drive and create an EXT4 partition:
 
 ```bash
-# list all USB drives and identify the intended USB flash drive
+# list all SCSI drives and identify the intended USB flash drive
 lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
 
 # once identified, assign its device path to the variable `flashdrive`
@@ -83,17 +83,17 @@ cd ethereum-node
 
 #### On the Air-Gapped PC:
 - [ ] plug-in the flash drive
-- [ ] open a terminal and run the Ethereum Staking Deposit CLI:
+- [ ] open a terminal and generate a mnemonic seed & validator keys:
 
 ```bash
-# change to the flash drive's `ethereum-node` directory and chown it
-cd /media/mint/DATA/ethereum-node/
-sudo chown -R $USER:$USER ./
+# change to the flash drive and unseal the deployment
+cd /media/mint/DATA/
+source ./unseal.sh
 
-# generate the mnemonic and validator key(s)
-./generate-keys.sh --new-mnemonic
+# generate a mnemonic seed and validator key(s)
+./generate-keys.sh new-mnemonic
 
-# save the passphrase in a password manager, e.g. KeePassXC on the client PC
+# save the passphrase in your client PC's password manager
 # save the seedphrase/mnemonic offline, e.g. engraved on metal plates in a fireproof safe, with encrypted off-site backups
 ```
 - [ ] safely eject the flash drive and unplug it
@@ -108,7 +108,7 @@ cd ethereum-node
 
 ./tools/import-keys.sh
 # ignore any warnings that appear
-# when prompted to create a wallet password, also save it in your password manager, e.g. KeePassXC
+# when prompted to create a wallet password, also save it in your client PC's password manager
 # when prompted for the account password, enter the passphrase created in the previous step
 ```
 - [ ] login to the node server via SSH and set the wallet password:
@@ -132,6 +132,25 @@ exit
 - [ ] follow the website instructions to connect your MetaMask wallet and complete the deposits: one for each validator
 	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the "ethstaker" Discord server if needed.
 
-## Next Steps
+### 4. Enable Validator Service
+
+It can take over a week for the deposit(s) to arrive in the balance of your validator(s), signaling your official entry as a validating Ethereum node.  At the moment of entry, your validator(s) will be expected to be up-and-running, along with your EL & CL, so start the validator service now and leave it running.
+
+#### On the Client PC
+- [ ] login to the node server via SSH and start the validator:
+
+```bash
+ssh -p 55522 eth-node-mainnet
+cd ethereum-node
+
+# start the service and follow its log
+# press `ctrl + c` to exit the log
+./enable-validator.sh
+```
+
+(optional) You can monitor the balance of your validator(s) by running the following script:
+```bash
+TODO TODO TODO TODO
+```
 
 ### TODO

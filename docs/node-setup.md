@@ -16,7 +16,6 @@
 As in the initial setup guide, this guide is written using the following configurable values:
 - node server SSH port: `55522`
 - node server hostname: `eth-node-mainnet`
-- node server username: `coejoder`
 
 ## Steps
 
@@ -30,6 +29,7 @@ git clone https://github.com/CoeJoder/ethereum-node.git
 ```
 
 - [ ] configure the project environment variables:
+	- **IMPORTANT:** ensure that `suggested_fee_recipient` and `withdrawal` are set now, if you're going to be running a validator.  This guide does not cover how to update these values later, so do it now.  The `suggested_fee_recipient` is the Ethereum wallet address which will receive tips from user transactions.  The `withdrawal` is the Ethereum wallet address which will receive validator income rewards and also the full withdrawal of funds upon exiting.  These can be set to the same address if you'd prefer:
 
 ```bash
 cd ethereum-node
@@ -40,6 +40,7 @@ cd ethereum-node
 # change the default values as needed
 # for example, you may need to customize the ports if multiple nodes are connected to the same router
 # these values will be used throughout the rest of the project and should only be set this once
+# `suggested_fee_recipient` and `withdrawal` should be set now if you plan on running a validator
 nano ./src/env.sh
 ```
 
