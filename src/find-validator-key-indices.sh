@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# get-validator-indices.sh
+# find-validator-key-indices.sh
 #
 # Given a mnemonic seed phrase and a list of validator pubkeys, determine the
 # validator account indices.
