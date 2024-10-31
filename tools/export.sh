@@ -47,6 +47,9 @@ print_failed_checks --error
 
 node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
 
+# make the dist dir in case deployment of scripts hasn't been done yet
+sudo mkdir -p "$usb_dist_dir"
+
 # if validator statuses file already exists, confirm overwrite
 reset_checks
 check_file_does_not_exist --sudo validator_statuses_json

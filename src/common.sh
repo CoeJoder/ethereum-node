@@ -43,11 +43,16 @@ regex_eth_addr='^0x[[:xdigit:]]{40}$'
 # e.g. "0xAbC123,0xdEf456"
 regex_eth_addr_csv='^0x[[:xdigit:]]{40}(,0x[[:xdigit:]]{40})*$'
 
+# e.g., 183526,182347
+regex_eth_validator_indices_csv='^[[:digit:]]+(,[[:digit:]]+)*$'
+
 regex_eth_validator_pubkey='^0x[[:xdigit:]]{96}$'
 regex_eth_validator_pubkey_v2='^[[:xdigit:]]{96}$'
 
 regex_eth_validator_pubkey_csv='^0x[[:xdigit:]]{96}(,0x[[:xdigit:]]{96})*$'
 regex_eth_validator_pubkey_csv_v2='^[[:xdigit:]]{96}(,[[:xdigit:]]{96})*$'
+
+regex_eth_validator_bls_withdrawal_credentials='^0x[[:xdigit:]]{64}$'
 
 # see: https://eips.ethereum.org/EIPS/eip-2334#validator-keys
 regex_eth_validator_signing_key_path='m/12381/3600/([[:digit:]]+)/0/0'
@@ -68,6 +73,7 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	theme_value="${color_green}"
 	theme_url="${color_blue}"
 	theme_command="${color_lightgray}"
+	theme_example="${color_lightgray}"
 fi
 
 # generic error messages to display on ERR trap
@@ -204,7 +210,7 @@ function read_default() {
 		return 1
 	fi
 	local description="$1" default_val="$2" outvar="$3" val
-	echo -e "${description} (default: ${color_lightgray}$default_val${color_reset}):${color_green}"
+	echo -e "${description} (default: ${theme_example}$default_val${color_reset}):${theme_value}"
 	read val
 	if [[ -z $val ]]; then
 		val="$default_val"
@@ -222,7 +228,7 @@ function read_no_default() {
 		return 1
 	fi
 	local description="$1" outvar="$2" val
-	read -p "${description}: ${color_green}" val
+	read -p "${description}: ${theme_value}" val
 	echo -en "${color_reset}"
 	printf -v $outvar "$val"
 }
@@ -418,6 +424,10 @@ function is_online() {
 		fi
 	done
 	return 1
+}
+
+function is_devmode() {
+	[[ -n $tools_dir ]] &>/dev/null
 }
 
 # yes-or-no prompt

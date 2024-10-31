@@ -15,14 +15,11 @@ function staking_deposit_cli__preconditions() {
 	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
 	check_is_defined ethereum_staking_deposit_cli_url
 
-	deposit_cli_basename="$(basename "$ethereum_staking_deposit_cli_url")"
-	deposit_cli_basename_sha256="${deposit_cli_basename}.sha256"
-	deposit_cli="$this_dir/$deposit_cli_basename"
-	deposit_cli_sha256="$this_dir/$deposit_cli_basename_sha256"
+	deposit_cli="$this_dir/$ethereum_staking_deposit_cli_basename"
+	deposit_cli_sha256="$this_dir/$ethereum_staking_deposit_cli_basename_sha256"
 
 	check_file_exists --sudo deposit_cli
 	check_file_exists --sudo deposit_cli_sha256
-
 	print_failed_checks --error || return
 }
 
@@ -30,7 +27,7 @@ function staking_deposit_cli__reconnaissance() {
 	printf '%s' \
 		"Using an online PC, navigate to " \
 		"${color_blue}https://github.com/ethereum/staking-deposit-cli/releases/tag/${ethereum_staking_deposit_cli_version}${color_reset} " \
-		"and verify the ${color_lightgray}SHA256 Checksum${color_reset} of ${theme_filename}$deposit_cli_basename${color_reset}"
+		"and verify the ${color_lightgray}SHA256 Checksum${color_reset} of ${theme_filename}$ethereum_staking_deposit_cli_basename${color_reset}"
 	printf '\n'
 	if ! yes_or_no --default-no "Does it match this? ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"; then
 		printerr "unexpected checksum; ensure that ${color_lightgray}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
@@ -40,10 +37,18 @@ function staking_deposit_cli__reconnaissance() {
 }
 
 function staking_deposit_cli__unpack_tarball() {
+	# these are set during preconditions, make sure they're set
+	reset_checks
+	check_file_exists --sudo deposit_cli
+	check_file_exists --sudo deposit_cli_sha256
+	print_failed_checks --error || return
+
 	# copy to the temp dir and chown it all
-	cp -f "$deposit_cli" ./
-	cp -f "$deposit_cli_sha256" ./
-	sudo chown -R "$USER:$USER" ./
+	# (assume curdir is temp dir)
+	local dest_dir="$(pwd)"
+	cp -f "$deposit_cli" "$dest_dir"
+	cp -f "$deposit_cli_sha256" "$dest_dir"
+	sudo chown -R "$USER:$USER" "$dest_dir"
 
 	# checksum using the included .sha256 file
 	printinfo "Verifying deposit-cli SHA256 checksum..."
@@ -52,10 +57,10 @@ function staking_deposit_cli__unpack_tarball() {
 
 	# unpack tarball
 	printinfo "Unpacking tarball..."
-	tar xvzf "$deposit_cli_basename"
+	tar xvzf "$ethereum_staking_deposit_cli_basename"
 	printf '\n'
 
-	deposit_cli_dir="${deposit_cli_basename%%.*}"
+	local deposit_cli_dir="${dest_dir}/${ethereum_staking_deposit_cli_basename%%.*}"
 	deposit_cli_bin="$deposit_cli_dir/deposit"
 
 	# verify extraction success

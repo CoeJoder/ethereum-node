@@ -8,23 +8,20 @@
 function portable_jq__preconditions() {
 	assert_sudo
 
-	check_is_defined this_dir
-	check_is_defined jq_bin
-	check_is_defined jq_bin_sha256
-
-	jq_bin_path="$this_dir/$jq_bin"
-	jq_bin_sha256_path="$this_dir/$jq_bin_sha256"
-
-	check_file_exists --sudo jq_bin_path
-	check_file_exists --sudo jq_bin_sha256_path
+	check_directory_exists --sudo usb_dist_dir
+	check_file_exists --sudo jq_bin_dist
+	check_file_exists --sudo jq_bin_sha256_dist
 	print_failed_checks --error || return
 
 	# checksum using the included .sha256 file
 	printinfo "Verifying jq SHA256 checksum..."
-	sha256sum -c "$jq_bin_sha256_path" || return
+	(
+		pushd "$usb_dist_dir"
+		sha256sum -c "$jq_bin_sha256_dist"
+	) || return $?
 	printf '\n'
 }
 
 function jq() {
-	"$jq_bin_path" "$@"
+	"$jq_bin_dist" "$@"
 }

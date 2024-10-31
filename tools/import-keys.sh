@@ -55,10 +55,9 @@ check_is_defined prysm_validator_group
 check_is_defined client_pc_usb_data_drive
 
 # careful changing these as they are params to rsync
-usb_scripts_dir="$client_pc_usb_data_drive/$dist_dirname"
-usb_validator_keys="$usb_scripts_dir/validator_keys"
+usb_validator_keys="$usb_dist_dir/validator_keys"
 
-check_directory_exists --sudo usb_scripts_dir
+check_directory_exists --sudo usb_dist_dir
 check_directory_exists --sudo usb_validator_keys
 
 print_failed_checks --error || exit
@@ -86,8 +85,8 @@ trap 'on_err_retry' ERR
 
 # chown the `DATA` dir and pushd into it
 printinfo "Chowning the source files..."
-sudo chown -R "$USER:$USER" "$usb_scripts_dir"
-pushd "$usb_scripts_dir" >/dev/null
+sudo chown -R "$USER:$USER" "$usb_dist_dir"
+pushd "$usb_dist_dir" >/dev/null
 
 # 1. create remote tempdir
 printinfo "Creating remote tempdir..."

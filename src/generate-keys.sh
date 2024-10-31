@@ -124,6 +124,8 @@ trap 'on_err_noretry' ERR
 trap 'on_exit' EXIT
 
 assert_sudo
+
+# initialize dependencies
 staking_deposit_cli__unpack_tarball
 
 if [[ $_mode_new == true ]]; then

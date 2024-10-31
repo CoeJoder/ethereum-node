@@ -24,8 +24,11 @@ eth_jwt_file='/usr/local/secrets/eth_jwt.hex'
 # the location of the 'DATA' drive mount point
 client_pc_usb_data_drive="/media/$USER/DATA"
 
+# the location of the 'DATA' distribution
+usb_dist_dir="$client_pc_usb_data_drive/$dist_dirname"
+
 # the location of the exported validator statuses
-validator_statuses_json="$client_pc_usb_data_drive/$dist_dirname/validator_statuses.json"
+validator_statuses_json="$usb_dist_dir/validator_statuses.json"
 
 # geth values
 geth_user='goeth'
@@ -67,9 +70,13 @@ prysm_validator_unit_file='/etc/systemd/system/eth2-validator.service'
 # Ethereum Staking Deposit CLI values
 ethereum_staking_deposit_cli_version='v2.7.0'
 ethereum_staking_deposit_cli_sha256_checksum='ac3151843d681c92ae75567a88fbe0e040d53c21368cc1ed1a8c3d9fb29f2a3a'
-ethereum_staking_deposit_cli_url='https://github.com/ethereum/staking-deposit-cli/releases/download/v2.7.0/staking_deposit-cli-fdab65d-linux-amd64.tar.gz'
+ethereum_staking_deposit_cli_basename='staking_deposit-cli-fdab65d-linux-amd64.tar.gz'
+ethereum_staking_deposit_cli_basename_sha256="${deposit_cli_basename}.sha256"
+ethereum_staking_deposit_cli_url="https://github.com/ethereum/staking-deposit-cli/releases/download/v2.7.0/${ethereum_staking_deposit_cli_basename}"
 
 # Portable `jq` values
 jq_version='jq-1.7.1'
 jq_bin='jq-linux-amd64'
 jq_bin_sha256='jq-linux-amd64.sha256'
+jq_bin_dist="$usb_dist_dir/$jq_bin"
+jq_bin_sha256_dist="$usb_dist_dir/$jq_bin_sha256"

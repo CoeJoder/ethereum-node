@@ -12,18 +12,17 @@ function show_usage() {
 	cat >&2 <<-EOF 
 	Usage: $(basename ${BASH_SOURCE[0]}) [options]
 		--dry-run   Perform a dry-run of the rsync transfers
-		--offline   Deploy to the USB 'DATA' drive for the air-gapped PC;
-		            omit to deploy to the node server instead
+		--usb       Deploy to the USB 'DATA' drive. Omit to deploy to the node server instead
 		--help, -h  Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='help,dry-run,offline' \
+_parsed_args=$(getopt --options='h' --longoptions='help,dry-run,usb' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
-offline_mode=false
+usb_mode=false
 rsync_opts=''
 
 while true; do
@@ -36,8 +35,8 @@ while true; do
 		rsync_opts='--dry-run'
 		shift
 		;;
-	--offline)
-		offline_mode=true
+	--usb)
+		usb_mode=true
 		shift
 		;;
 	--)
@@ -68,8 +67,8 @@ EOF
 # -------------------------- PREAMBLE -----------------------------------------
 
 preamble="[${theme_value}NORMAL${color_reset} mode] Copies the source scripts from the client PC to the node server."
-if [[ $offline_mode == true ]]; then
-	preamble="[${theme_value}OFFLINE${color_reset} mode] Copies the source scripts and offline tools to the USB 'DATA' drive on the client PC."
+if [[ $usb_mode == true ]]; then
+	preamble="[${theme_value}USB${color_reset} mode] Copies the source scripts and offline tools to the USB 'DATA' drive on the client PC."
 fi
 
 cat <<EOF
@@ -83,8 +82,9 @@ assert_not_on_node_server
 
 check_is_defined dist_dirname
 
-if [[ $offline_mode == true ]]; then
+if [[ $usb_mode == true ]]; then
 	check_directory_exists --sudo client_pc_usb_data_drive
+	check_is_defined usb_dist_dir
 	check_is_defined ethereum_staking_deposit_cli_version
 	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
 	check_is_defined ethereum_staking_deposit_cli_url
@@ -111,7 +111,7 @@ print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-if [[ $offline_mode == true ]]; then
+if [[ $usb_mode == true ]]; then
 	get_latest_deposit_cli_version latest_deposit_cli_version
 
 	if [[ $latest_deposit_cli_version != $ethereum_staking_deposit_cli_version ]]; then
@@ -120,14 +120,11 @@ if [[ $offline_mode == true ]]; then
 		exit 1
 	fi
 
-	deposit_cli_basename="$(basename "$ethereum_staking_deposit_cli_url")"
-	deposit_cli_basename_sha256="${deposit_cli_basename}.sha256"
-
 	printf '\n'
 	printf '%s' \
 		"Please navigate to " \
 		"${color_blue}https://github.com/ethereum/staking-deposit-cli/releases/tag/${ethereum_staking_deposit_cli_version}${color_reset} " \
-		"and verify the ${theme_value}SHA256 Checksum${color_reset} of ${theme_filename}$deposit_cli_basename${color_reset}"
+		"and verify the ${theme_value}SHA256 Checksum${color_reset} of ${theme_filename}$ethereum_staking_deposit_cli_basename${color_reset}"
 	printf '\n'
 	if ! yes_or_no --default-no "Does it match this? ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"; then
 		printerr "unexpected checksum; ensure that ${theme_value}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
@@ -138,7 +135,7 @@ fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
-if [[ $offline_mode == true ]]; then
+if [[ $usb_mode == true ]]; then
 	temp_dir=$(mktemp -d)
 	pushd "$temp_dir" >/dev/null
 
@@ -158,8 +155,8 @@ if [[ $offline_mode == true ]]; then
 	download_file "$ethereum_staking_deposit_cli_url"
 
 	# construct a .sha256 file from the value listed on the release page and run shasum with it
-	echo "$ethereum_staking_deposit_cli_sha256_checksum  $deposit_cli_basename" > "$deposit_cli_basename_sha256"
-	if ! sha256sum -c "$deposit_cli_basename_sha256"; then
+	echo "$ethereum_staking_deposit_cli_sha256_checksum  $ethereum_staking_deposit_cli_basename" > "$ethereum_staking_deposit_cli_basename_sha256"
+	if ! sha256sum -c "$ethereum_staking_deposit_cli_basename_sha256"; then
 		printerr "checksum failed; expected: ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"
 		exit 1
 	fi
@@ -170,15 +167,14 @@ if [[ $offline_mode == true ]]; then
 
 	printinfo "Deploying..."
 
-	# create the dist dir if necessary and copy over 3rd party software and checksums
-	dist_dir="$client_pc_usb_data_drive/$dist_dirname"
-	sudo mkdir -p "$dist_dir"
-	sudo chown -R "$USER:$USER" "$dist_dir"
-	sudo chmod 775 "$dist_dir"
-	cp -vf "$deposit_cli_basename" "$dist_dir"
-	cp -vf "$deposit_cli_basename_sha256" "$dist_dir"
-	cp -vf "$jq_bin" "$dist_dir"
-	cp -vf "$jq_bin_sha256" "$dist_dir"
+	# create the usb dist dir if necessary and copy over 3rd party software and checksums
+	sudo mkdir -p "$usb_dist_dir"
+	sudo chown -R "$USER:$USER" "$usb_dist_dir"
+	sudo chmod 775 "$usb_dist_dir"
+	cp -vf "$ethereum_staking_deposit_cli_basename" "$usb_dist_dir"
+	cp -vf "$ethereum_staking_deposit_cli_basename_sha256" "$usb_dist_dir"
+	cp -vf "$jq_bin" "$usb_dist_dir"
+	cp -vf "$jq_bin_sha256" "$usb_dist_dir"
 
 	# overwrite non-generated files and remove deleted files i.e. those listed in 
 	# includes-file but not existing in source filesystem
@@ -189,7 +185,7 @@ if [[ $offline_mode == true ]]; then
 		--include-from="$includes_offline" \
 		--exclude="*" \
 		$rsync_opts \
-		"$deploy_src_dir" "$dist_dir"
+		"$deploy_src_dir" "$usb_dist_dir"
 
 	# overwrite generated files only if source copy is newer
 	rsync -avhu \
@@ -197,16 +193,16 @@ if [[ $offline_mode == true ]]; then
 		--include-from="$includes_generated" \
 		--exclude="*" \
 		$rsync_opts \
-		"$deploy_src_dir" "$dist_dir"
+		"$deploy_src_dir" "$usb_dist_dir"
 
 	# deploy the unseal.sh script to the dist parent dir
 	unseal_dest="$client_pc_usb_data_drive/unseal.sh"
 	sudo cp -fv "$tools_dir/unseal.sh" "$unseal_dest"
 	
 	# seal the deployment
-	sudo chown root:root "$dist_dir"
+	sudo chown -R root:root "$usb_dist_dir"
 	sudo chown root:root "$unseal_dest"
-	sudo chmod 0 "$dist_dir"
+	sudo chmod 0 "$usb_dist_dir"
 	sudo chmod +rx "$unseal_dest"
 else
 	trap 'on_err_retry' ERR
@@ -234,12 +230,12 @@ fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
-if [[ $offline_mode == true ]]; then
+if [[ $usb_mode == true ]]; then
 	reset_checks
-	deposit_cli_dest="$dist_dir/$deposit_cli_basename"
-	deposit_cli_sha256_dest="$dist_dir/$deposit_cli_basename_sha256"
-	jq_bin_dest="$dist_dir/$jq_bin"
-	jq_bin_sha256_dest="$dist_dir/$jq_bin_sha256"
+	deposit_cli_dest="$usb_dist_dir/$ethereum_staking_deposit_cli_basename"
+	deposit_cli_sha256_dest="$usb_dist_dir/$ethereum_staking_deposit_cli_basename_sha256"
+	jq_bin_dest="$usb_dist_dir/$jq_bin"
+	jq_bin_sha256_dest="$usb_dist_dir/$jq_bin_sha256"
 	check_file_exists --sudo deposit_cli_dest
 	check_file_exists --sudo deposit_cli_sha256_dest
 	check_file_exists --sudo jq_bin_dest

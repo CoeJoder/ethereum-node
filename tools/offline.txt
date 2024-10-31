@@ -3,6 +3,7 @@
 */
 _portable_jq.sh
 _staking-deposit-cli.sh
+find-validator-key-indices.sh
 generate-keys.sh
-get-validator-indices.sh
 partial-withdrawal.sh
+seal.sh

@@ -75,8 +75,11 @@ node_server_secondary_storage='$node_server_secondary_storage'
 # the location of the 'DATA' drive mount point
 client_pc_usb_data_drive="/media/$USER/DATA"
 
-# the location of the exported validator accounts list
-validator_statuses_json="$client_pc_usb_data_drive/$dist_dirname/validator_statuses.json"
+# the location of the 'DATA' distribution
+usb_dist_dir="$client_pc_usb_data_drive/$dist_dirname"
+
+# the location of the exported validator statuses
+validator_statuses_json="$usb_dist_dir/validator_statuses.json"
 
 # external geth ports
 geth_port=$geth_port           # TCP
