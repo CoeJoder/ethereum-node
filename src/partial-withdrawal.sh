@@ -209,7 +209,7 @@ done
 
 # collect the pubkeys of the chosen validators
 chosen_pubkeys=()
-for i in "${!arr_indexes[@]}"; do
+for i in "${arr_indexes[@]}"; do
 	if [[ -z "${pubkeys[i]}" ]]; then
 		printerr "expected pubkey at index $i"
 		exit 1
