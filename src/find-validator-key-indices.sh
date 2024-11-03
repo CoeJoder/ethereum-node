@@ -17,22 +17,25 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 source "$this_dir/_staking-deposit-cli.sh"
 source "$this_dir/_portable_jq.sh"
-housekeeping
+set_env
+# whether to enable logging depends on the opts
 
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage: $(basename ${BASH_SOURCE[0]}) [options]
-		  --mnemonic value                Mnemonic used to generate the validator keys
+		  --mnemonic value                Mnemonic used to generate the validator keys.  Omit to be prompted for it instead
 		  --validator_pubkeys value       Validator public keys, comma-separated
 		  --validator_start_index value   Search start index, 0-based
 		  --num_validators value          Number of keys to search
 			--deposit_cli value             Path to the extracted deposit-cli binary (optional)
 			--outfile value                 File to save results in (optional)
+			--no_logging                    If present, stdout/stderr is not tee'd out to the log file
+			--no_banner                     If present, banner is not displayed
 		  --help, -h                      Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='help,mnemonic:,validator_pubkeys:,validator_start_index:,num_validators:,deposit_cli:,outfile:' \
+_parsed_args=$(getopt --options='h' --longoptions='help,no_logging,no_banner,mnemonic:,validator_pubkeys:,validator_start_index:,num_validators:,deposit_cli:,outfile:' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
@@ -43,12 +46,22 @@ validator_start_index=''
 num_validators=''
 deposit_cli_bin=''
 indices_outfile=''
+no_logging=false
+no_banner=false
 
 while true; do
 	case "$1" in
 	-h | --help)
 		show_usage
 		exit 0
+		;;
+	--no_logging)
+		no_logging=true
+		shift
+		;;
+	--no_banner)
+		no_banner=true
+		shift
 		;;
 	--mnemonic)
 		mnemonic="$2"
@@ -85,116 +98,93 @@ while true; do
 	esac
 done
 
-# -------------------------- BANNER -------------------------------------------
-
-echo "${color_blue}${bold}"
-cat <<'EOF'
-[`.,_ |__    |. |  |-    __.,_ |. _ _  _
-| |||(|  \/(|||(|(||_()|`  |||(||(_(/__\
-EOF
-echo -n "${color_reset}"
-
-# -------------------------- PREAMBLE -----------------------------------------
-
-cat <<EOF
-Given a mnemonic seed phrase and a list of validator pubkeys, determine the validator key indices.
-See: https://eips.ethereum.org/EIPS/eip-2334#validator-keys
-EOF
-press_any_key_to_continue
+if [[ $no_logging == false ]]; then
+	log_start
+	log_timestamp
+fi
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+# validate opts
+reset_checks
+[[ -n $mnemonic ]] && check_is_valid_validator_mnemonic mnemonic
+[[ -n $validator_pubkeys_csv ]] && check_is_valid_validator_pubkeys validator_pubkeys_csv
+[[ -n $validator_start_index ]] && check_is_valid_eip2334_index validator_start_index
+[[ -n $num_validators ]] && check_is_positive_integer num_validators
+[[ -n $deposit_cli_bin ]] && check_executable_exists deposit_cli_bin
+print_failed_checks --error
+
 if [[ -z $deposit_cli_bin ]]; then
 	staking_deposit_cli__preconditions
-else
-	check_executable_exists deposit_cli_bin
-	print_failed_checks --error
 fi
 portable_jq__preconditions
 
+# -------------------------- BANNER -------------------------------------------
+
+if [[ $no_banner == false ]]; then
+	echo "${color_blue}${bold}"
+	cat <<-'EOF'
+		░█▀▀░▀█▀░█▀█░█▀▄░░░░░█░█░█▀▀░█░█░░░░░▀█▀░█▀█░█▀▄░▀█▀░█▀▀░█▀▀░█▀▀
+		░█▀▀░░█░░█░█░█░█░▄▄▄░█▀▄░█▀▀░░█░░▄▄▄░░█░░█░█░█░█░░█░░█░░░█▀▀░▀▀█
+		░▀░░░▀▀▀░▀░▀░▀▀░░░░░░▀░▀░▀▀▀░░▀░░░░░░▀▀▀░▀░▀░▀▀░░▀▀▀░▀▀▀░▀▀▀░▀▀▀
+	EOF
+	echo -n "${color_reset}"
+
+	# -------------------------- PREAMBLE -----------------------------------------
+
+	cat <<-EOF
+		Given a mnemonic seed and a list of validator pubkeys, perform a brute-force search for the respective EIP-2334 validator key indices.
+		See: https://eips.ethereum.org/EIPS/eip-2334#validator-keys
+	EOF
+	press_any_key_to_continue
+fi
+
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-function validate_mnemonic() {
-	if [[ -z $1 ]]; then
-		printerr "missing mnemonic"
-		exit 1
-	fi
-	if [[ $(printf '%s' "$1" | wc -w) -ne 24 ]]; then
-		printerr "expected a 24-word mnemonic"
-		exit 1
-	fi
-}
-
-function validate_validator_pubkeys {
-	if [[ -z $1 ]]; then
-		printerr "missing validator pubkeys"
-		exit 1
-	fi
-	if [[ ! $1 =~ $regex_eth_validator_pubkey_csv && ! $1 =~ $regex_eth_validator_pubkey_csv_v2 ]]; then
-		printerr "expected a comma-separated list of validator pubkeys"
-		exit 1
-	fi
-}
-
-function validate_validator_start_index() {
-	if [[ -z $1 ]]; then
-		printerr "missing validator start index"
-		exit 1
-	fi
-	if [[ ! $1 =~ ^[[:digit:]]+$ || ! $1 -ge 0 ]]; then
-		printerr "validator start index must be an integer ≥ 0"
-		exit 1
-	fi
-}
-
-function validate_num_validators() {
-	if [[ -z $1 ]]; then
-		printerr "missing number of validators to search"
-	fi
-	if [[ ! $1 =~ ^[[:digit:]]+$ || ! $1 -gt 0 ]]; then
-		printerr "must choose a positive integer"
-		exit 1
-	fi
-}
+[[ -z $deposit_cli_bin ]] && staking_deposit_cli__reconnaissance
 
 # prompt for mnemonic if not passed as script arg
-if [[ -n $mnemonic ]]; then
-	validate_mnemonic "$mnemonic"
-else
+if [[ -z $mnemonic ]]; then
+	log_pause "mnemonic entry"
 	read_no_default "Please enter your mnemonic separated by spaces (\" \"). \
 	Note: you only need to enter the first 4 letters of each word if you'd prefer" mnemonic
-	validate_mnemonic "$mnemonic"
+	log_resume "mnemonic entry complete"
+
+	reset_checks
+	check_is_valid_validator_mnemonic mnemonic
+	print_failed_checks --error
 	printf '\n'
 fi
 
 # prompt for validator pubkeys if not passed as script arg
-if [[ -n $validator_pubkeys_csv ]]; then
-	validate_validator_pubkeys "$validator_pubkeys_csv"
-else
+if [[ -z $validator_pubkeys_csv ]]; then
 	read_no_default "Please enter the validator public keys, separated by commas" validator_pubkeys_csv
-	validate_validator_pubkeys "$validator_pubkeys_csv"
+
+	reset_checks
+	check_is_valid_validator_pubkeys validator_pubkeys_csv
+	print_failed_checks --error
 	printf '\n'
 fi
 
 # prompt for validator start index if not passed as script arg
-if [[ -n $validator_start_index ]]; then
-	validate_validator_start_index "$validator_start_index"
-else
+if [[ -z $validator_start_index ]]; then
 	read_default "Start search at index" 0 validator_start_index
-	validate_validator_start_index "$validator_start_index"
+
+	reset_checks
+	check_is_valid_eip2334_index validator_start_index
+	print_failed_checks --error
 	printf '\n'
 fi
 
 # prompt for num validators to search if not passed as a script arg
-if [[ -n $num_validators ]]; then
-	validate_num_validators "$num_validators"
-else
+if [[ -z $num_validators ]]; then
 	read_default "Max search range (more takes longer)" 5 num_validators
-	validate_num_validators "$num_validators"
+
+	reset_checks
+	check_is_positive_integer num_validators
+	print_failed_checks --error
 	printf '\n'
 fi
-
-[[ -z $deposit_cli_bin ]] && staking_deposit_cli__reconnaissance
 
 # -------------------------- EXECUTION ----------------------------------------
 
@@ -228,7 +218,7 @@ for validator_pubkey in "${validator_pubkeys[@]}"; do
 done
 
 # generate keys in the temp dir
-printinfo "Generating keys..."
+printinfo "Searching..."
 validator_keys_parent_dir='.'
 validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 $deposit_cli_bin --language=English --non_interactive existing-mnemonic \
@@ -243,6 +233,7 @@ printf '\n'
 # search the generated keys for pubkey matches and extract the indices
 # from the `path` property
 indices_found=()
+indices_found_msgs=()
 pubkeys_not_found=()
 readarray -d $'\0' keystore_files < <(find "$validator_keys_dir" -maxdepth 1 -name 'keystore-m_12381_3600_*' -type f -print0)
 num_pubkeys=${#validator_pubkeys_trimmed[@]}
@@ -255,7 +246,7 @@ for ((i = 0; i < num_pubkeys; i++)); do
 		if [[ -n $key_path ]]; then
 			parse_index_from_signing_key_path "$key_path" validator_index
 			indices_found+=("$validator_index $validator_pubkey")
-			printinfo "${keystore_file}:\n\tpubkey: ${validator_pubkey}\n\tpath: ${key_path}\n\tindex: $validator_index"
+			indices_found_msgs+=("${keystore_file}:\n\tpubkey: ${validator_pubkey}\n\tpath: ${key_path}\n\tindex: $validator_index")
 			continue
 		fi
 	done
@@ -267,7 +258,10 @@ done
 # print sorted indices to stdout
 num_found=${#indices_found[@]}
 if [[ $num_found -ne 0 ]]; then
-	printinfo "Found $num_found matches."
+	printinfo "Found $num_found matches:"
+	for i in "${indices_found_msgs[@]}"; do
+		echo -e "$i" >&2
+	done
 	if [[ -n $indices_outfile ]]; then
 		# ensure empty
 		>"$indices_outfile"

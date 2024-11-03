@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# generate-keys.sh
+#
+# Generates validator keys, using an existing mnemonic seed or a new one.
+#
+# Meant to be run on the air-gapped PC.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e
@@ -58,6 +64,13 @@ elif [[ $_mode_new == true && $_mode_existing == true ]]; then
 	exit 1
 fi
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+staking_deposit_cli__preconditions
+
+validator_keys_parent_dir="$this_dir"
+validator_keys_dir="$validator_keys_parent_dir/validator_keys"
+
 # -------------------------- BANNER -------------------------------------------
 
 echo -n "${color_blue}${bold}"
@@ -81,30 +94,36 @@ See: https://github.com/ethereum/staking-deposit-cli?tab=readme-ov-file#step-2-c
 EOF
 press_any_key_to_continue
 
-# -------------------------- PRECONDITIONS ------------------------------------
-
-staking_deposit_cli__preconditions
-
-validator_keys_parent_dir="$this_dir"
-validator_keys_dir="$validator_keys_parent_dir/validator_keys"
-
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-staking_deposit_cli__reconnaissance || exit
+staking_deposit_cli__reconnaissance
 
-read_default "Number of validator keys to generate" 1 num_validators
-if [[ ! $num_validators =~ ^[[:digit:]]+$ || ! $num_validators -gt 0 ]]; then
-	printerr "must choose a positive integer"
-	exit 1
-fi
+# prompt for mnemonic
+log_pause "mnemonic entry"
+read_no_default "Please enter your mnemonic separated by spaces (\" \"). \
+Note: you only need to enter the first 4 letters of each word if you'd prefer" mnemonic
+log_resume "mnemonic entry complete"
+
+reset_checks
+check_is_valid_validator_mnemonic mnemonic
+print_failed_checks --error
 printf '\n'
 
+# prompt for num validators to generate
+read_default "Number of validator keys to generate" 1 num_validators
+
+reset_checks
+check_is_positive_integer num_validators
+print_failed_checks --error
+printf '\n'
+
+# prompt for validator start index
 if [[ $_mode_existing == true ]]; then
 	read_default "Validator start index (0-based)" 0 validator_start_index
-	if [[ ! $validator_start_index =~ ^[[:digit:]]+$ || ! $validator_start_index -ge 0 ]]; then
-		printerr "must choose an integer ≥ 0"
-		exit 1
-	fi
+
+	reset_checks
+	check_is_valid_eip2334_index validator_start_index
+	print_failed_checks --error
 	printf '\n'
 fi
 
@@ -152,6 +171,7 @@ else
 	cat <<-EOF
 		Ready to run the following command:${color_lightgray}
 		$deposit_cli_bin --language=English existing-mnemonic \\
+			--mnemonic=<hidden> \\
 			--validator_start_index=$validator_start_index \\
 			--num_validators=$num_validators \\
 			--chain="$ethereum_network" \\
@@ -162,6 +182,7 @@ else
 
 	# generate the key(s)
 	$deposit_cli_bin --language=English existing-mnemonic \
+		--mnemonic="$mnemonic" \
 		--validator_start_index=$validator_start_index \
 		--num_validators=$num_validators \
 		--chain="$ethereum_network" \

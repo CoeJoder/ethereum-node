@@ -10,6 +10,7 @@ function staking_deposit_cli__preconditions() {
 	assert_not_on_node_server
 	assert_sudo
 
+	reset_checks
 	check_is_defined this_dir
 	check_is_defined ethereum_staking_deposit_cli_version
 	check_is_defined ethereum_staking_deposit_cli_sha256_checksum

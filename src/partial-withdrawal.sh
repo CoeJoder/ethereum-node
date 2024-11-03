@@ -15,15 +15,13 @@ set -e
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 source "$this_dir/_staking-deposit-cli.sh"
-if ! is_devmode; then
-	source "$this_dir/_portable_jq.sh"
-fi
+source "$this_dir/_portable_jq.sh"
 housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage: $(basename ${BASH_SOURCE[0]}) [options]
-		  --mnemonic value   Mnemonic used to generate the validator keys
+		  --mnemonic value   Mnemonic used to generate the validator keys. Omit to be prompted for it instead
 		  --help, -h         Show this message
 	EOF
 }
@@ -56,6 +54,24 @@ while true; do
 	esac
 done
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+# validate opts
+reset_checks
+[[ -n $mnemonic ]] && check_is_valid_validator_mnemonic mnemonic
+print_failed_checks --error
+
+staking_deposit_cli__preconditions
+portable_jq__preconditions
+
+bls_to_execution_changes_parent_dir="$this_dir"
+bls_to_execution_changes_dir="$bls_to_execution_changes_parent_dir/bls_to_execution_changes"
+
+reset_checks
+check_is_valid_ethereum_address withdrawal
+check_file_exists --sudo validator_statuses_json
+print_failed_checks --error
+
 # -------------------------- BANNER -------------------------------------------
 
 cat <<EOF
@@ -76,47 +92,22 @@ Uses your mnemonic seed and exported validator status to generate a ${theme_valu
 EOF
 press_any_key_to_continue
 
-# -------------------------- PRECONDITIONS ------------------------------------
-
-assert_sudo
-staking_deposit_cli__preconditions
-if ! is_devmode; then
-	portable_jq__preconditions
-fi
-
-bls_to_execution_changes_parent_dir="$this_dir"
-bls_to_execution_changes_dir="$bls_to_execution_changes_parent_dir/bls_to_execution_changes"
-
-reset_checks
-check_is_valid_ethereum_address withdrawal
-check_file_exists --sudo validator_statuses_json
-print_failed_checks --error
-
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-# TODO refactor
-function validate_mnemonic() {
-	if [[ -z $1 ]]; then
-		printerr "missing mnemonic"
-		exit 1
-	fi
-	if [[ $(printf '%s' "$1" | wc -w) -ne 24 ]]; then
-		printerr "expected a 24-word mnemonic"
-		exit 1
-	fi
-}
+staking_deposit_cli__reconnaissance
 
 # prompt for mnemonic if not passed as script arg
-if [[ -n $mnemonic ]]; then
-	validate_mnemonic "$mnemonic"
-else
+if [[ -z $mnemonic ]]; then
+	log_pause "mnemonic entry"
 	read_no_default "Please enter your mnemonic separated by spaces (\" \"). \
 	Note: you only need to enter the first 4 letters of each word if you'd prefer" mnemonic
-	validate_mnemonic "$mnemonic"
+	log_resume "mnemonic entry complete"
+
+	reset_checks
+	check_is_valid_validator_mnemonic mnemonic
+	print_failed_checks --error
 	printf '\n'
 fi
-
-staking_deposit_cli__reconnaissance
 
 filter_all='.[] | {
 	index,
@@ -165,7 +156,7 @@ staking_deposit_cli__unpack_tarball
 # search for active validators
 active_validators="$(jq -C "$filter_active" "$validator_statuses_json")"
 if [[ -z $active_validators ]]; then
-	printerr "no active validators found:"
+	printerr "No active validators found:"
 	jq -C "$filter_all" "$validator_statuses_json"
 	exit 1
 fi
@@ -196,6 +187,7 @@ else
 	printerr 'expected "all" or a comma-separated list of validator indices'
 	exit 1
 fi
+printf '\n'
 
 # determine the parallel array indexes based on the chosen indices
 arr_indexes=()
@@ -226,23 +218,12 @@ for i in "${!arr_indexes[@]}"; do
 done
 chosen_pubkeys_csv="$(join_arr ',' "${chosen_pubkeys[@]}")"
 
-# collect the bls_withdrawal_credentials of the chosen validators
-chosen_bls_withdrawal_credentials=()
-for i in "${!arr_indexes[@]}"; do
-	if [[ -z "${bls_withdrawal_credentials[i]}" ]]; then
-		printerr "expected bls_withdrawal_credential at index $i"
-		exit 1
-	fi
-	chosen_bls_withdrawal_credentials+=("${bls_withdrawal_credentials[i]}")
-done
-chosen_bls_withdrawal_credentials_csv="$(join_arr ',' "${chosen_bls_withdrawal_credentials[@]}")"
-
 function find_failed_exit() {
 	printerr "Failed to find EIP-2334 start index.  Try running the find-script yourself, adjusting params as needed:"
 	echo -en "$theme_command"
 	cat <<-EOF
-	./find-validator-key-indices.sh \\
-		--validator_pubkeys="$chosen_pubkeys_csv"
+		./find-validator-key-indices.sh \\
+			--validator_pubkeys="$chosen_pubkeys_csv"
 	EOF
 	echo -e "$color_reset"
 	exit 1
@@ -252,6 +233,8 @@ function find_failed_exit() {
 find_validator_key_indices_outfile=$(mktemp)
 temp_files_to_delete+=("$find_validator_key_indices_outfile")
 if ! "$this_dir/find-validator-key-indices.sh" \
+	--no_logging \
+	--no_banner \
 	--mnemonic="$mnemonic" \
 	--validator_pubkeys="$chosen_pubkeys_csv" \
 	--deposit_cli="$deposit_cli_bin" \
@@ -280,6 +263,7 @@ done <"$find_validator_key_indices_outfile"
 if [[ -z $validator_start_index ]]; then
 	find_failed_exit
 fi
+printf '\n'
 
 # serialize the final arrays
 final_pubkeys_csv="$(join_arr ',' "${final_pubkeys[@]}")"
@@ -291,6 +275,7 @@ printinfo "Validator pubkeys:\n${final_pubkeys_csv}"
 printinfo "Beacon indices:\n${final_beacon_indices_csv}"
 printinfo "BLS Withdrawal Credentials:\n${final_bls_csv}"
 printinfo "EIP-2334 validator start index:\n${validator_start_index}"
+printf '\n'
 
 # obnoxious confirmation message
 printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withdrawal wallet address!!!'
@@ -300,7 +285,7 @@ printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withd
 cat <<EOF
 Ready to run the following command:${theme_command}
 $deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-change \\
-	--mnemonic="$mnemonic" \\
+	--mnemonic=<hidden> \\
 	--execution_address="$withdrawal" \\
 	--bls_to_execution_changes_folder="$bls_to_execution_changes_parent_dir" \\
 	--bls_withdrawal_credentials_list="$final_bls_csv" \\

@@ -128,7 +128,20 @@ function log_start() {
 			fi
 		fi
 	fi
+	log_resume
+}
+
+# restore stdout & stderr
+function log_pause() {
+	echo -e "[Logging paused] $@" >> "$log_file"
+	exec 1>&3 2>&4
+}
+
+# backup stdout & stdout, and redirect both to tee'd logfile
+function log_resume() {
+	exec 3>&1 4>&2
 	exec &> >(tee -a "$log_file")
+	echo -e "[Logging resumed] $@" >> "$log_file"
 }
 
 # common logging suffix for INFO messages
@@ -388,6 +401,7 @@ function parse_index_from_signing_key_path() {
 	printf -v $outvar "${BASH_REMATCH[1]}"
 }
 
+# source: https://stackoverflow.com/a/53839433/159570
 function join_arr() {
 	local IFS="$1"
 	shift
@@ -723,6 +737,38 @@ function check_current_directory_is_not() {
 		resolved_dir="$(realpath "${!1}")"
 		if [[ $(pwd) == $resolved_dir ]]; then
 			_check_failures+=("current directory is $resolved_dir")
+		fi
+	fi
+}
+
+function check_is_valid_validator_mnemonic() {
+	if _check_is_defined $1; then
+		if [[ $(printf '%s' "${!1}" | wc -w) -ne 24 ]]; then
+			_check_failures+=("$1: expected a 24-word seed phrase")
+		fi
+	fi
+}
+
+function check_is_valid_validator_pubkeys() {
+	if _check_is_defined $1; then
+		if [[ ! ${!1} =~ $regex_eth_validator_pubkey_csv && ! ${!1} =~ $regex_eth_validator_pubkey_csv_v2 ]]; then
+			_check_failures+=("$1: expected a comma-separated list of validator pubkeys")
+		fi
+	fi
+}
+
+function check_is_valid_eip2334_index() {
+	if _check_is_defined $1; then
+		if [[ ! ${!1} =~ ^[[:digit:]]+$ || ! ${!1} -ge 0 ]]; then
+			_check_failures+=("$1: expected a valid EIP-2334 index ≥ 0")
+		fi
+	fi
+}
+
+function check_is_positive_integer() {
+	if _check_is_defined $1; then
+		if [[ ! ${!1} =~ ^[[:digit:]]+$ || ! ${!1} -gt 0 ]]; then
+			_check_failures+=("$1: expected a positive integer")
 		fi
 	fi
 }
