@@ -273,6 +273,8 @@ if [[ $num_found -ne 0 ]]; then
 	fi
 fi
 
+# -------------------------- POSTCONDITIONS -----------------------------------
+
 # return an error code and warning message if any indices not found
 num_not_found=${#pubkeys_not_found[@]}
 if [[ $num_not_found -ne 0 ]]; then
@@ -282,5 +284,3 @@ if [[ $num_not_found -ne 0 ]]; then
 	done
 	exit 1
 fi
-
-# -------------------------- POSTCONDITIONS -----------------------------------

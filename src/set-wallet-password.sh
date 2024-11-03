@@ -6,6 +6,14 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+assert_on_node_server
+assert_sudo
+
+check_directory_exists --sudo prysm_validator_datadir
+check_is_defined prysm_validator_wallet_password_file
+
 # -------------------------- BANNER -------------------------------------------
 
 cat <<EOF
@@ -25,14 +33,6 @@ cat <<EOF
 Saves the wallet password to a file, as required by prysm-validator.
 EOF
 press_any_key_to_continue
-
-# -------------------------- PRECONDITIONS ------------------------------------
-
-assert_on_node_server
-assert_sudo
-
-check_directory_exists --sudo prysm_validator_datadir
-check_is_defined prysm_validator_wallet_password_file
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

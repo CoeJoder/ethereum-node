@@ -8,6 +8,11 @@ source "$tools_dir/../src/common.sh"
 log_start
 log_timestamp
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+check_executable_exists env_base_sh
+print_failed_checks --error || exit
+
 # -------------------------- BANNER -------------------------------------------
 
 echo -n "${color_blue}${bold}"
@@ -29,11 +34,6 @@ cat <<EOF
 Generates $env_sh_basename, an editable config file.
 EOF
 press_any_key_to_continue
-
-# -------------------------- PRECONDITIONS ------------------------------------
-
-check_executable_exists env_base_sh
-print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

@@ -6,26 +6,6 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
-# -------------------------- BANNER -------------------------------------------
-
-cat <<EOF
-${color_magenta}${bold}
-░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░    
-░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄    
-░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░    
-░█░█░█▀█░▀█▀░▀█▀░░░░░█▀▀░▀█▀░█░░░█▀▀░█▀▀
-░█░█░█░█░░█░░░█░░▄▄▄░█▀▀░░█░░█░░░█▀▀░▀▀█
-░▀▀▀░▀░▀░▀▀▀░░▀░░░░░░▀░░░▀▀▀░▀▀▀░▀▀▀░▀▀▀
-${color_reset}
-EOF
-
-# -------------------------- PREAMBLE -----------------------------------------
-
-cat <<EOF
-Generates the systemd unit files for the Ethereum EL, CL, and validator services, and reloads the service daemon.
-EOF
-press_any_key_to_continue
-
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_on_node_server
@@ -61,6 +41,26 @@ check_is_valid_port prysm_beacon_p2p_quic_port
 check_is_valid_port prysm_beacon_p2p_tcp_port
 
 print_failed_checks --error || exit
+
+# -------------------------- BANNER -------------------------------------------
+
+cat <<EOF
+${color_magenta}${bold}
+░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░    
+░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄    
+░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░    
+░█░█░█▀█░▀█▀░▀█▀░░░░░█▀▀░▀█▀░█░░░█▀▀░█▀▀
+░█░█░█░█░░█░░░█░░▄▄▄░█▀▀░░█░░█░░░█▀▀░▀▀█
+░▀▀▀░▀░▀░▀▀▀░░▀░░░░░░▀░░░▀▀▀░▀▀▀░▀▀▀░▀▀▀
+${color_reset}
+EOF
+
+# -------------------------- PREAMBLE -----------------------------------------
+
+cat <<EOF
+Generates the systemd unit files for the Ethereum EL, CL, and validator services, and reloads the service daemon.
+EOF
+press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

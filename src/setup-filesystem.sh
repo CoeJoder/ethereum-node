@@ -6,23 +6,6 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
-# -------------------------- BANNER -------------------------------------------
-
-cat <<EOF
-${color_cyan}${bold}
-░█▀▀░█▀▀░▀█▀░█░█░█▀█░░░░░█▀▀░▀█▀░█░░░█▀▀░█▀▀░█░█░█▀▀░▀█▀░█▀▀░█▄█
-░▀▀█░█▀▀░░█░░█░█░█▀▀░▄▄▄░█▀▀░░█░░█░░░█▀▀░▀▀█░░█░░▀▀█░░█░░█▀▀░█░█
-░▀▀▀░▀▀▀░░▀░░▀▀▀░▀░░░░░░░▀░░░▀▀▀░▀▀▀░▀▀▀░▀▀▀░░▀░░▀▀▀░░▀░░▀▀▀░▀░▀
-${color_reset}
-EOF
-
-# -------------------------- PREAMBLE -----------------------------------------
-
-cat <<EOF
-Creates the users, groups, directories required to run a self-managed Ethereum validator node.
-EOF
-press_any_key_to_continue
-
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_on_node_server
@@ -44,6 +27,23 @@ check_directory_does_not_exist --sudo prysm_beacon_datadir
 check_directory_does_not_exist --sudo prysm_validator_datadir
 
 print_failed_checks --error || exit
+
+# -------------------------- BANNER -------------------------------------------
+
+cat <<EOF
+${color_cyan}${bold}
+░█▀▀░█▀▀░▀█▀░█░█░█▀█░░░░░█▀▀░▀█▀░█░░░█▀▀░█▀▀░█░█░█▀▀░▀█▀░█▀▀░█▄█
+░▀▀█░█▀▀░░█░░█░█░█▀▀░▄▄▄░█▀▀░░█░░█░░░█▀▀░▀▀█░░█░░▀▀█░░█░░█▀▀░█░█
+░▀▀▀░▀▀▀░░▀░░▀▀▀░▀░░░░░░░▀░░░▀▀▀░▀▀▀░▀▀▀░▀▀▀░░▀░░▀▀▀░░▀░░▀▀▀░▀░▀
+${color_reset}
+EOF
+
+# -------------------------- PREAMBLE -----------------------------------------
+
+cat <<EOF
+Creates the users, groups, directories required to run a self-managed Ethereum validator node.
+EOF
+press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

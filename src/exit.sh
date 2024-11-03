@@ -6,6 +6,11 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+assert_on_node_server
+assert_sudo
+
 # -------------------------- BANNER -------------------------------------------
 
 echo "${color_green}${bold}"
@@ -28,11 +33,6 @@ Performs a voluntary exit of the validator node.
 To abort this process, press ${color_green}ctrl + c${color_reset}.
 
 EOF
-
-# -------------------------- PRECONDITIONS ------------------------------------
-
-assert_on_node_server
-assert_sudo
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

@@ -8,6 +8,20 @@ tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$tools_dir/../src/common.sh"
 housekeeping
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+assert_not_on_node_server
+assert_sudo
+
+check_is_valid_port node_server_ssh_port
+check_is_defined node_server_username
+check_is_defined node_server_hostname
+
+check_is_defined dist_dirname
+check_is_defined validator_statuses_json
+
+print_failed_checks --error
+
 # -------------------------- BANNER -------------------------------------------
 
 cat <<EOF
@@ -28,20 +42,6 @@ cat <<EOF
 Exports public data about the validators from the node server to the local 'DATA' flash drive.
 EOF
 press_any_key_to_continue
-
-# -------------------------- PRECONDITIONS ------------------------------------
-
-assert_not_on_node_server
-assert_sudo
-
-check_is_valid_port node_server_ssh_port
-check_is_defined node_server_username
-check_is_defined node_server_hostname
-
-check_is_defined dist_dirname
-check_is_defined validator_statuses_json
-
-print_failed_checks --error
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

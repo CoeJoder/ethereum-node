@@ -6,6 +6,25 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+assert_on_node_server
+assert_sudo
+
+check_is_service_active geth_unit_file
+check_is_service_active prysm_beacon_unit_file
+
+check_executable_does_not_exist --sudo prysm_validator_bin
+
+check_is_valid_ethereum_network ethereum_network
+check_is_valid_ethereum_address suggested_fee_recipient
+
+check_user_exists prysm_validator_user
+check_group_exists prysm_validator_group
+check_directory_exists --sudo prysm_validator_datadir
+
+print_failed_checks --error || exit
+
 # -------------------------- BANNER -------------------------------------------
 
 cat <<EOF
@@ -30,25 +49,6 @@ cat <<EOF
 Installs prysm-validator and configures it to run as a service.
 EOF
 press_any_key_to_continue
-
-# -------------------------- PRECONDITIONS ------------------------------------
-
-assert_on_node_server
-assert_sudo
-
-check_is_service_active geth_unit_file
-check_is_service_active prysm_beacon_unit_file
-
-check_executable_does_not_exist --sudo prysm_validator_bin
-
-check_is_valid_ethereum_network ethereum_network
-check_is_valid_ethereum_address suggested_fee_recipient
-
-check_user_exists prysm_validator_user
-check_group_exists prysm_validator_group
-check_directory_exists --sudo prysm_validator_datadir
-
-print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

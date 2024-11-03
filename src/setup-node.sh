@@ -6,29 +6,6 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
-# -------------------------- BANNER -------------------------------------------
-
-cat <<EOF
-${color_green}${bold}
-              __                                                 __            
-             /\ \__                                             /\ \           
-  ____     __\ \ ,_\  __  __  _____              ___     ___    \_\ \     __   
- /',__\  /'__\`\ \ \/ /\ \/\ \/\ '__\`\  _______ /' _ \`\  / __\`\  /'_\` \  /'__\`\ 
-/\__, \`\/\  __/\ \ \_\ \ \_\ \ \ \L\ \/\______\/\ \/\ \/\ \L\ \/\ \L\ \/\  __/ 
-\/\____/\ \____\\\ \__\\\ \____/\ \ ,__/\/______/\ \_\ \_\ \____/\ \___,_\ \____\\
- \/___/  \/____/ \/__/ \/___/  \ \ \/           \/_/\/_/\/___/  \/__,_ /\/____/
-                                \ \_\                                          
-                                 \/_/                                          
-${color_reset}
-EOF
-
-# -------------------------- PREAMBLE -----------------------------------------
-
-cat <<EOF
-Installs geth (EL), prysm-beacon (CL), and generates the JWT secret shared between them.  Also configures the EL and CL to run as services.
-EOF
-press_any_key_to_continue
-
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_on_node_server
@@ -56,6 +33,29 @@ check_is_valid_port prysm_beacon_p2p_quic_port
 check_is_valid_port prysm_beacon_p2p_tcp_port
 
 print_failed_checks --error || exit
+
+# -------------------------- BANNER -------------------------------------------
+
+cat <<EOF
+${color_green}${bold}
+              __                                                 __            
+             /\ \__                                             /\ \           
+  ____     __\ \ ,_\  __  __  _____              ___     ___    \_\ \     __   
+ /',__\  /'__\`\ \ \/ /\ \/\ \/\ '__\`\  _______ /' _ \`\  / __\`\  /'_\` \  /'__\`\ 
+/\__, \`\/\  __/\ \ \_\ \ \_\ \ \ \L\ \/\______\/\ \/\ \/\ \L\ \/\ \L\ \/\  __/ 
+\/\____/\ \____\\\ \__\\\ \____/\ \ ,__/\/______/\ \_\ \_\ \____/\ \___,_\ \____\\
+ \/___/  \/____/ \/__/ \/___/  \ \ \/           \/_/\/_/\/___/  \/__,_ /\/____/
+                                \ \_\                                          
+                                 \/_/                                          
+${color_reset}
+EOF
+
+# -------------------------- PREAMBLE -----------------------------------------
+
+cat <<EOF
+Installs geth (EL), prysm-beacon (CL), and generates the JWT secret shared between them.  Also configures the EL and CL to run as services.
+EOF
+press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

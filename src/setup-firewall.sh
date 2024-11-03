@@ -6,6 +6,22 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
+# -------------------------- PRECONDITIONS ------------------------------------
+
+assert_on_node_server
+
+for _command in ufw awk; do
+	check_command_exists_on_path _command
+done
+check_is_valid_port node_server_ssh_port
+check_is_valid_port geth_port
+check_is_valid_port geth_discovery_port
+check_is_valid_port prysm_beacon_p2p_tcp_port
+check_is_valid_port prysm_beacon_p2p_udp_port
+check_is_valid_port prysm_beacon_p2p_quic_port
+
+print_failed_checks --error || exit
+
 # -------------------------- BANNER -------------------------------------------
 
 cat <<EOF
@@ -27,22 +43,6 @@ cat <<EOF
 Configures the firewall on the node server to allow only the ports needed for the Ethereum node software and rate-limited SSH access.
 EOF
 press_any_key_to_continue
-
-# -------------------------- PRECONDITIONS ------------------------------------
-
-assert_on_node_server
-
-for _command in ufw awk; do
-	check_command_exists_on_path _command
-done
-check_is_valid_port node_server_ssh_port
-check_is_valid_port geth_port
-check_is_valid_port geth_discovery_port
-check_is_valid_port prysm_beacon_p2p_tcp_port
-check_is_valid_port prysm_beacon_p2p_udp_port
-check_is_valid_port prysm_beacon_p2p_quic_port
-
-print_failed_checks --error || exit
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

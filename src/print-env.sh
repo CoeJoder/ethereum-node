@@ -6,6 +6,7 @@ this_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
 source "$this_dir/common.sh"
 housekeeping
 
+# -------------------------- PRECONDITIONS ------------------------------------
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -27,8 +28,6 @@ cat <<EOF
 Prints the project environment variables to the terminal.
 EOF
 press_any_key_to_continue
-
-# -------------------------- PRECONDITIONS ------------------------------------
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

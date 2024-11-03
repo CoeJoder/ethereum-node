@@ -50,32 +50,6 @@ while true; do
 	esac
 done
 
-# -------------------------- BANNER -------------------------------------------
-
-cat <<EOF
-${color_blue}${bold}
-      :::::::::  :::::::::: :::::::::  :::        ::::::::  :::   :::
-     :+:    :+: :+:        :+:    :+: :+:       :+:    :+: :+:   :+: 
-    +:+    +:+ +:+        +:+    +:+ +:+       +:+    +:+  +:+ +:+   
-   +#+    +:+ +#++:++#   +#++:++#+  +#+       +#+    +:+   +#++:     
-  +#+    +#+ +#+        +#+        +#+       +#+    +#+    +#+       
- #+#    #+# #+#        #+#        #+#       #+#    #+#    #+#        
-#########  ########## ###        ########## ########     ###         
-${color_reset}
-EOF
-
-# -------------------------- PREAMBLE -----------------------------------------
-
-preamble="[${theme_value}NORMAL${color_reset} mode] Copies the source scripts from the client PC to the node server."
-if [[ $usb_mode == true ]]; then
-	preamble="[${theme_value}USB${color_reset} mode] Copies the source scripts and offline tools to the USB 'DATA' drive on the client PC."
-fi
-
-cat <<EOF
-$preamble
-EOF
-press_any_key_to_continue
-
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_not_on_node_server
@@ -108,6 +82,32 @@ check_file_exists includes_offline
 check_directory_exists deploy_src_dir
 
 print_failed_checks --error || exit
+
+# -------------------------- BANNER -------------------------------------------
+
+cat <<EOF
+${color_blue}${bold}
+      :::::::::  :::::::::: :::::::::  :::        ::::::::  :::   :::
+     :+:    :+: :+:        :+:    :+: :+:       :+:    :+: :+:   :+: 
+    +:+    +:+ +:+        +:+    +:+ +:+       +:+    +:+  +:+ +:+   
+   +#+    +:+ +#++:++#   +#++:++#+  +#+       +#+    +:+   +#++:     
+  +#+    +#+ +#+        +#+        +#+       +#+    +#+    +#+       
+ #+#    #+# #+#        #+#        #+#       #+#    #+#    #+#        
+#########  ########## ###        ########## ########     ###         
+${color_reset}
+EOF
+
+# -------------------------- PREAMBLE -----------------------------------------
+
+preamble="[${theme_value}NORMAL${color_reset} mode] Copies the source scripts from the client PC to the node server."
+if [[ $usb_mode == true ]]; then
+	preamble="[${theme_value}USB${color_reset} mode] Copies the source scripts and offline tools to the USB 'DATA' drive on the client PC."
+fi
+
+cat <<EOF
+$preamble
+EOF
+press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
