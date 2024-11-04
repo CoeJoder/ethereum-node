@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# partial-withdrawal.sh
+# generate-bls-to-execution-change-message.sh
 #
 # Uses your mnemonic seed and exported validator status to generate a
 # `bls-to-execution-change` signed message, which will trigger partial-

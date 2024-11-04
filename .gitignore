@@ -20,9 +20,9 @@
 !src/env-base.sh
 !src/exit.sh
 !src/find-validator-key-indices.sh
+!src/generate-bls-to-execution-change-message.sh
 !src/generate-keys.sh
 !src/get-validator-statuses.sh
-!src/partial-withdrawal.sh
 !src/print-env.sh
 !src/seal.sh
 !src/set-wallet-password.sh
