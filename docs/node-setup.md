@@ -72,18 +72,14 @@ cd ethereum-node
 ```
 
 - [ ] login to your router via web browser, and manually configure port forwarding using the same configuration described by the output of the previous command
-- [ ] prepare the users, groups, and filesystem for the Ethereum node software:
-
-```bash
-# setup users, groups, directories
-./setup-filesystem.sh
-```
-
-- [ ] install the Ethereum node software: **geth** (Execution Layer) and **prysm-beacon** (Consensus Layer):
+- [ ] install the Ethereum node software: **geth** (Execution Layer), **prysm-beacon** (Consensus Layer), and **prysmctl**:
 
 ```bash
 # install EL and CL, and configure them to run as services
 ./setup-node.sh
+
+# install prysmctl, a CLI utility for common node tasks
+./setup-prysmctl.sh
 ```
 
 - [ ] enable the EL and CL services:

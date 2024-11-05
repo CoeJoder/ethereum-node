@@ -15,7 +15,7 @@ import-keys.sh
 print-env.sh
 seal.sh
 set-wallet-password.sh
-setup-filesystem.sh
 setup-firewall.sh
 setup-node.sh
+setup-prysmctl.sh
 setup-validator.sh

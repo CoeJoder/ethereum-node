@@ -27,6 +27,9 @@ client_pc_usb_data_drive="/media/$USER/DATA"
 # the location of the 'DATA' distribution
 usb_dist_dir="$client_pc_usb_data_drive/$dist_dirname"
 
+# the location of the `bls-to-execution-changes` signed messages
+usb_bls_to_execution_changes_dir="$usb_dist_dir/bls_to_execution_changes"
+
 # the location of the exported validator statuses
 validator_statuses_json="$usb_dist_dir/validator_statuses.json"
 
@@ -66,6 +69,12 @@ prysm_validator_keys_dir='/var/lib/prysm/validator/validator_keys'
 prysm_validator_wallet_dir='/var/lib/prysm/validator/prysm-wallet-v2'
 prysm_validator_wallet_password_file='/var/lib/prysm/validator/wallet-password.txt'
 prysm_validator_unit_file='/etc/systemd/system/eth2-validator.service'
+
+# prysmctl values
+prysmctl_user=prysmctl
+prysmctl_group=prysmctl
+prysmctl_bin='/usr/local/bin/prysmctl'
+prysmctl_datadir='/var/lib/prysm/prysmctl'
 
 # Ethereum Staking Deposit CLI values
 ethereum_staking_deposit_cli_version='v2.7.0'

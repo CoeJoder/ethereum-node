@@ -26,9 +26,9 @@
 !src/print-env.sh
 !src/seal.sh
 !src/set-wallet-password.sh
-!src/setup-filesystem.sh
 !src/setup-firewall.sh
 !src/setup-node.sh
+!src/setup-prysmctl.sh
 !src/setup-unit-files.sh
 !src/setup-validator.sh
 

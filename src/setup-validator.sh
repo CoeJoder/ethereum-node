@@ -19,9 +19,9 @@ check_executable_does_not_exist --sudo prysm_validator_bin
 check_is_valid_ethereum_network ethereum_network
 check_is_valid_ethereum_address suggested_fee_recipient
 
-check_user_exists prysm_validator_user
-check_group_exists prysm_validator_group
-check_directory_exists --sudo prysm_validator_datadir
+check_user_does_not_exist prysm_validator_user
+check_group_does_not_exist prysm_validator_group
+check_directory_does_not_exist --sudo prysm_validator_datadir
 
 print_failed_checks --error || exit
 
@@ -54,22 +54,6 @@ press_any_key_to_continue
 
 get_latest_prysm_version latest_prysm_version || exit 1
 
-# display the env vars used in this script for confirmation
-cat <<EOF
-Ethereum network: ${color_green}$ethereum_network${color_reset}
-Suggested fee recipient: ${color_green}$suggested_fee_recipient${color_reset}
-
-Latest Prysm version: ${color_green}$latest_prysm_version${color_reset}
-Prysm-validator user: ${color_green}$prysm_validator_user${color_reset}
-Prysm-validator group: ${color_green}$prysm_validator_group${color_reset}
-Prysm-validator executable: ${color_green}$prysm_validator_bin${color_reset}
-Prysm-validator data-dir: ${color_green}$prysm_validator_datadir${color_reset}
-Prysm-validator wallet-dir: ${color_green}$prysm_validator_wallet_dir${color_reset}
-Prysm-validator wallet password file: ${color_green}$prysm_validator_wallet_password_file${color_reset}
-EOF
-continue_or_exit 1
-printf '\n'
-
 # if unit file already exists, confirm overwrite
 reset_checks
 check_file_does_not_exist prysm_validator_unit_file
@@ -100,7 +84,14 @@ printinfo Running APT update and upgrade...
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
-# prysm-validator
+# prysm-validator filesystem
+printinfo "Setting up prysm-validator user, group, datadir..."
+sudo useradd --no-create-home --shell /bin/false "$prysm_validator_user"
+sudo mkdir -p "$prysm_validator_datadir"
+sudo chown -R "${prysm_validator_user}:${prysm_validator_group}" "$prysm_validator_datadir"
+sudo chmod -R 700 "$prysm_validator_datadir"
+
+# prysm-validator install
 printinfo "Downloading prysm-validator..."
 download_prysm validator "$latest_prysm_version" latest_validator_bin
 sudo chown -v ${prysm_validator_user}:${prysm_validator_group} "$latest_validator_bin"
@@ -145,6 +136,9 @@ sudo systemctl daemon-reload
 reset_checks
 
 check_executable_exists --sudo prysm_validator_bin
+check_user_exists prysm_validator_user
+check_group_exists prysm_validator_group
+check_directory_exists --sudo prysm_validator_datadir
 check_file_exists --sudo prysm_validator_unit_file
 
 print_failed_checks --error
