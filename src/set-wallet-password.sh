@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
@@ -11,8 +13,12 @@ housekeeping
 assert_on_node_server
 assert_sudo
 
+reset_checks
+check_user_exists prysm_validator_user
+check_group_exists prysm_validator_group
 check_directory_exists --sudo prysm_validator_datadir
 check_is_defined prysm_validator_wallet_password_file
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
@@ -67,7 +73,7 @@ sudo chmod 440 "$prysm_validator_wallet_password_file"
 
 reset_checks
 check_file_exists --sudo prysm_validator_wallet_password_file
-print_failed_checks --error # trapped
+print_failed_checks --error
 
 cat <<EOF
 Password saved to ${theme_filename}$prysm_validator_wallet_password_file${color_reset}

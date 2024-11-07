@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
@@ -10,8 +12,9 @@ housekeeping
 
 assert_on_node_server
 
-check_is_valid_ethereum_network ethereum_network
+reset_checks
 
+check_is_valid_ethereum_network ethereum_network
 check_is_valid_ethereum_address suggested_fee_recipient
 
 check_command_exists_on_path geth_bin
@@ -40,20 +43,20 @@ check_is_valid_port prysm_beacon_p2p_udp_port
 check_is_valid_port prysm_beacon_p2p_quic_port
 check_is_valid_port prysm_beacon_p2p_tcp_port
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
-cat <<EOF
-${color_magenta}${bold}
+echo -ne "${color_magenta}${bold}"
+cat <<'EOF'
 ░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░    
 ░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄    
 ░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░    
 ░█░█░█▀█░▀█▀░▀█▀░░░░░█▀▀░▀█▀░█░░░█▀▀░█▀▀
 ░█░█░█░█░░█░░░█░░▄▄▄░█▀▀░░█░░█░░░█▀▀░▀▀█
 ░▀▀▀░▀░▀░▀▀▀░░▀░░░░░░▀░░░▀▀▀░▀▀▀░▀▀▀░▀▀▀
-${color_reset}
 EOF
+echo -ne "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 

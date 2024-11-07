@@ -66,6 +66,10 @@ fi
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+reset_checks
+check_is_valid_ethereum_network ethereum_network
+print_failed_checks --error
+
 staking_deposit_cli__preconditions
 
 validator_keys_parent_dir="$this_dir"
@@ -73,13 +77,13 @@ validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -n "${color_blue}${bold}"
-cat <<EOF
+echo -en "${color_blue}${bold}"
+cat <<'EOF'
 ░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░░█░█░█▀▀░█░█░█▀▀
 ░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄░█▀▄░█▀▀░░█░░▀▀█
 ░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░░▀░▀░▀▀▀░░▀░░▀▀▀
-${color_reset}
 EOF
+echo -en "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 

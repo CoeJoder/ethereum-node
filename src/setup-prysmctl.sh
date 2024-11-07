@@ -54,7 +54,7 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-get_latest_prysm_version latest_prysm_version || exit
+get_latest_prysm_version latest_prysm_version
 
 # -------------------------- EXECUTION ----------------------------------------
 

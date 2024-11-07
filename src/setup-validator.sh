@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
@@ -10,6 +12,8 @@ housekeeping
 
 assert_on_node_server
 assert_sudo
+
+reset_checks
 
 check_is_service_active geth_unit_file
 check_is_service_active prysm_beacon_unit_file
@@ -23,12 +27,12 @@ check_user_does_not_exist prysm_validator_user
 check_group_does_not_exist prysm_validator_group
 check_directory_does_not_exist --sudo prysm_validator_datadir
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
+echo -ne "${color_green}${bold}"
 cat <<EOF
-${color_green}${bold}
             _____                                         
 ______________  /____  _________                          
 __  ___/  _ \  __/  / / /__  __ \_______                  
@@ -40,8 +44,8 @@ ___   _______ ___  /__(_)_____  /_____ __  /______________
 __ | / /  __ \`/_  /__  /_  __  /_  __ \`/  __/  __ \_  ___/
 __ |/ // /_/ /_  / _  / / /_/ / / /_/ // /_ / /_/ /  /    
 _____/ \__,_/ /_/  /_/  \__,_/  \__,_/ \__/ \____//_/     
-${color_reset}
 EOF
+echo -ne "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 
@@ -52,7 +56,7 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-get_latest_prysm_version latest_prysm_version || exit 1
+get_latest_prysm_version latest_prysm_version
 
 # if unit file already exists, confirm overwrite
 reset_checks

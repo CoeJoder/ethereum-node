@@ -67,6 +67,7 @@ portable_jq__preconditions
 usb_bls_to_execution_changes_parent_dir="$(dirname "$usb_bls_to_execution_changes_dir")"
 
 reset_checks
+check_is_valid_ethereum_network ethereum_network
 check_is_defined usb_bls_to_execution_changes_dir
 check_directory_exists --sudo usb_bls_to_execution_changes_parent_dir
 check_is_valid_ethereum_address withdrawal

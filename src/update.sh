@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# update.sh 
+#
+# Updates to the latest version all node programs, if installed (geth, 
+# prysm-beacon, prysm-validator, prysmctl).
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e
@@ -51,7 +58,7 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-get_latest_prysm_version latest_prysm_version || exit
+get_latest_prysm_version latest_prysm_version
 
 _update_prysmbeacon=false
 _update_prysmvalidator=false

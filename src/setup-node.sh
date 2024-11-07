@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
@@ -10,6 +12,8 @@ housekeeping
 
 assert_on_node_server
 assert_sudo
+
+reset_checks
 
 # geth
 check_command_does_not_exist_on_path geth_bin
@@ -36,12 +40,12 @@ check_file_does_not_exist --sudo eth_jwt_file
 check_is_valid_ethereum_network ethereum_network
 check_is_valid_ethereum_address suggested_fee_recipient
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
+echo -ne "${color_green}${bold}"
 cat <<EOF
-${color_green}${bold}
               __                                                 __            
              /\ \__                                             /\ \           
   ____     __\ \ ,_\  __  __  _____              ___     ___    \_\ \     __   
@@ -51,8 +55,8 @@ ${color_green}${bold}
  \/___/  \/____/ \/__/ \/___/  \ \ \/           \/_/\/_/\/___/  \/__,_ /\/____/
                                 \ \_\                                          
                                  \/_/                                          
-${color_reset}
 EOF
+echo -ne "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 
@@ -63,7 +67,7 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-get_latest_prysm_version latest_prysm_version || exit
+get_latest_prysm_version latest_prysm_version
 
 # only use checkpoint-sync on 'holesky' testnet, due to trust required
 # see: https://docs.prylabs.network/docs/prysm-usage/checkpoint-sync

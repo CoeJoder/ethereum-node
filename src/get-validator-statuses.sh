@@ -36,16 +36,17 @@ _outfile="$1"
 assert_on_node_server
 assert_sudo
 
-check_is_defined ethereum_network
-check_is_defined prysm_validator_wallet_dir
-check_is_defined prysm_validator_wallet_password_file
-check_is_defined prysm_validator_user
+reset_checks
+
+check_is_valid_ethereum_network ethereum_network
+check_executable_exists --sudo prysm_validator_bin
+check_directory_exists --sudo prysm_validator_wallet_dir
+check_file_exists --sudo prysm_validator_wallet_password_file
+check_user_exists prysm_validator_user
 
 for _command in tee awk curl jq; do
 	check_command_exists_on_path _command
 done
-
-check_executable_exists --sudo prysm_validator_bin
 
 print_failed_checks --error
 

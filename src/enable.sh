@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # enable.sh
+#
 # Starts & enables all node services (geth, prysm-beacon, prysm-validator).
 #
 # Meant to be run on the node server.

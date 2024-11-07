@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
@@ -10,9 +12,12 @@ housekeeping
 
 assert_on_node_server
 
+reset_checks
+
 for _command in ufw awk; do
 	check_command_exists_on_path _command
 done
+
 check_is_valid_port node_server_ssh_port
 check_is_valid_port geth_port
 check_is_valid_port geth_discovery_port
@@ -20,12 +25,12 @@ check_is_valid_port prysm_beacon_p2p_tcp_port
 check_is_valid_port prysm_beacon_p2p_udp_port
 check_is_valid_port prysm_beacon_p2p_quic_port
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
+echo -ne "${bold}"
 cat <<EOF
-${bold}
                                ${color_red} (                            (  (     ${color_reset}
                                ${color_red} )\ ) (  (     (  (  (      ) )\ )\    ${color_reset}
           _                    ${color_red}(()/( )\ )(   ))\ )\))(  ( /(((_|(_)   ${color_reset}
@@ -34,8 +39,8 @@ ${bold}
 \__ \  __/ |_| |_| | |_) |____|${color_yellow}|  _|| | '_/ -_)\ V  V / _\` | || | ${color_reset}
 |___/\___|\__|\__,_| .__/      |_|  |_|_| \___| \_/\_/\__,_|_||_|                               
                    |_|                                                                          
-${color_reset}
 EOF
+echo -ne "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 
