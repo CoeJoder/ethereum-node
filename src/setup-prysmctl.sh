@@ -82,11 +82,8 @@ sudo chmod -R 770 "$prysmctl_datadir"
 
 # prysmctl install
 printinfo "Downloading prysmctl..."
-download_prysm prysmctl "$latest_prysm_version" latest_prysmctl_bin
-sudo chown -v "${prysmctl_user}:${prysmctl_group}" "$latest_prysmctl_bin"
-sudo chmod -v 550 "$latest_prysmctl_bin"
-sudo mv -vf "$latest_prysmctl_bin" "$prysmctl_bin"
-sudo "$prysmctl_bin" --version
+install_prysm prysmctl \
+	"$latest_prysm_version" "$prysmctl_bin" "$prysmctl_user" "$prysmctl_group"
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 

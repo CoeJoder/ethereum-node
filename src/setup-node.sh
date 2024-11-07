@@ -177,12 +177,9 @@ sudo chown -R "${prysm_beacon_user}:${prysm_beacon_group}" "$prysm_beacon_datadi
 sudo chmod -R 700 "$prysm_beacon_datadir"
 
 # prysm-beacon install
-printinfo "Downloading prysm-beacon..."
-download_prysm beacon-chain "$latest_prysm_version" latest_beacon_chain_bin
-sudo chown -v ${prysm_beacon_user}:${prysm_beacon_group} "$latest_beacon_chain_bin"
-sudo chmod -v 550 "$latest_beacon_chain_bin"
-sudo mv -vf "$latest_beacon_chain_bin" "$prysm_beacon_bin"
-sudo "$prysm_beacon_bin" --version
+printinfo "Installing prysm-beacon..."
+install_prysm beacon-chain \
+	"$latest_prysm_version" "$prysm_beacon_bin" "$prysm_beacon_user" "$prysm_beacon_group"
 
 # prysm-beacon unit file
 printinfo "Generating ${theme_filename}$prysm_beacon_unit_file${color_reset}:"

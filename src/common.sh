@@ -340,25 +340,29 @@ function download_prysm() {
 	printf -v "$outvar" "$program_bin"
 }
 
+# downloads and installs a given version of prysm-beacon
+function install_prysm() {
+	if [[ $# -ne 5 ]]; then
+		printerr "usage: install_prysm program version destination_bin owner group"
+		return 2
+	fi
+	local program="$1" version="$2" destination_bin="$3" owner="$4" group="$5"
+	local downloaded_bin
+	download_prysm "$program" "$version" downloaded_bin || return
+	sudo chown -v "${owner}:${group}" "$downloaded_bin" || return
+	sudo chmod -v 550 "$downloaded_bin" || return
+	sudo mv -vf "$downloaded_bin" "$destination_bin" || return
+	sudo "$destination_bin" --version || return
+}
+
 # enable a system service
 function enable_service() {
 	if [[ $# -ne 1 ]]; then
-		printerr "usage: enable_service unit_file_var"
-		exit 2
+		printerr "usage: enable_service unit_file"
+		return 2
 	fi
-	local unit_file_var="$1"
-	local service_name
-
-	assert_sudo
-	sudo systemctl daemon-reload
-
-	check_is_service_installed $unit_file_var
-	print_failed_checks --error || return
-
-	service_name="$(basename "${!unit_file_var}")"
-	yes_or_no --default-yes "Start and enable ${color_lightgray}${service_name}${color_reset}?" \
-		|| return
-
+	local unit_file="$1"
+	local service_name="$(basename "$unit_file")"
 	sudo systemctl start "$service_name"
 	sudo systemctl enable "$service_name"
 }
@@ -366,22 +370,11 @@ function enable_service() {
 # disable a system service
 function disable_service() {
 	if [[ $# -ne 1 ]]; then
-		printerr "usage: disable_service unit_file_var"
-		exit 2
+		printerr "usage: disable_service unit_file"
+		return 2
 	fi
-	local unit_file_var="$1"
-	local service_name
-
-	assert_sudo
-	sudo systemctl daemon-reload
-
-	check_is_service_installed $unit_file_var
-	print_failed_checks --error || return
-
-	service_name="$(basename "${!unit_file_var}")"
-	yes_or_no --default-yes "Stop and disable ${color_lightgray}${service_name}${color_reset}?" \
-		|| return
-
+	local unit_file="$1"
+	local service_name="$(basename "$unit_file")"
 	sudo systemctl stop "$service_name"
 	sudo systemctl disable "$service_name"
 }
@@ -524,6 +517,10 @@ _check_failures=()
 
 function reset_checks() {
 	_check_failures=()
+}
+
+function has_failed_checks() {
+	[[ ${#_check_failures[@]} -gt 0 ]]
 }
 
 # print failed checks with given log-level, return error code if failures

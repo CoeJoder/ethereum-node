@@ -11,9 +11,11 @@
 !src/_portable_jq.sh
 !src/_staking-deposit-cli.sh
 !src/common.sh
+!src/disable.sh
 !src/disable-beacon.sh
 !src/disable-geth.sh
 !src/disable-validator.sh
+!src/enable.sh
 !src/enable-beacon.sh
 !src/enable-geth.sh
 !src/enable-validator.sh
@@ -31,6 +33,7 @@
 !src/setup-prysmctl.sh
 !src/setup-unit-files.sh
 !src/setup-validator.sh
+!src/update.sh
 
 !test/
 !test/tests.sh

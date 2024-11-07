@@ -93,11 +93,8 @@ sudo chmod -R 700 "$prysm_validator_datadir"
 
 # prysm-validator install
 printinfo "Downloading prysm-validator..."
-download_prysm validator "$latest_prysm_version" latest_validator_bin
-sudo chown -v ${prysm_validator_user}:${prysm_validator_group} "$latest_validator_bin"
-sudo chmod -v 550 "$latest_validator_bin"
-sudo mv -vf "$latest_validator_bin" "$prysm_validator_bin"
-sudo "$prysm_validator_bin" --version
+install_prysm validator \
+	"$latest_prysm_version" "$prysm_validator_bin" "$prysm_validator_user" "$prysm_validator_group"
 
 # prysm-validator unit file
 echo -e "\n${theme_filename}$prysm_validator_unit_file${color_reset}"
