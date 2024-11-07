@@ -64,10 +64,11 @@ print_failed_checks --error
 staking_deposit_cli__preconditions
 portable_jq__preconditions
 
-bls_to_execution_changes_parent_dir="$this_dir"
-bls_to_execution_changes_dir="$bls_to_execution_changes_parent_dir/bls_to_execution_changes"
+usb_bls_to_execution_changes_parent_dir="$(dirname "$usb_bls_to_execution_changes_dir")"
 
 reset_checks
+check_is_defined usb_bls_to_execution_changes_dir
+check_directory_exists --sudo usb_bls_to_execution_changes_parent_dir
 check_is_valid_ethereum_address withdrawal
 check_file_exists --sudo validator_statuses_json
 print_failed_checks --error
@@ -76,12 +77,12 @@ print_failed_checks --error
 
 cat <<EOF
 ${color_green}${bold}
-░█▀█░█▀█░█▀▄░▀█▀░▀█▀░█▀█░█░░░░░░        
-░█▀▀░█▀█░█▀▄░░█░░░█░░█▀█░█░░░▄▄▄        
-░▀░░░▀░▀░▀░▀░░▀░░▀▀▀░▀░▀░▀▀▀░░░░        
-░█░█░▀█▀░▀█▀░█░█░█▀▄░█▀▄░█▀█░█░█░█▀█░█░░
-░█▄█░░█░░░█░░█▀█░█░█░█▀▄░█▀█░█▄█░█▀█░█░░
-░▀░▀░▀▀▀░░▀░░▀░▀░▀▀░░▀░▀░▀░▀░▀░▀░▀░▀░▀▀▀
+░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░░█▀▄░█░░░█▀▀░░░░░▀█▀░█▀█░░░░
+░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄░█▀▄░█░░░▀▀█░▄▄▄░░█░░█░█░▄▄▄
+░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░░▀▀░░▀▀▀░▀▀▀░░░░░░▀░░▀▀▀░░░░
+░█▀▀░█░█░█▀▀░█▀▀░█░█░▀█▀░▀█▀░█▀█░█▀█░░░░░█▀▀░█░█░█▀█░█▀█░█▀▀░█▀▀
+░█▀▀░▄▀▄░█▀▀░█░░░█░█░░█░░░█░░█░█░█░█░▄▄▄░█░░░█▀█░█▀█░█░█░█░█░█▀▀
+░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░░░░░▀▀▀░▀░▀░▀░▀░▀░▀░▀▀▀░▀▀▀
 ${color_reset}
 EOF
 
@@ -220,12 +221,12 @@ chosen_pubkeys_csv="$(join_arr ',' "${chosen_pubkeys[@]}")"
 
 function find_failed_exit() {
 	printerr "Failed to find EIP-2334 start index.  Try running the find-script yourself, adjusting params as needed:"
-	echo -en "$theme_command"
-	cat <<-EOF
+	echo -en "$theme_command" >&2
+	cat >&2 <<-EOF
 		./find-validator-key-indices.sh \\
 			--validator_pubkeys="$chosen_pubkeys_csv"
 	EOF
-	echo -e "$color_reset"
+	echo -e "$color_reset" >&2
 	exit 1
 }
 
@@ -287,7 +288,7 @@ Ready to run the following command:${theme_command}
 $deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-change \\
 	--mnemonic=<hidden> \\
 	--execution_address="$withdrawal" \\
-	--bls_to_execution_changes_folder="$bls_to_execution_changes_parent_dir" \\
+	--bls_to_execution_changes_folder="$usb_bls_to_execution_changes_parent_dir" \\
 	--bls_withdrawal_credentials_list="$final_bls_csv" \\
 	--validator_start_index=$validator_start_index \\
 	--validator_indices="$final_beacon_indices_csv" \\
@@ -300,7 +301,7 @@ continue_or_exit 1
 $deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-change \
 	--mnemonic="$mnemonic" \
 	--execution_address="$withdrawal" \
-	--bls_to_execution_changes_folder="$bls_to_execution_changes_parent_dir" \
+	--bls_to_execution_changes_folder="$usb_bls_to_execution_changes_parent_dir" \
 	--bls_withdrawal_credentials_list="$final_bls_csv" \
 	--validator_start_index=$validator_start_index \
 	--validator_indices="$final_beacon_indices_csv" \
@@ -309,5 +310,5 @@ $deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-
 # -------------------------- POSTCONDITIONS -----------------------------------
 
 reset_checks
-check_directory_exists --sudo bls_to_execution_changes_dir
+check_directory_exists --sudo usb_bls_to_execution_changes_dir
 print_failed_checks --error
