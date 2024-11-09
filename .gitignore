@@ -25,6 +25,7 @@
 !src/generate-bls-to-execution-change-message.sh
 !src/generate-keys.sh
 !src/get-validator-statuses.sh
+!src/init.sh
 !src/print-env.sh
 !src/seal.sh
 !src/set-wallet-password.sh

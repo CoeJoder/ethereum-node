@@ -12,6 +12,7 @@ env-base.sh
 exit.sh
 get-validator-statuses.sh
 import-keys.sh
+init.sh
 print-env.sh
 seal.sh
 set-wallet-password.sh
