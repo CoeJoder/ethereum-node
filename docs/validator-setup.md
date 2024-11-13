@@ -78,7 +78,7 @@ sudo eject $flashdrive
 - [ ] change into the project directory and deploy to the flash drive:
 ```bash
 cd ethereum-node
-./tools/deploy.sh --offline
+./tools/deploy.sh --usb
 ```
 - [ ] safely eject the flash drive and unplug it
 
@@ -153,5 +153,6 @@ cd ethereum-node
 
 ### Next Steps
 
-- [Partial Withdrawal](./partial-withdrawal.md)
+- [Validator Withdrawal](./partial-withdrawal.md)
+- [Validator Exit](./voluntary-exit.md)
 

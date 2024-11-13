@@ -55,13 +55,11 @@ reset_checks
 check_file_does_not_exist --sudo validator_statuses_json
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
-	sudo rm -rf --interactive=never "$validator_statuses_json" >/dev/null
 	printf '\n'
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
-set -e
 assert_sudo
 trap 'on_err_retry' ERR
 

@@ -34,6 +34,7 @@
 !src/setup-prysmctl.sh
 !src/setup-unit-files.sh
 !src/setup-validator.sh
+!src/submit-bls-to-execution-change-message.sh
 !src/update.sh
 
 !test/
@@ -55,3 +56,4 @@
 !tools/offline.txt
 !tools/setup-env.sh
 !tools/unseal.sh
+!tools/withdraw.sh
