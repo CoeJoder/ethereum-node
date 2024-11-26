@@ -2,8 +2,11 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
+source "$this_dir/_portable_jq.sh"
 housekeeping
 
 # -------------------------- PRECONDITIONS ------------------------------------
@@ -11,9 +14,20 @@ housekeeping
 assert_on_node_server
 assert_sudo
 
+portable_jq__preconditions
+
+reset_checks
+check_is_valid_ethereum_network ethereum_network
+check_user_exists prysmctl_user
+check_group_exists prysmctl_group
+check_executable_exists --sudo prysmctl_bin
+check_directory_exists --sudo prysm_validator_wallet_dir
+check_file_exists --sudo prysm_validator_wallet_password_file
+print_failed_checks --error
+
 # -------------------------- BANNER -------------------------------------------
 
-echo "${color_green}${bold}"
+echo -ne "${color_green}${bold}"
 cat <<'EOF'
                     $$\   $$\     
                     \__|  $$ |    
@@ -24,115 +38,98 @@ $$   ____| $$  $$<  $$ |  $$ |$$\
 \$$$$$$$\ $$  /\$$\ $$ |  \$$$$  |
  \_______|\__/  \__|\__|   \____/ 
 EOF
-echo "${color_reset}"
+echo -ne "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 
-cat <<EOF
-Performs a voluntary exit of the validator node.
-To abort this process, press ${color_green}ctrl + c${color_reset}.
-
+cat <<'EOF'
+Performs a voluntary exit of one or more validators.
 EOF
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-# ask for location of the wallet created during validator initialization
-default_val="/var/lib/prysm/validator/prysm-wallet-v2"
-read_default "\nValidator wallet" "$default_val" wallet_dir
-assert_sudo
-if sudo test ! -d "$wallet_dir"; then
-	printerr "directory not found"
-	exit 1
-fi
+portable_jq__reconnaissaince
 
-# ask for location of the file containing wallet password
-default_val="/var/lib/prysm/validator/wallet-password.txt"
-read_default "\nWallet password file" "$default_val" wallet_password_file
-assert_sudo
-if sudo test ! -f "$wallet_password_file"; then
-	printerr "file not found"
-	exit 1
-fi
-
-# ask for comma-separated list of the public hex keys of the validators to exit
-echo -e "\nEnter a comma-separated list of validator public keys (e.g. ${color_lightgray}0xABC123,0xDEF456${color_reset}) or ${color_lightgray}all${color_reset}."
-read_default "Validators to exit" "all" public_keys
-if [[ $public_keys == "all" ]]; then
-	prysm_param_validators="--exit-all"
-elif [[ $public_keys =~ $regex_eth_addr_csv ]]; then
-	prysm_param_validators="--public-keys $public_keys"
-else
-	printerr 'expected "all" or a comma-separated list of hexadecimal numbers'
-	exit 1
-fi
-
-# ask for network
-read_default "\nEthereum network" $ethereum_network ethereum_network
-prysm_param_network="--${ethereum_network}"
-
-# lookup the latest program version
-echo -en "\nLooking up latest prysm version..."
-prysm_version=$(get_latest_release "prysmaticlabs/prysm")
-if [[ ! "$prysm_version" =~ v[0-9]\.[0-9]\.[0-9] ]]; then
-	echo "${color_red}failed${color_reset}."
-	printerr "malformed version string: \"$prysm_version\""
-	exit 1
-fi
-echo -e "${color_green}${prysm_version}${color_reset}"
+# variables set in jq recon
+reset_checks
+check_is_defined filter_active
+print_failed_checks --error
 
 # -------------------------- EXECUTION ----------------------------------------
 
 temp_dir=$(mktemp -d)
+temp_validator_statuses_json="$(mktemp)"
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
 	echo -en "\nCleaning up..."
 	popd >/dev/null
-	[[ -d $temp_dir ]] && rm -rf "$temp_dir" >/dev/null
+	rm -rf --interactive=never "$temp_dir" >/dev/null
+	rm -rf --interactive=never "$temp_validator_statuses_json" >/dev/null
 	echo -e "${color_green}OK${color_reset}"
 }
 
 trap 'on_err_retry' ERR
 trap 'on_exit' EXIT
 
-echo -e "Downloading prysmctl-$prysm_version..."
-prysmctl_bin="prysmctl-${prysm_version}-linux-amd64"
-prysmctl_bin_sha256="prysmctl-${prysm_version}-linux-amd64.sha256"
-wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/${prysmctl_bin}"
-wget -q "https://github.com/prysmaticlabs/prysm/releases/download/${prysm_version}/${prysmctl_bin_sha256}"
-echo "$(cat "$prysmctl_bin_sha256")" | shasum -a 256 -c - || (
-	printerr $? "prysmctl checksum failed; supply-chain may be compromised"
+# display active validators
+"$this_dir/get-validator-statuses.sh" "$temp_validator_statuses_json"
+active_validators="$(jq -C "$filter_active" "$temp_validator_statuses_json")"
+if [[ -z $active_validators ]]; then
+	printerr "No active validators found:"
+	jq -C "$filter_all" "$temp_validator_statuses_json"
 	exit 1
-)
+fi
+printinfo "Active validators:"
+echo "$active_validators" >&2
 
-# need to invoke prysmctl as `prysmvalidator`, in a directory where both
-# the current user and `prysmvalidator` have read/write/execute permissions
-install_dir="/var/lib/prysm/prysmctl"
-assert_sudo
-sudo mkdir -p "$install_dir"
-sudo mv -f "$prysmctl_bin" "$install_dir"
-sudo chown -R "${USER}:${prysm_validator_user}" "$install_dir"
-sudo chmod -R 770 "$install_dir"
-popd >/dev/null
-pushd "$install_dir" >/dev/null
+# ask for comma-separated list of the public hex keys of the validators to exit
+echo -e "\nEnter a comma-separated list of validator public keys (e.g. ${theme_example}0xABC123,0xDEF456${color_reset}) or ${theme_example}all${color_reset}."
+read_default "Validators to exit" "all" chosen_pubkeys_csv
+if [[ $chosen_pubkeys_csv == "all" ]]; then
+	prysm_param_validators="--exit-all"
+elif [[ $chosen_pubkeys_csv =~ $regex_eth_addr_csv ]]; then
+	prysm_param_validators="--public-keys $chosen_pubkeys_csv"
+else
+	printerr 'expected "all" or a comma-separated list of hexadecimal numbers'
+	exit 1
+fi
+printf '\n'
 
-echo -e "\nReady to invoke prysmctl the following way:"
-echo -e "${color_lightgray}sudo -u \"${prysm_validator_user}\" \"./${prysmctl_bin}\" validator exit \\
-  --wallet-dir \"$wallet_dir\" \\
-  --wallet-password-file \"$wallet_password_file\" \\
-  --accept-terms-of-use \\
-  --force-exit \\
-  $prysm_param_network \\
-  $prysm_param_validators \n${color_reset}"
+# TODO keep this section as reference until script tests OK
 
-read -p "Continue? (y/N): " confirm &&
-	[[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+# # need to invoke prysmctl as `prysmvalidator`, in a directory where both
+# # the current user and `prysmvalidator` have read/write/execute permissions
+# install_dir="/var/lib/prysm/prysmctl"
+# assert_sudo
+# sudo mkdir -p "$install_dir"
+# sudo mv -f "$prysmctl_bin" "$install_dir"
+# sudo chown -R "${USER}:${prysm_validator_user}" "$install_dir"
+# sudo chmod -R 770 "$install_dir"
+# popd >/dev/null
+# pushd "$install_dir" >/dev/null
 
-assert_sudo
-sudo -u "${prysm_validator_user}" "./${prysmctl_bin}" validator exit \
-	--wallet-dir "$wallet_dir" \
-	--wallet-password-file "$wallet_password_file" \
+cat <<EOF
+Ready to invoke prysmctl the following way:${theme_command}
+sudo -u "$prysmctl_user" "$prysmctl_bin" validator exit \\
+	--wallet-dir "$prysm_validator_wallet_dir" \\
+	--wallet-password-file "$prysm_validator_wallet_password_file" \\
+	--accept-terms-of-use \\
+	--force-exit \\
+	--${ethereum_network} \\
+	$prysm_param_validators
+${color_reset}
+EOF
+
+continue_or_exit
+
+# TODO verify this works; original was invoked as `prysmvalidator` user
+sudo -u "$prysmctl_user" "$prysmctl_bin" validator exit \
+	--wallet-dir "$prysm_validator_wallet_dir" \
+	--wallet-password-file "$prysm_validator_wallet_password_file" \
 	--accept-terms-of-use \
 	--force-exit \
-	$prysm_param_network \
+	--${ethereum_network} \
 	$prysm_param_validators
+
+# -------------------------- POSTCONDITIONS -----------------------------------
