@@ -56,6 +56,9 @@ done
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+assert_offline
+assert_sudo
+
 # validate opts
 reset_checks
 [[ -n $mnemonic ]] && check_is_valid_validator_mnemonic mnemonic
@@ -97,6 +100,7 @@ press_any_key_to_continue
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 staking_deposit_cli__reconnaissance
+portable_jq__reconnaissaince
 
 # prompt for mnemonic if not passed as script arg
 if [[ -z $mnemonic ]]; then
@@ -110,27 +114,6 @@ if [[ -z $mnemonic ]]; then
 	print_failed_checks --error
 	printf '\n'
 fi
-
-filter_all='.[] | {
-	index,
-	status,
-	balance,
-	pubkey: .validator.pubkey,
-	bls_withdrawal_credentials: .validator.withdrawal_credentials
-}'
-filter_active='.[] | select(.status == "active_ongoing") | {
-	index,
-	status,
-	balance,
-	pubkey: .validator.pubkey,
-	bls_withdrawal_credentials: .validator.withdrawal_credentials
-}'
-filter_indices='.[] | select(.status == "active_ongoing") |
-	.index'
-filter_pubkeys='.[] | select(.status == "active_ongoing") |
-	.validator.pubkey'
-filter_bls_withdrawal_credentials='.[] | select(.status == "active_ongoing") |
-	.validator.withdrawal_credentials'
 
 # -------------------------- EXECUTION ----------------------------------------
 
@@ -296,7 +279,7 @@ $deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-
 	--chain="$ethereum_network"
 ${color_reset}
 EOF
-continue_or_exit 1
+continue_or_exit
 
 # generate the signed message
 $deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-change \

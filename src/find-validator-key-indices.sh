@@ -105,6 +105,9 @@ fi
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+assert_offline
+assert_sudo
+
 # validate opts
 reset_checks
 [[ -n $mnemonic ]] && check_is_valid_validator_mnemonic mnemonic
