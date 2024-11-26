@@ -80,7 +80,7 @@ prysmctl_datadir='/var/lib/prysm/prysmctl'
 ethereum_staking_deposit_cli_version='v2.7.0'
 ethereum_staking_deposit_cli_sha256_checksum='ac3151843d681c92ae75567a88fbe0e040d53c21368cc1ed1a8c3d9fb29f2a3a'
 ethereum_staking_deposit_cli_basename='staking_deposit-cli-fdab65d-linux-amd64.tar.gz'
-ethereum_staking_deposit_cli_basename_sha256="${deposit_cli_basename}.sha256"
+ethereum_staking_deposit_cli_basename_sha256="${ethereum_staking_deposit_cli_basename}.sha256"
 ethereum_staking_deposit_cli_url="https://github.com/ethereum/staking-deposit-cli/releases/download/v2.7.0/${ethereum_staking_deposit_cli_basename}"
 
 # Portable `jq` values
