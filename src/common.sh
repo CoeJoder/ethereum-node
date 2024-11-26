@@ -340,7 +340,7 @@ function download_prysm() {
 	printf -v "$outvar" "$program_bin"
 }
 
-# downloads and installs a given version of prysm-beacon
+# downloads and installs a given version of a prysm program
 function install_prysm() {
 	if [[ $# -ne 5 ]]; then
 		printerr "usage: install_prysm program version destination_bin owner group"
@@ -458,9 +458,9 @@ function yes_or_no() {
 	fi
 }
 
-# "Continue?" prompt, defaulting to no, exiting on 'no' with given code or 0 by default
+# "Continue?" prompt, defaulting to no, exiting on 'no' with given code or 1 by default
 function continue_or_exit() {
-	local code=0 prompt="Continue?"
+	local code=1 prompt="Continue?"
 	if [[ $# -gt 0 ]]; then
 		code=$1
 	fi

@@ -99,7 +99,7 @@ cat <<EOF
 	--accept-terms-of-use
 EOF
 echo -ne "${color_reset}"
-continue_or_exit 1
+continue_or_exit
 
 "$prysmctl_bin" validator withdraw \
 	--path="$message_path" \

@@ -119,7 +119,7 @@ Prysm-validator data-dir: ${color_green}$prysm_validator_datadir${color_reset}
 Prysm-validator wallet-dir: ${color_green}$prysm_validator_wallet_dir${color_reset}
 Prysm-validator wallet password file: ${color_green}$prysm_validator_wallet_password_file${color_reset}
 EOF
-continue_or_exit 1
+continue_or_exit
 printf '\n'
 
 # if unit files already exist, confirm overwrite

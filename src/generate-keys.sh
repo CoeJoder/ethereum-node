@@ -33,15 +33,11 @@ _mode_existing=false
 # we omit `getopt` and loop over all arguments:
 while (($#)); do
 	case $1 in
-	n | new-mnemonic=*)
-		# _mode_new="${1#*=}"
-		# shift 2
+	n | new-mnemonic)
 		_mode_new=true
 		shift 1
 		;;
-	e | existing-mnemonic=*)
-		# _mode_existing="${1#*=}"
-		# shift 2
+	e | existing-mnemonic)
 		_mode_existing=true
 		shift 1
 		;;
@@ -162,7 +158,7 @@ if [[ $_mode_new == true ]]; then
 			--folder="$validator_keys_parent_dir"
 		${color_reset}
 	EOF
-	continue_or_exit 1
+	continue_or_exit
 
 	# generate the key(s)
 	$deposit_cli_bin --language=English new-mnemonic \
@@ -182,7 +178,7 @@ else
 			--folder="$validator_keys_parent_dir"
 		${color_reset}
 	EOF
-	continue_or_exit 1
+	continue_or_exit
 
 	# generate the key(s)
 	$deposit_cli_bin --language=English existing-mnemonic \

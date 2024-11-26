@@ -86,7 +86,7 @@ if (( ${#bls_messages[@]} == 0 )); then
 elif (( ${#bls_messages[@]} == 1 )); then
 	bls_message="${bls_messages[0]}"
 	printinfo "Found ${theme_filename}$bls_message${color_reset}"
-	continue_or_exit 1
+	continue_or_exit
 else
 	printwarn "Multiple bls messages found!"
 	choose_from_menu "Please select one to submit:" bls_message "${bls_messages[@]}"

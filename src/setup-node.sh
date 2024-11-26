@@ -86,7 +86,7 @@ else
 	prysm_beacon_checkpoint_sync_url=""
 	prysm_beacon_genesis_beacon_api_url=""
 fi
-continue_or_exit 1
+continue_or_exit
 printf '\n'
 
 # if unit files already exist, confirm overwrite
