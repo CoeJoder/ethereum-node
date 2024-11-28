@@ -98,8 +98,7 @@ function on_exit() {
 
 	# 4. delete the remote tempdir if it exists
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
-		temp_dir=\"$remote_temp_dir\"
-		[[ -d \$temp_dir ]] && rm -rf --interactive=never \"\$temp_dir\" >/dev/null"
+		rm -rf --interactive=never \"$remote_temp_dir\" >/dev/null"
 	print_ok
 }
 trap 'on_exit' EXIT
@@ -107,7 +106,7 @@ trap 'on_exit' EXIT
 # ensure that 'remote_temp_dir' variable is set before interpolating remote commands
 reset_checks
 check_is_defined remote_temp_dir
-print_failed_checks --error # trapped
+print_failed_checks --error
 
 # 2. copy into tempdir
 printinfo "Copying validator keys to remote tempdir..."

@@ -106,8 +106,7 @@ function on_exit() {
 
 	# 4. delete the remote tempdir if it exists
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
-		temp_dir=\"$remote_temp_dir\"
-		[[ -d \$temp_dir ]] && rm -rf --interactive=never \"\$temp_dir\" >/dev/null"
+		rm -rf --interactive=never \"$remote_temp_dir\" >/dev/null"
 	print_ok
 }
 trap 'on_exit' EXIT

@@ -125,9 +125,9 @@ pushd "$temp_dir" >/dev/null
 function on_exit() {
 	printinfo -n "Cleaning up..."
 	popd >/dev/null
-	[[ -d $temp_dir ]] && rm -rf --interactive=never "$temp_dir" >/dev/null
+	rm -rf --interactive=never "$temp_dir" >/dev/null
 	for temp_file in "${temp_files_to_delete[@]}"; do
-		[[ -f $temp_file ]] && rm -f --interactive=never "$temp_file" >/dev/null
+		rm -f --interactive=never "$temp_file" >/dev/null
 	done
 	print_ok
 }

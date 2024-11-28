@@ -65,7 +65,7 @@ function on_exit() {
 	echo -en "\nCleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	rm -rf --interactive=never "$temp_validator_statuses_json" >/dev/null
+	rm -f --interactive=never "$temp_validator_statuses_json" >/dev/null
 	echo -e "${color_green}OK${color_reset}"
 }
 

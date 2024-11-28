@@ -135,7 +135,7 @@ pushd "$temp_dir" >/dev/null
 function on_exit() {
 	printinfo -n "Cleaning up..."
 	popd >/dev/null
-	[[ -d $temp_dir ]] && rm -rf --interactive=never "$temp_dir" >/dev/null
+	rm -rf --interactive=never "$temp_dir" >/dev/null
 	print_ok
 }
 

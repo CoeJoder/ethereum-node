@@ -75,18 +75,9 @@ print_failed_checks --error
 # delete remote temp file on exit
 function on_exit() {
 	printinfo -n "Cleaning up..."
-
-	# delete remote temp file if it exists
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
-		temp_file=\"$remote_temp_file\"
-		[[ -f \$temp_file ]] && rm -rf --interactive=never \"\$temp_file\" &>/dev/null
-	"
-
-	# delete local temp file if it exists
-	if [[ -f $local_temp_file ]]; then
-		rm -rf --interactive=never "$local_temp_file" &>/dev/null
-	fi
-
+		rm -f --interactive=never \"$remote_temp_file\" &>/dev/null"
+	rm -f --interactive=never "$local_temp_file" &>/dev/null
 	print_ok
 }
 trap 'on_exit' EXIT
