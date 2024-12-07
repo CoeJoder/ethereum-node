@@ -71,8 +71,8 @@ prysm_validator_wallet_password_file='/var/lib/prysm/validator/wallet-password.t
 prysm_validator_unit_file='/etc/systemd/system/eth2-validator.service'
 
 # prysmctl values
-prysmctl_user=prysmctl
-prysmctl_group=prysmctl
+prysmctl_user='prysmctl'
+prysmctl_group='prysmctl'
 prysmctl_bin='/usr/local/bin/prysmctl'
 prysmctl_datadir='/var/lib/prysm/prysmctl'
 
