@@ -33,7 +33,7 @@
 	- [Linksys WRT3200ACM](https://www.amazon.com/dp/B01JOXW3YE?&tag=router10-20) (*Èl Classicò Americàno*)
 		- long in the tooth, but still works well.  It has dual-partition storage to house two firmware installs simultaneously and switches between them automatically during flashing, which makes tinkering safer.  It's also widely supported with a huge userbase, so finding help on the various forums is easy
 	- a more powerful (and expensive) alternative would be an official [pfSense](https://www.pfsense.org/) or [OPNSense](https://opnsense.org/) appliance, and running its respective operating system for routing & firewall duties instead of OpenWRT, but that is beyond the scope of this guide
-	- there are newer WiFi 6+ routers which are open source-friendly, including a variety of cheap Chinesium appliances which are popular in the "tech bro" community, but they have spotty hardware support, suffer occasional zero-day exploits ([exhibit A](https://news.ycombinator.com/item?id=41605680)) and supply-chain attacks ([exhibit B](https://archive.is/xewlX)), but that is beyond the scope of this guide
+	- there are newer WiFi 6+ routers which are open source-friendly, including a variety of cheap Chinesium appliances which are popular in the "tech bro" community, but they have spotty hardware support, suffer occasional zero-day exploits ([exhibit A](https://news.ycombinator.com/item?id=41605680)), supply-chain attacks ([exhibit B](https://archive.is/xewlX)), and backdoors ([exhibit C](https://wyzguyscybersecurity.com/chinese-arm-processors-backdoor/)), but that is beyond the scope of this guide
 	- I recommend sticking with *Èl Classicò Americàno* for now.  If better WiFi is needed, disable its WiFi radios and connect a separate AP
 
 ## UPS Battery Backup
