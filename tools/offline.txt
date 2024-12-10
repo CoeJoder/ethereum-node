@@ -4,6 +4,7 @@
 _portable_jq.sh
 _staking-deposit-cli.sh
 find-validator-key-indices.sh
+generate-bls-to-execution-change-message.sh
 generate-keys.sh
 init.sh
 partial-withdrawal.sh
