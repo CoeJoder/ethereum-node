@@ -90,19 +90,40 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
+message_filename="$(basename "$message_path")"
+
 # -------------------------- EXECUTION ----------------------------------------
+
+assert_sudo
+trap 'on_err_retry' ERR
+
+# copy the message into a prysmctl-owned temp dir
+temp_dir="$(sudo -u "$prysmctl_user" mktemp -d)"
+sudo cp -v "$message_path" "$temp_dir"
+message_path="$temp_dir/$message_filename"
+sudo chown -c "$prysmctl_user:$prysmctl_group" "$message_path"
+
+function on_exit() {
+	printinfo -n "Cleaning up..."
+	sudo rm -rf --interactive=never "$temp_dir" >/dev/null
+	print_ok
+}
+trap 'on_exit' EXIT
+
 
 printinfo "Ready to invoke prysmctl the following way:${theme_command}"
 cat <<EOF
-"$prysmctl_bin" validator withdraw \\
+sudo -u "$prysmctl_user" "$prysmctl_bin" validator withdraw \\
 	--path="$message_path" \\
+	--confirm \\
 	--accept-terms-of-use
 EOF
 echo -ne "${color_reset}"
 continue_or_exit
 
-"$prysmctl_bin" validator withdraw \
+sudo -u "$prysmctl_user" "$prysmctl_bin" validator withdraw \
 	--path="$message_path" \
+	--confirm \
 	--accept-terms-of-use
 
 # -------------------------- POSTCONDITIONS -----------------------------------
