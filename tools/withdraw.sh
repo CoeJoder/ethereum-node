@@ -70,6 +70,7 @@ bls_to_execution_change_message_format='bls_to_execution_change-*.json'
 # chown the `DATA` dir and cd into it
 printinfo "Chowning the source files..."
 sudo chown -R "$USER:$USER" "$usb_dist_dir"
+sudo chmod 700 "$usb_dist_dir"
 cd "$usb_dist_dir" >/dev/null
 
 # search for bls messages
@@ -108,6 +109,10 @@ function on_exit() {
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
 		rm -rf --interactive=never \"$remote_temp_dir\" >/dev/null"
 	print_ok
+
+	# 5. reseal the USB deployment
+	sudo chown -R root:root "$usb_dist_dir"
+	sudo chmod 0 "$usb_dist_dir"
 }
 trap 'on_exit' EXIT
 
@@ -120,7 +125,7 @@ print_failed_checks --error
 printinfo "Copying \`bls-to-execution-change\` message to remote tempdir..."
 rsync -avh -e "ssh -p $node_server_ssh_port" \
 	--progress \
-	"$bls_message" "${node_server_ssh_endpoint}:${remote_temp_dir}"
+	"$usb_bls_to_execution_changes_dir/$bls_message" "${node_server_ssh_endpoint}:${remote_temp_dir}"
 
 # 3. run the remote submission script
 ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
