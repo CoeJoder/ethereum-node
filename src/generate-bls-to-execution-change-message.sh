@@ -214,7 +214,7 @@ function find_failed_exit() {
 	exit 1
 }
 
-# find the lowest EIP-2334 key index of the chosen validators
+printinfo "Need to find the lowest EIP-2334 key index of the chosen validators..."
 find_validator_key_indices_outfile=$(mktemp)
 temp_files_to_delete+=("$find_validator_key_indices_outfile")
 if ! "$this_dir/find-validator-key-indices.sh" \
@@ -263,9 +263,9 @@ printinfo "EIP-2334 validator start index:\n${validator_start_index}"
 printf '\n'
 
 # obnoxious confirmation message
-printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withdrawal wallet address!!!'
-printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withdrawal wallet address!!!'
-printwarn 'IMPORTANT: ensure that 'execution_address' below is set to your withdrawal wallet address!!!'
+printwarn "IMPORTANT: ensure that ${theme_command}execution_address${color_reset} below is set to your withdrawal wallet address!!!"
+printwarn "IMPORTANT: ensure that ${theme_command}execution_address${color_reset} below is set to your withdrawal wallet address!!!"
+printwarn "IMPORTANT: ensure that ${theme_command}execution_address${color_reset} below is set to your withdrawal wallet address!!!"
 
 cat <<EOF
 Ready to run the following command:${theme_command}
