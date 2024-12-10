@@ -116,7 +116,7 @@ function log_timestamp() {
 	echo -e "\n$(date "+%m-%d-%Y, %r")" >> "$_file"
 }
 
-# tee stdout & stderr to log file
+# rotate log file if necessary and begin logging terminal output
 function log_start() {
 	if [[ -f $log_file ]]; then
 		local log_size=$(stat -c %s "$log_file")
@@ -137,7 +137,7 @@ function log_pause() {
 	exec 1>&3 2>&4
 }
 
-# backup stdout & stdout, and redirect both to tee'd logfile
+# backup stdout & stderr, and redirect both to tee'd logfile
 function log_resume() {
 	exec 3>&1 4>&2
 	exec &> >(tee -a "$log_file")
@@ -352,7 +352,6 @@ function install_prysm() {
 	sudo chown -v "${owner}:${group}" "$downloaded_bin" || return
 	sudo chmod -v 550 "$downloaded_bin" || return
 	sudo mv -vf "$downloaded_bin" "$destination_bin" || return
-	sudo "$destination_bin" --version || return
 }
 
 # enable a system service
