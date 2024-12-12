@@ -108,13 +108,14 @@ fi
 assert_offline
 assert_sudo
 
-# validate opts
+# validate opts and params
 reset_checks
 [[ -n $mnemonic ]] && check_is_valid_validator_mnemonic mnemonic
 [[ -n $validator_pubkeys_csv ]] && check_is_valid_validator_pubkeys validator_pubkeys_csv
 [[ -n $validator_start_index ]] && check_is_valid_eip2334_index validator_start_index
 [[ -n $num_validators ]] && check_is_positive_integer num_validators
 [[ -n $deposit_cli_bin ]] && check_executable_exists deposit_cli_bin
+check_is_valid_ethereum_network ethereum_network
 print_failed_checks --error
 
 [[ -z $deposit_cli_bin ]] && staking_deposit_cli__preconditions
