@@ -42,17 +42,7 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-# read and confirm password
-read -sp "Validator wallet password: " password1
-printf '\n'
-
-read -sp "Confirm password: " password2
-printf '\n\n'
-
-if [[ $password1 != $password2 ]]; then
-	printerr "confirmation failed, try again"
-	exit 1
-fi
+enter_password_and_confirm "Validator wallet password" password1
 
 # if password file already exists, confirm overwrite
 reset_checks

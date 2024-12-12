@@ -57,6 +57,10 @@ regex_eth_validator_bls_withdrawal_credentials='^0x[[:xdigit:]]{64}$'
 # see: https://eips.ethereum.org/EIPS/eip-2334#validator-keys
 regex_eth_validator_signing_key_path='m/12381/3600/([[:digit:]]+)/0/0'
 
+# prompted by the staking deposit CLI
+regex_keystore_password='^.{8,}$'
+errmsg_keystore_password='expected a valid keystore password of at least 8-digits'
+
 # set colors only if tput is available
 if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_red=$(tput setaf 1)
@@ -391,6 +395,45 @@ function parse_index_from_signing_key_path() {
 			return 1
 	fi
 	printf -v $outvar "${BASH_REMATCH[1]}"
+}
+
+function enter_password_and_confirm() {
+	if [[ $# -eq 4 ]]; then
+		local prompt="$1" failmsg="$2" check_func="$3" outvar="$4"
+	elif [[ $# -eq 2 ]]; then
+		local prompt="$1" outvar="$2"
+	else
+		printerr "usage:\n\tenter_password_and_confirm prompt failmsg check_func outvar\n\tenter_password_and_confirm prompt outvar"
+		return 2
+	fi
+	# loop until valid password
+	while true; do
+		read -sp "$prompt: " password1
+		printf '\n'
+		if [[ -z $check_func ]]; then
+			break # no validator provided
+		else
+			reset_checks
+			"$check_func" "password1"
+			if has_failed_checks; then
+				printwarn "$failmsg"
+				reset_checks
+			else
+				break # success
+			fi
+		fi
+	done
+	# loop until confirmed
+	while true; do
+		read -sp "Re-enter to confirm: " password2
+		printf '\n'
+		if [[ $password1 != $password2 ]]; then
+			printwarn "confirmation failed, try again"
+		else
+			break # success
+		fi
+	done
+	printf -v "$outvar" "$password1"
 }
 
 # source: https://stackoverflow.com/a/53839433/159570
@@ -803,6 +846,14 @@ function check_is_positive_integer() {
 	if _check_is_defined $1; then
 		if [[ ! ${!1} =~ ^[[:digit:]]+$ || ! ${!1} -gt 0 ]]; then
 			_check_failures+=("$1: expected a positive integer")
+		fi
+	fi
+}
+
+function check_is_valid_keystore_password() {
+	if _check_is_defined $1; then
+		if [[ ! ${!1} =~ $regex_keystore_password ]]; then
+			_check_failures+=("$1: $errmsg_keystore_password")
 		fi
 	fi
 }
