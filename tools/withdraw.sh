@@ -75,7 +75,7 @@ cd "$usb_dist_dir" >/dev/null
 
 # search for bls messages
 printinfo "Searching for \`bls-to-execution-change\` messages on \`DATA\` drive..."
-readarray -t -d '' bls_messages < <(LC_ALL=C find \
+readarray -td '' bls_messages < <(LC_ALL=C find \
 	"$usb_bls_to_execution_changes_dir" -maxdepth 1 -name \
 	"$bls_to_execution_change_message_format" -type f -printf '%T@/%P\0' |
 	sort -rzn | cut -zd/ -f2-)

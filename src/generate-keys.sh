@@ -151,7 +151,7 @@ if [[ $_mode_new == true ]]; then
 	# confirmation message
 	cat <<-EOF
 		Ready to run the following command:${color_lightgray}
-		$deposit_cli_bin --language=English new-mnemonic \\
+		"$deposit_cli_bin" --language=English new-mnemonic \\
 			--num_validators=$num_validators \\
 			--mnemonic_language=English \\
 			--chain="$ethereum_network" \\
@@ -161,7 +161,7 @@ if [[ $_mode_new == true ]]; then
 	continue_or_exit
 
 	# generate the key(s)
-	$deposit_cli_bin --language=English new-mnemonic \
+	"$deposit_cli_bin" --language=English new-mnemonic \
 		--num_validators=$num_validators \
 		--mnemonic_language=English \
 		--chain="$ethereum_network" \
@@ -170,7 +170,7 @@ else
 	# confirmation message
 	cat <<-EOF
 		Ready to run the following command:${color_lightgray}
-		$deposit_cli_bin --language=English existing-mnemonic \\
+		"$deposit_cli_bin" --language=English existing-mnemonic \\
 			--mnemonic=<hidden> \\
 			--validator_start_index=$validator_start_index \\
 			--num_validators=$num_validators \\
@@ -181,7 +181,7 @@ else
 	continue_or_exit
 
 	# generate the key(s)
-	$deposit_cli_bin --language=English existing-mnemonic \
+	"$deposit_cli_bin" --language=English existing-mnemonic \
 		--mnemonic="$mnemonic" \
 		--validator_start_index=$validator_start_index \
 		--num_validators=$num_validators \

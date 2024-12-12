@@ -269,7 +269,7 @@ printwarn "IMPORTANT: ensure that ${theme_command}execution_address${color_reset
 
 cat <<EOF
 Ready to run the following command:${theme_command}
-$deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-change \\
+"$deposit_cli_bin" --language=English --non_interactive generate-bls-to-execution-change \\
 	--mnemonic=<hidden> \\
 	--execution_address="$withdrawal" \\
 	--bls_to_execution_changes_folder="$usb_bls_to_execution_changes_parent_dir" \\
@@ -282,7 +282,7 @@ EOF
 continue_or_exit
 
 # generate the signed message
-$deposit_cli_bin --language=English --non_interactive generate-bls-to-execution-change \
+"$deposit_cli_bin" --language=English --non_interactive generate-bls-to-execution-change \
 	--mnemonic="$mnemonic" \
 	--execution_address="$withdrawal" \
 	--bls_to_execution_changes_folder="$usb_bls_to_execution_changes_parent_dir" \

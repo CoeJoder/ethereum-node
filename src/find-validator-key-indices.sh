@@ -117,9 +117,7 @@ reset_checks
 [[ -n $deposit_cli_bin ]] && check_executable_exists deposit_cli_bin
 print_failed_checks --error
 
-if [[ -z $deposit_cli_bin ]]; then
-	staking_deposit_cli__preconditions
-fi
+[[ -z $deposit_cli_bin ]] && staking_deposit_cli__preconditions
 portable_jq__preconditions
 
 # -------------------------- BANNER -------------------------------------------
@@ -224,7 +222,7 @@ done
 printinfo "Searching..."
 validator_keys_parent_dir='.'
 validator_keys_dir="$validator_keys_parent_dir/validator_keys"
-$deposit_cli_bin --language=English --non_interactive existing-mnemonic \
+"$deposit_cli_bin" --language=English --non_interactive existing-mnemonic \
 	--mnemonic="$mnemonic" \
 	--keystore_password=passworddoesntmatter \
 	--validator_start_index=$validator_start_index \
@@ -238,7 +236,7 @@ printf '\n'
 indices_found=()
 indices_found_msgs=()
 pubkeys_not_found=()
-readarray -d $'\0' keystore_files < <(find "$validator_keys_dir" -maxdepth 1 -name 'keystore-m_12381_3600_*' -type f -print0)
+readarray -d '' keystore_files < <(find "$validator_keys_dir" -maxdepth 1 -name 'keystore-m_12381_3600_*' -type f -print0)
 num_pubkeys=${#validator_pubkeys_trimmed[@]}
 for ((i = 0; i < num_pubkeys; i++)); do
 	validator_pubkey_trimmed="${validator_pubkeys_trimmed[i]}"
@@ -269,7 +267,7 @@ if [[ $num_found -ne 0 ]]; then
 		# ensure empty
 		>"$indices_outfile"
 		# numeric-string, null-delimited array sort
-		readarray -td $'\0' indices_found_sorted < <(printf '%s\0' "${indices_found[@]}" | sort -z -n)
+		readarray -td '' indices_found_sorted < <(printf '%s\0' "${indices_found[@]}" | sort -z -n)
 		for index_found in "${indices_found_sorted[@]}"; do
 			printf '%s\n' "$index_found" >>"$indices_outfile"
 		done

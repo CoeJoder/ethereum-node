@@ -1,5 +1,5 @@
 # Partial Withdrawal
-Sets a withdrawal wallet address for some or all validators running on the node.  This triggers automatic, periodic withdrawals of ETH income until the validator(s) are exited.  When a validator is finally exited, its 32 ETH stake will be withdrawn to this same address.  The withdrawal address can only be set this once, so be careful!
+Sets a withdrawal address for one or more validators.  A validator can have its withdrawal address set only once, so be careful!
 
 ## Preconditions
 - [ ] [validator setup](./validator-setup.md) has been completed
