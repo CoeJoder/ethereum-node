@@ -13,32 +13,103 @@ set -e
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 source "$this_dir/_staking-deposit-cli.sh"
-housekeeping
+source "$this_dir/_portable_jq.sh"
+set_env
+# whether to enable logging depends on the opts
 
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage:
-		  $(basename ${BASH_SOURCE[0]}) [-h|--help] command
-
+		  $(basename ${BASH_SOURCE[0]}) [options] command
+		Options:
+		  --keystore_password value       Keystore password.  Used to decrypt keystores when during validator import
+		  --num_validators value          Number of validator keys to generate
+			--validator_start_index value   [existing-mnemonic] Validator start index, 0-based.  Omit to be prompted for it instead
+		  --mnemonic value                [existing-mnemonic] Mnemonic used to generate the validator keys.  Omit to be prompted for it instead
+			--deposit_cli value             Path to the extracted deposit-cli binary (optional)
+			--no_logging                    Prevent logging terminal output to logfile
+			--no_banner                     Prevent banner display
+		  --help, -h                      Show this message
 		Commands:
-		  n, new-mnemonic
-		  e, existing-mnemonic
+		  n, new-mnemonic                 Generate a new mnemonic and from it, the validator keys
+			e, existing-mnemonic            Use an existing mnemonic to generate the validator keys
 	EOF
 }
 
-_mode_new=false
-_mode_existing=false
+_parsed_args=$(getopt --options='h' --longoptions='keystore_password:,num_validators:,validator_start_index:,mnemonic:,deposit_cli:,no_logging,no_banner,help' \
+	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
+eval set -- "$_parsed_args"
+unset _parsed_args
 
-# since we want to parse all arguments, not just '-' and '--' options,
-# we omit `getopt` and loop over all arguments:
+keystore_password=''
+num_validators=''
+validator_start_index=''
+mnemonic=''
+deposit_cli_bin=''
+no_logging=false
+no_banner=false
+mode_new=false
+mode_existing=false
+
+while true; do
+	case "$1" in
+	--keystore_password)
+		keystore_password="$2"
+		shift 2
+		;;
+	--num_validators)
+		num_validators="$2"
+		shift 2
+		;;
+	--validator_start_index)
+		validator_start_index="$2"
+		shift 2
+		;;
+	--mnemonic)
+		mnemonic="$2"
+		shift 2
+		;;
+	--deposit_cli)
+		deposit_cli_bin="$2"
+		shift 2
+		;;
+	--no_logging)
+		no_logging=true
+		shift
+		;;
+	--no_banner)
+		no_banner=true
+		shift
+		;;
+	-h | --help)
+		show_usage
+		exit 0
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		printerr "unknown option: $1"
+		exit 1
+		;;
+	esac
+done
+
+if [[ $no_logging == false ]]; then
+	log_start
+	log_timestamp
+fi
+
+# parse command
 while (($#)); do
 	case $1 in
 	n | new-mnemonic)
-		_mode_new=true
+		mode_new=true
 		shift 1
 		;;
 	e | existing-mnemonic)
-		_mode_existing=true
+		mode_existing=true
 		shift 1
 		;;
 	--help | -h)
@@ -46,85 +117,122 @@ while (($#)); do
 		exit 0
 		;;
 	*)
-		printerr "unknown argument: $1"
+		printerr "unknown command: $1"
 		exit 1
 		;;
 	esac
 done
 
-if [[ $_mode_new == false && $_mode_existing == false ]]; then
+if [[ $mode_new == false && $mode_existing == false ]]; then
 	printerr "command missing"
 	exit 1
-elif [[ $_mode_new == true && $_mode_existing == true ]]; then
+elif [[ $mode_new == true && $mode_existing == true ]]; then
 	printerr "multiple commands"
 	exit 1
 fi
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+# TODO debugging
+# assert_offline
+assert_sudo
+
+# validate opts and params
 reset_checks
+[[ -n $keystore_password ]] && check_is_valid_keystore_password keystore_password
+[[ -n $num_validators ]] && check_is_positive_integer num_validators
+[[ -n $mnemonic ]] && check_is_valid_validator_mnemonic mnemonic
+[[ -n $validator_start_index ]] && check_is_valid_eip2334_index validator_start_index
+[[ -n $deposit_cli_bin ]] && check_executable_exists deposit_cli_bin
 check_is_valid_ethereum_network ethereum_network
 print_failed_checks --error
 
-staking_deposit_cli__preconditions
+[[ -z $deposit_cli_bin ]] && staking_deposit_cli__preconditions
+portable_jq__preconditions
 
 validator_keys_parent_dir="$this_dir"
 validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -en "${color_blue}${bold}"
-cat <<'EOF'
-░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░░█░█░█▀▀░█░█░█▀▀
-░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄░█▀▄░█▀▀░░█░░▀▀█
-░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░░▀░▀░▀▀▀░░▀░░▀▀▀
-EOF
-echo -en "${color_reset}"
+if [[ $no_banner == false ]]; then
+	echo "${color_blue}${bold}"
+	cat <<-'EOF'
+	░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░░█░█░█▀▀░█░█░█▀▀
+	░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄░█▀▄░█▀▀░░█░░▀▀█
+	░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░░▀░▀░▀▀▀░░▀░░▀▀▀
+	EOF
+	echo -n "${color_reset}"
 
-# -------------------------- PREAMBLE -----------------------------------------
+	# -------------------------- PREAMBLE -----------------------------------------
 
-preamble="[${theme_value}New Mnemonic${color_reset}] Generates a new mnemonic and creates validator keys with it on the air-gapped PC."
-if [[ $_mode_existing == true ]]; then
-	preamble="[${theme_value}Existing Mnemonic${color_reset}] Uses an existing mnemonic and creates validator keys with it on the air-gapped PC."
+	preamble="[${theme_value}New Mnemonic${color_reset}] Generates a new mnemonic and validator keys on the air-gapped PC."
+	if [[ $mode_existing == true ]]; then
+		preamble="[${theme_value}Existing Mnemonic${color_reset}] Uses an existing mnemonic to create validator keys on the air-gapped PC."
+	fi
+
+	cat <<-EOF
+	$preamble
+	See: https://github.com/ethereum/staking-deposit-cli?tab=readme-ov-file#step-2-create-keys-and-deposit_data-json
+	EOF
+	press_any_key_to_continue
 fi
-
-cat <<EOF
-$preamble
-See: https://github.com/ethereum/staking-deposit-cli?tab=readme-ov-file#step-2-create-keys-and-deposit_data-json
-EOF
-press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-staking_deposit_cli__reconnaissance
+[[ -z $deposit_cli_bin ]] && staking_deposit_cli__reconnaissance
 
-# prompt for mnemonic
-log_pause "mnemonic entry"
-read_no_default "Please enter your mnemonic separated by spaces (\" \"). \
-Note: you only need to enter the first 4 letters of each word if you'd prefer" mnemonic
-log_resume "mnemonic entry complete"
-
-reset_checks
-check_is_valid_validator_mnemonic mnemonic
-print_failed_checks --error
-printf '\n'
-
-# prompt for num validators to generate
-read_default "Number of validator keys to generate" 1 num_validators
-
-reset_checks
-check_is_positive_integer num_validators
-print_failed_checks --error
-printf '\n'
-
-# prompt for validator start index
-if [[ $_mode_existing == true ]]; then
-	read_default "Validator start index (0-based)" 0 validator_start_index
+# prompt for keystore password if not passed as script arg
+if [[ -z $keystore_password ]]; then
+	log_pause "keystore password entry"
+	echo "Create a password that secures your validator keystore(s). You will \
+	need to re-enter this to decrypt them when you setup your Ethereum validators"
+	enter_password_and_confirm "Choose a keystore password" \
+		"$errmsg_keystore_password" \
+		check_is_valid_keystore_password \
+		keystore_password
+	log_resume "keystore password entry complete"
 
 	reset_checks
-	check_is_valid_eip2334_index validator_start_index
+	check_is_valid_keystore_password keystore_password
 	print_failed_checks --error
 	printf '\n'
+fi
+
+# prompt for num validators to generate if not passed as script arg
+if [[ -z $num_validators ]]; then
+	read_default "Number of validator keys to generate" 1 num_validators
+
+	reset_checks
+	check_is_positive_integer num_validators
+	print_failed_checks --error
+	printf '\n'
+fi
+
+# prompt for validator start index
+if [[ $mode_existing == true ]]; then
+	# prompt for validator start index if not passed as script arg
+	if [[ -z $validator_start_index ]]; then
+		read_default "Validator start index (0-based)" 0 validator_start_index
+
+		reset_checks
+		check_is_valid_eip2334_index validator_start_index
+		print_failed_checks --error
+		printf '\n'
+	fi
+
+	# prompt for mnemonic if not passed as script arg
+	if [[ -z $mnemonic ]]; then
+		log_pause "mnemonic entry"
+		read_no_default "Please enter your mnemonic separated by spaces (\" \"). \
+		Note: you only need to enter the first 4 letters of each word if you'd prefer" mnemonic
+		log_resume "mnemonic entry complete"
+
+		reset_checks
+		check_is_valid_validator_mnemonic mnemonic
+		print_failed_checks --error
+		printf '\n'
+	fi
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -145,13 +253,14 @@ trap 'on_exit' EXIT
 assert_sudo
 
 # initialize dependencies
-staking_deposit_cli__unpack_tarball
+[[ -z $deposit_cli_bin ]] && staking_deposit_cli__unpack_tarball
 
-if [[ $_mode_new == true ]]; then
+if [[ $mode_new == true ]]; then
 	# confirmation message
 	cat <<-EOF
 		Ready to run the following command:${color_lightgray}
-		"$deposit_cli_bin" --language=English new-mnemonic \\
+		"$deposit_cli_bin" --language=English --non_interactive new-mnemonic \\
+			--keystore_password=<hidden> \\
 			--num_validators=$num_validators \\
 			--mnemonic_language=English \\
 			--chain="$ethereum_network" \\
@@ -161,7 +270,8 @@ if [[ $_mode_new == true ]]; then
 	continue_or_exit
 
 	# generate the key(s)
-	"$deposit_cli_bin" --language=English new-mnemonic \
+	"$deposit_cli_bin" --language=English --non_interactive new-mnemonic \
+		--keystore_password="$keystore_password" \
 		--num_validators=$num_validators \
 		--mnemonic_language=English \
 		--chain="$ethereum_network" \
@@ -170,10 +280,11 @@ else
 	# confirmation message
 	cat <<-EOF
 		Ready to run the following command:${color_lightgray}
-		"$deposit_cli_bin" --language=English existing-mnemonic \\
-			--mnemonic=<hidden> \\
-			--validator_start_index=$validator_start_index \\
+		"$deposit_cli_bin" --language=English --non_interactive existing-mnemonic \\
+			--keystore_password=<hidden> \\
 			--num_validators=$num_validators \\
+			--validator_start_index=$validator_start_index \\
+			--mnemonic=<hidden> \\
 			--chain="$ethereum_network" \\
 			--folder="$validator_keys_parent_dir"
 		${color_reset}
@@ -181,10 +292,11 @@ else
 	continue_or_exit
 
 	# generate the key(s)
-	"$deposit_cli_bin" --language=English existing-mnemonic \
-		--mnemonic="$mnemonic" \
-		--validator_start_index=$validator_start_index \
+	"$deposit_cli_bin" --language=English --non_interactive existing-mnemonic \
+		--keystore_password="$keystore_password" \
 		--num_validators=$num_validators \
+		--validator_start_index=$validator_start_index \
+		--mnemonic="$mnemonic" \
 		--chain="$ethereum_network" \
 		--folder="$validator_keys_parent_dir"
 fi
