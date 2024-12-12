@@ -89,16 +89,14 @@ cd ethereum-node
 - [ ] open a terminal and generate a mnemonic seed & validator keys:
 
 ```bash
-# change to the flash drive and unseal the deployment
 cd /media/mint/DATA/
 source ./unseal.sh
-
-# generate a mnemonic seed and validator key(s)
 ./generate-keys.sh new-mnemonic
-
-# save the passphrase in your client PC's password manager
-# save the seedphrase/mnemonic offline, e.g. engraved on metal plates in a fireproof safe, with encrypted off-site backups
+source ./seal.sh
 ```
+
+- [ ] save the passphrase in your client PC's password manager
+- [ ] save the seedphrase/mnemonic offline, e.g. engraved on metal plates in a fireproof safe, with encrypted off-site backups
 - [ ] safely eject the flash drive and unplug it
 
 ### 4. Import Validator Keys and Create Wallet
@@ -153,6 +151,6 @@ cd ethereum-node
 
 ### Next Steps
 
-- [Validator Withdrawal](./partial-withdrawal.md)
-- [Validator Exit](./voluntary-exit.md)
-
+- [Add validators](./add-validators.md)
+- [Withdraw validators](./partial-withdrawal.md)
+- [Exit validators](./voluntary-exit.md)

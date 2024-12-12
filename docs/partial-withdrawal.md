@@ -44,11 +44,8 @@ cd ethereum-node
 - [ ] pick the validators to withdraw and generate a signed `bls-to-execution-change` message: 
 
 ```bash
-# change to USB drive and unseal deployment
 cd /media/mint/DATA/
 source ./unseal.sh
-
-# pick validators to withdraw, generate signed message, then reseal deployment
 ./generate-bls-to-execution-change-message.sh
 source ./seal.sh
 ```
