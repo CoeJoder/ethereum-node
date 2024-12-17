@@ -74,11 +74,11 @@ function test_parse_index_from_signing_key_path() {
 		'm/12381/3600/2/0/0'
 	)
 	local invalids=(
-		'm/12381/3600/a/0/0' # invalid index
-		'm/12382/3600/1/0/0' # wrong prefix
-		'm/12381/3600/2/0' # too short
+		'm/12381/3600/a/0/0'  # invalid index
+		'm/12382/3600/1/0/0'  # wrong prefix
+		'm/12381/3600/2/0'    # too short
 		'm/12381/3600/42/0/0' # wrong index
-		'zebra' # not a zoo
+		'zebra'               # not a zoo
 	)
 	local curtest
 	local i
@@ -116,12 +116,12 @@ function test_regex_eth_addr() {
 		'0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
 	)
 	local invalids=(
-		'0x0123456789abcdefABCDEF01234567890abcdef0,0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f' # csv
+		'0x0123456789abcdefABCDEF01234567890abcdef0,0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f'                                            # csv
 		'0x0123456789abcdefABCDEF01234567890abcdef0,0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f,0x0123456789abcdefABCDEF01234567890abcdef0' # csv
-		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068' # too short
-		'0xZEBRA123FAACf8071bd4bb5AB99Db01938090689' # invalid characters
-		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f1' # too long
-		'f19B1c91FAACf8071bd4bb5AB99Db0193809068f1' # missing 0x
+		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068'                                                                                        # too short
+		'0xZEBRA123FAACf8071bd4bb5AB99Db01938090689'                                                                                       # invalid characters
+		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f1'                                                                                      # too long
+		'f19B1c91FAACf8071bd4bb5AB99Db0193809068f1'                                                                                        # missing 0x
 	)
 	local curtest
 	local i
@@ -151,10 +151,10 @@ function test_regex_eth_validator_pubkey() {
 	)
 	local invalids=(
 		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0123456789abcdefABCDEF01234567890abcdef00123456789abcdefABCDEF01234567890abcdef00123456789abcdef' # csv
-		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f' # too short
-		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540ZEBRA' # invalid characters
-		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B1' # too long
-		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # missing 0x
+		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f'                                                                                                                                                            # too short
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540ZEBRA'                                                                                                    # invalid characters
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B1'                                                                                                   # too long
+		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B'                                                                                                      # missing 0x
 	)
 	local curtest
 	local i
@@ -182,15 +182,15 @@ function test_regex_eth_addr_csv() {
 		'0x0123456789abcdefABCDEF01234567890abcdef0,0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f,0x0123456789abcdefABCDEF01234567890abcdef0'
 	)
 	local invalids=(
-		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068' # too short
-		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068,0x0123456789abcdefABCDEF01234567890abcdefg' # too short csv
-		'0xZEBRA123FAACf8071bd4bb5AB99Db01938090689' # invalid characters
-		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f1' # too long
-		'f19B1c91FAACf8071bd4bb5AB99Db0193809068f1' # missing 0x
-		'f19B1c91FAACf8071bd4bb5AB99Db0193809068f,f19B1c91FAACf8071bd4bb5AB99Db0193809068f' # missing 0x csv
-		'0x0123456789abcdefABCDEF01234567890abcdef0,0x0x0123456789abcdefABCDEF01234567890abcde' # too many 0x
+		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068'                                              # too short
+		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068,0x0123456789abcdefABCDEF01234567890abcdefg'   # too short csv
+		'0xZEBRA123FAACf8071bd4bb5AB99Db01938090689'                                             # invalid characters
+		'0xf19B1c91FAACf8071bd4bb5AB99Db0193809068f1'                                            # too long
+		'f19B1c91FAACf8071bd4bb5AB99Db0193809068f1'                                              # missing 0x
+		'f19B1c91FAACf8071bd4bb5AB99Db0193809068f,f19B1c91FAACf8071bd4bb5AB99Db0193809068f'      # missing 0x csv
+		'0x0123456789abcdefABCDEF01234567890abcdef0,0x0x0123456789abcdefABCDEF01234567890abcde'  # too many 0x
 		',0x0123456789abcdefABCDEF01234567890abcdef0,0x0123456789abcdefABCDEF01234567890abcdef0' # leading comma
-		'0x0123456789abcdefABCDEF01234567890abcdef0 0x0123456789abcdefABCDEF01234567890abcdef0' # spaced not csv
+		'0x0123456789abcdefABCDEF01234567890abcdef0 0x0123456789abcdefABCDEF01234567890abcdef0'  # spaced not csv
 		'0x0123456789abcdefABCDEF01234567890abcdef0, 0x0123456789abcdefABCDEF01234567890abcdef0' # csv plus space
 	)
 	local curtest
@@ -219,15 +219,15 @@ function test_regex_eth_validator_pubkey_csv() {
 		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0123456789abcdefABCDEF01234567890abcdef00123456789abcdefABCDEF01234567890abcdef00123456789abcdef'
 	)
 	local invalids=(
-		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270' # too short
-		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270,0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270' # too short csv
-		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540ZEBRA' # invalid characters
-		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B1' # too long
-		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # missing 0x
-		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # missing 0x csv
-		'0x0x0fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0x0fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # too many 0x
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270'                                                                                                      # too short
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270,0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270'    # too short csv
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540ZEBRA'                                                                                                     # invalid characters
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B1'                                                                                                    # too long
+		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B'                                                                                                       # missing 0x
+		'a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,a90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B'      # missing 0x csv
+		'0x0x0fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0x0x0fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B'  # too many 0x
 		',0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B,0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # leading comma
-		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B 0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # spaced not csv
+		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B 0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B'  # spaced not csv
 		'0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B, 0xa90fdc2762f674332536dff57c4669e022c42881a600d2d5c1cb9b8b951fce3df0a209a7a97802302f55fdd2540d270B' # csv plus space
 	)
 	local curtest

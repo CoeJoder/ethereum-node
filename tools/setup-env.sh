@@ -78,7 +78,7 @@ client_pc_usb_data_drive="/media/$USER/DATA"
 # the location of the 'DATA' distribution
 usb_dist_dir="$client_pc_usb_data_drive/$dist_dirname"
 
-# the location of the `bls-to-execution-changes` signed messages
+# the location of the \`bls-to-execution-changes\` signed messages
 usb_bls_to_execution_changes_dir="$usb_dist_dir/bls_to_execution_changes"
 
 # the location of the exported validator statuses

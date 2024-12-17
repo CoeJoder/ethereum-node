@@ -3,7 +3,7 @@
 # unseal.sh
 #
 # Unseals the USB-deployed files for use by changing owner and permissions.
-# 
+#
 # Should be `source`d to run in the caller's shell.
 
 _dist_dirname='ethereum-node'

@@ -78,9 +78,9 @@ if [[ $ethereum_network == 'holesky' ]]; then
 	--genesis-beacon-api-url=\"$prysm_beacon_genesis_beacon_api_url\""
 
 	cat <<-EOF
-	Prysm-beacon checkpoint-sync URL: ${color_green}$prysm_beacon_checkpoint_sync_url${color_reset}
-	Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
-EOF
+		Prysm-beacon checkpoint-sync URL: ${color_green}$prysm_beacon_checkpoint_sync_url${color_reset}
+		Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
+	EOF
 else
 	printinfo "non-holesky network detected: checkpoint-sync disabled"
 	prysm_beacon_checkpoint_sync_url=""
@@ -122,7 +122,7 @@ sudo apt-get -y upgrade
 
 # JWT secret
 printinfo "Generating JWT secret..."
-openssl rand -hex 32 | tr -d "\n" > "jwt.hex"
+openssl rand -hex 32 | tr -d "\n" >"jwt.hex"
 sudo mkdir -p "$(dirname "$eth_jwt_file")"
 sudo mv -vf jwt.hex "$eth_jwt_file"
 sudo chmod 644 "$eth_jwt_file"

@@ -101,6 +101,6 @@ print_failed_checks --error
 
 cat <<-EOF
 
-Saved as:
-${theme_command}$validator_statuses_json${color_reset}
+	Saved as:
+	${theme_command}$validator_statuses_json${color_reset}
 EOF

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# update.sh 
+# update.sh
 #
-# Updates to the latest version all node programs, if installed (geth, 
+# Updates to the latest version all node programs, if installed (geth,
 # prysm-beacon, prysm-validator, prysmctl).
 #
 # Meant to be run on the node server.

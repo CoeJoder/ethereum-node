@@ -9,11 +9,11 @@ source "$tools_dir/../src/common.sh"
 housekeeping
 
 function show_usage() {
-	cat >&2 <<-EOF 
-	Usage: $(basename ${BASH_SOURCE[0]}) [options]
-		--dry-run   Perform a dry-run of the rsync transfers
-		--usb       Deploy to the USB 'DATA' drive. Omit to deploy to the node server instead
-		--help, -h  Show this message
+	cat >&2 <<-EOF
+		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+			--dry-run   Perform a dry-run of the rsync transfers
+			--usb       Deploy to the USB 'DATA' drive. Omit to deploy to the node server instead
+			--help, -h  Show this message
 	EOF
 }
 
@@ -155,7 +155,7 @@ if [[ $usb_mode == true ]]; then
 	download_file "$ethereum_staking_deposit_cli_url"
 
 	# construct a .sha256 file from the value listed on the release page and run shasum with it
-	echo "$ethereum_staking_deposit_cli_sha256_checksum  $ethereum_staking_deposit_cli_basename" > "$ethereum_staking_deposit_cli_basename_sha256"
+	echo "$ethereum_staking_deposit_cli_sha256_checksum  $ethereum_staking_deposit_cli_basename" >"$ethereum_staking_deposit_cli_basename_sha256"
 	if ! sha256sum -c "$ethereum_staking_deposit_cli_basename_sha256"; then
 		printerr "checksum failed; expected: ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"
 		exit 1
@@ -176,7 +176,7 @@ if [[ $usb_mode == true ]]; then
 	cp -vf "$jq_bin" "$usb_dist_dir"
 	cp -vf "$jq_bin_sha256" "$usb_dist_dir"
 
-	# overwrite non-generated files and remove deleted files i.e. those listed in 
+	# overwrite non-generated files and remove deleted files i.e. those listed in
 	# includes-file but not existing in source filesystem
 	rsync -avh \
 		--progress \
@@ -198,7 +198,7 @@ if [[ $usb_mode == true ]]; then
 	# deploy the unseal.sh script to the dist parent dir
 	unseal_dest="$client_pc_usb_data_drive/unseal.sh"
 	sudo cp -fv "$tools_dir/unseal.sh" "$unseal_dest"
-	
+
 	# seal the deployment
 	sudo chown -R root:root "$usb_dist_dir"
 	sudo chown root:root "$unseal_dest"
@@ -209,7 +209,7 @@ else
 
 	printinfo "Deploying..."
 
-	# overwrite non-generated files and remove deleted files i.e. those listed in 
+	# overwrite non-generated files and remove deleted files i.e. those listed in
 	# includes-file but not existing in source filesystem
 	rsync -avh -e "ssh -p $node_server_ssh_port" \
 		--progress \
@@ -245,6 +245,6 @@ if [[ $usb_mode == true ]]; then
 
 	cat <<-EOF
 
-	Success!  Downloaded the offline tools to the USB 'DATA' drive.
+		Success!  Downloaded the offline tools to the USB 'DATA' drive.
 	EOF
 fi

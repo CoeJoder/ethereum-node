@@ -81,10 +81,10 @@ readarray -td '' bls_messages < <(LC_ALL=C find \
 	sort -rzn | cut -zd/ -f2-)
 
 # prompt for which bls message to submit if multiple found
-if (( ${#bls_messages[@]} == 0 )); then
+if ((${#bls_messages[@]} == 0)); then
 	printerr "No bls messages found in ${theme_filename}$usb_bls_to_execution_changes_dir${color_reset}"
 	exit 1
-elif (( ${#bls_messages[@]} == 1 )); then
+elif ((${#bls_messages[@]} == 1)); then
 	bls_message="${bls_messages[0]}"
 	printinfo "Found ${theme_filename}$bls_message${color_reset}"
 	continue_or_exit

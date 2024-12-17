@@ -101,7 +101,7 @@ function set_env() {
 	check_executable_exists env_base_sh
 	print_failed_checks --error || exit
 	source "$env_base_sh"
-	
+
 	# warn if private env is missing but don't exit
 	check_executable_exists env_sh
 	if print_failed_checks --warn; then
@@ -117,7 +117,7 @@ function log_timestamp() {
 	if [[ $# -gt 0 ]]; then
 		_file="$1"
 	fi
-	echo -e "\n$(date "+%m-%d-%Y, %r")" >> "$_file"
+	echo -e "\n$(date "+%m-%d-%Y, %r")" >>"$_file"
 }
 
 # rotate log file if necessary and begin logging terminal output
@@ -128,7 +128,7 @@ function log_start() {
 			printwarn "log file ≥ $max_log_size B"
 			if yes_or_no --default-yes "Rotate log?"; then
 				mv -vf "$log_file" "$log_file_previous"
-				echo -e "Log rotated: $log_file_previous" >> "$log_file"
+				echo -e "Log rotated: $log_file_previous" >>"$log_file"
 			fi
 		fi
 	fi
@@ -137,7 +137,7 @@ function log_start() {
 
 # restore stdout & stderr
 function log_pause() {
-	echo -e "[Logging paused] $@" >> "$log_file"
+	echo -e "[Logging paused] $@" >>"$log_file"
 	exec 1>&3 2>&4
 }
 
@@ -145,7 +145,7 @@ function log_pause() {
 function log_resume() {
 	exec 3>&1 4>&2
 	exec &> >(tee -a "$log_file")
-	echo -e "[Logging resumed] $@" >> "$log_file"
+	echo -e "[Logging resumed] $@" >>"$log_file"
 }
 
 # common logging suffix for INFO messages
@@ -254,8 +254,8 @@ function read_no_default() {
 # source: https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c
 function get_latest_release() {
 	curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
-		grep '"tag_name":' |                                            # Get tag line
-		sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
+		grep '"tag_name":' |                                             # Get tag line
+		sed -E 's/.*"([^"]+)".*/\1/'                                     # Pluck JSON value
 }
 
 # factor; get the latest "vX.Y.Z" version of a GH project
@@ -320,9 +320,9 @@ function download_jq() {
 	local all_sha256_url="https://github.com/jqlang/jq/releases/download/${version}/${all_sha256}"
 	download_file "$program_bin_url" || return
 	download_file "$all_sha256_url" || return
-	
+
 	# all checksums are in a single file; we will filter it
-	grep --color=never "$program_bin" "$all_sha256" > "$program_bin_sha256"
+	grep --color=never "$program_bin" "$all_sha256" >"$program_bin_sha256"
 	shasum -a 256 -c "$program_bin_sha256" || return
 }
 
@@ -391,8 +391,8 @@ function parse_index_from_signing_key_path() {
 	fi
 	local signing_key_path="$1" outvar="$2"
 	if [[ ! $signing_key_path =~ $regex_eth_validator_signing_key_path ]]; then
-			printerr "unrecognized signing key path: $signing_key_path" >&2
-			return 1
+		printerr "unrecognized signing key path: $signing_key_path" >&2
+		return 1
 	fi
 	printf -v $outvar "${BASH_REMATCH[1]}"
 }
@@ -483,7 +483,7 @@ function is_devmode() {
 # 'no' is always falsey (returns 1)
 function yes_or_no() {
 	local confirm
-	if [[ $# -ne 2 || ( $1 != '--default-yes' && $1 != '--default-no' ) ]]; then
+	if [[ $# -ne 2 || ($1 != '--default-yes' && $1 != '--default-no') ]]; then
 		printerr 'usage: yes_or_no {--default-yes|--default-no} prompt'
 		exit 2
 	fi
@@ -528,27 +528,26 @@ function choose_from_menu() {
 	local options=("$@") cur=0 count=${#options[@]} index=0
 	local esc=$(echo -en "\e") # cache ESC as test doesn't allow esc codes
 	printf "$prompt\n"
-	while true
-	do
+	while true; do
 		# list all options (option list is zero-based)
-		index=0 
-		for o in "${options[@]}"
-		do
-			if [ "$index" == "$cur" ]
-			then echo -e " >\e[7m$o\e[0m" # mark & highlight the current option
-			else echo "  $o"
+		index=0
+		for o in "${options[@]}"; do
+			if [ "$index" == "$cur" ]; then
+				echo -e " >\e[7m$o\e[0m" # mark & highlight the current option
+			else
+				echo "  $o"
 			fi
-			index=$(( $index + 1 ))
+			index=$(($index + 1))
 		done
-		read -s -n3 key # wait for user to key in arrows or ENTER
-		if [[ $key == "$esc[A" ]] # up arrow
-		then cur=$(( $cur - 1 ))
+		read -s -n3 key                 # wait for user to key in arrows or ENTER
+		if [[ $key == "$esc[A" ]]; then # up arrow
+			cur=$(($cur - 1))
 			[ "$cur" -lt 0 ] && cur=0
-		elif [[ $key == "$esc[B" ]] # down arrow
-		then cur=$(( $cur + 1 ))
-			[ "$cur" -ge $count ] && cur=$(( $count - 1 ))
-		elif [[ $key == "" ]] # nothing, i.e the read delimiter - ENTER
-		then break
+		elif [[ $key == "$esc[B" ]]; then # down arrow
+			cur=$(($cur + 1))
+			[ "$cur" -ge $count ] && cur=$(($count - 1))
+		elif [[ $key == "" ]]; then # nothing, i.e the read delimiter - ENTER
+			break
 		fi
 		echo -en "\e[${count}A" # go up to the beginning to re-render
 	done
@@ -586,7 +585,7 @@ function assert_not_on_node_server() {
 # assert that script process does not have access to the internet
 function assert_offline() {
 	if is_online; then
-  	printerr "script must be run on the air-gapped PC"
+		printerr "script must be run on the air-gapped PC"
 		exit 1
 	fi
 }
@@ -605,7 +604,7 @@ function has_failed_checks() {
 
 # print failed checks with given log-level, return error code if failures
 function print_failed_checks() {
-	if [[ $# -ne 1 || ( $1 != "--warn" && $1 != "--error" ) ]]; then
+	if [[ $# -ne 1 || ($1 != "--warn" && $1 != "--error") ]]; then
 		printerr "usage: print_failed_checks {--warn|--error}"
 		exit 2
 	fi

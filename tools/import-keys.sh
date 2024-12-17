@@ -157,5 +157,5 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
 
 cat <<-EOF
 
-After verifying the above, you are ready to upload your deposit data.
+	After verifying the above, you are ready to upload your deposit data.
 EOF

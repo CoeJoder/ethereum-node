@@ -110,7 +110,6 @@ function on_exit() {
 }
 trap 'on_exit' EXIT
 
-
 printinfo "Ready to invoke prysmctl the following way:${theme_command}"
 cat <<EOF
 sudo -u "$prysmctl_user" "$prysmctl_bin" validator withdraw \\

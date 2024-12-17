@@ -101,9 +101,9 @@ if [[ $ethereum_network == 'holesky' ]]; then
 	--genesis-beacon-api-url=\"$prysm_beacon_genesis_beacon_api_url\""
 
 	cat <<-EOF
-	Prysm-beacon checkpoint-sync URL: ${color_green}$prysm_beacon_checkpoint_sync_url${color_reset}
-	Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
-EOF
+		Prysm-beacon checkpoint-sync URL: ${color_green}$prysm_beacon_checkpoint_sync_url${color_reset}
+		Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
+	EOF
 else
 	printinfo "non-holesky network detected: checkpoint-sync disabled"
 	prysm_beacon_checkpoint_sync_url=""

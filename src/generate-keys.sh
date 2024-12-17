@@ -24,15 +24,15 @@ function show_usage() {
 		Options:
 		  --keystore_password value       Keystore password.  Used to decrypt keystores when during validator import
 		  --num_validators value          Number of validator keys to generate
-			--validator_start_index value   [existing-mnemonic] Validator start index, 0-based.  Omit to be prompted for it instead
+		  --validator_start_index value   [existing-mnemonic] Validator start index, 0-based.  Omit to be prompted for it instead
 		  --mnemonic value                [existing-mnemonic] Mnemonic used to generate the validator keys.  Omit to be prompted for it instead
-			--deposit_cli value             Path to the extracted deposit-cli binary (optional)
-			--no_logging                    Prevent logging terminal output to logfile
-			--no_banner                     Prevent banner display
+		  --deposit_cli value             Path to the extracted deposit-cli binary (optional)
+		  --no_logging                    Prevent logging terminal output to logfile
+		  --no_banner                     Prevent banner display
 		  --help, -h                      Show this message
 		Commands:
 		  n, new-mnemonic                 Generate a new mnemonic and from it, the validator keys
-			e, existing-mnemonic            Use an existing mnemonic to generate the validator keys
+		  e, existing-mnemonic            Use an existing mnemonic to generate the validator keys
 	EOF
 }
 
@@ -158,9 +158,9 @@ validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 if [[ $no_banner == false ]]; then
 	echo "${color_blue}${bold}"
 	cat <<-'EOF'
-	░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░░█░█░█▀▀░█░█░█▀▀
-	░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄░█▀▄░█▀▀░░█░░▀▀█
-	░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░░▀░▀░▀▀▀░░▀░░▀▀▀
+		░█▀▀░█▀▀░█▀█░█▀▀░█▀▄░█▀█░▀█▀░█▀▀░░░░░█░█░█▀▀░█░█░█▀▀
+		░█░█░█▀▀░█░█░█▀▀░█▀▄░█▀█░░█░░█▀▀░▄▄▄░█▀▄░█▀▀░░█░░▀▀█
+		░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀░▀░▀░▀░░▀░░▀▀▀░░░░░▀░▀░▀▀▀░░▀░░▀▀▀
 	EOF
 	echo -n "${color_reset}"
 
@@ -172,8 +172,8 @@ if [[ $no_banner == false ]]; then
 	fi
 
 	cat <<-EOF
-	$preamble
-	See: https://github.com/ethereum/staking-deposit-cli?tab=readme-ov-file#step-2-create-keys-and-deposit_data-json
+		$preamble
+		See: https://github.com/ethereum/staking-deposit-cli?tab=readme-ov-file#step-2-create-keys-and-deposit_data-json
 	EOF
 	press_any_key_to_continue
 fi
