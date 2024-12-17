@@ -209,7 +209,6 @@ if [[ -z $num_validators ]]; then
 	printf '\n'
 fi
 
-# prompt for validator start index
 if [[ $mode_existing == true ]]; then
 	# prompt for validator start index if not passed as script arg
 	if [[ -z $validator_start_index ]]; then

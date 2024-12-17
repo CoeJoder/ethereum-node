@@ -109,10 +109,12 @@ cd ethereum-node
 
 ./tools/import-keys.sh
 # ignore any warnings that appear
-# when prompted to create a wallet password, also save it in your client PC's password manager
-# when prompted for the account password, enter the passphrase created in the previous step
 ```
+
+- [ ] when prompted to create a wallet password, also save it in your client PC's password manager
+- [ ] when prompted for the account password, enter the passphrase created in the previous step
 - [ ] login to the node server via SSH and set the wallet password:
+
 ```bash
 ssh -p 55522 eth-node-mainnet
 cd ethereum-node
@@ -145,8 +147,8 @@ ssh -p 55522 eth-node-mainnet
 cd ethereum-node
 
 # start the service and follow its log
-# press `ctrl + c` to exit the log
 ./enable-validator.sh
+# press `ctrl + c` to exit the log
 ```
 
 ### Next Steps

@@ -466,7 +466,8 @@ function test_check_directory_exists() {
 
 	# not exist, owned by root
 	reset_checks
-	for ((i = 0; i < ${#not_exist_root[@]}; i++)); do
+	len=${#not_exist_root[@]}
+	for ((i = 0; i < $len; i++)); do
 		curtest="${not_exist_root[i]}"
 		check_directory_exists --sudo curtest
 	done
