@@ -23,30 +23,6 @@ function portable_jq__preconditions() {
 	printf '\n'
 }
 
-function portable_jq__reconnaissaince() {
-	# common `jq` filters
-	filter_all='.[] | {
-		index,
-		status,
-		balance,
-		pubkey: .validator.pubkey,
-		bls_withdrawal_credentials: .validator.withdrawal_credentials
-	}'
-	filter_active='.[] | select(.status == "active_ongoing") | {
-		index,
-		status,
-		balance,
-		pubkey: .validator.pubkey,
-		bls_withdrawal_credentials: .validator.withdrawal_credentials
-	}'
-	filter_indices='.[] | select(.status == "active_ongoing") |
-		.index'
-	filter_pubkeys='.[] | select(.status == "active_ongoing") |
-		.validator.pubkey'
-	filter_bls_withdrawal_credentials='.[] | select(.status == "active_ongoing") |
-		.validator.withdrawal_credentials'
-}
-
 function jq() {
 	"$jq_bin_dist" "$@"
 }

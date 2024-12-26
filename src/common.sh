@@ -37,6 +37,28 @@ env_sh="$src_dir/env.sh"
 # log rotation threshold
 max_log_size=2097152 # 2 MB
 
+# common `jq` filters
+filter_all='.[] | {
+	index,
+	status,
+	balance,
+	pubkey: .validator.pubkey,
+	bls_withdrawal_credentials: .validator.withdrawal_credentials
+}'
+filter_active='.[] | select(.status == "active_ongoing") | {
+	index,
+	status,
+	balance,
+	pubkey: .validator.pubkey,
+	bls_withdrawal_credentials: .validator.withdrawal_credentials
+}'
+filter_indices='.[] | select(.status == "active_ongoing") |
+	.index'
+filter_pubkeys='.[] | select(.status == "active_ongoing") |
+	.validator.pubkey'
+filter_bls_withdrawal_credentials='.[] | select(.status == "active_ongoing") |
+	.validator.withdrawal_credentials'
+
 # e.g. "0xAbC123"
 regex_eth_addr='^0x[[:xdigit:]]{40}$'
 
