@@ -46,6 +46,7 @@
 !docs/node-setup.md
 !docs/partial-withdrawal.md
 !docs/validator-setup.md
+!docs/voluntary-exit.md
 
 !tools/
 !tools/deploy.sh
