@@ -237,9 +237,9 @@ sudo systemctl daemon-reload
 # -------------------------- POSTCONDITIONS -----------------------------------
 
 reset_checks
-check_file_exists geth_unit_file
-check_file_exists prysm_beacon_unit_file
-check_file_exists prysm_validator_unit_file
+check_file_exists --sudo geth_unit_file
+check_file_exists --sudo prysm_beacon_unit_file
+check_file_exists --sudo prysm_validator_unit_file
 print_failed_checks --error
 
 cat <<EOF
