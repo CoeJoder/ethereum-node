@@ -133,8 +133,7 @@ fi
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
-# TODO debugging
-# assert_offline
+assert_offline
 assert_sudo
 
 # validate opts and params
