@@ -1,12 +1,17 @@
 #!/bin/bash
 
+# exit.sh
+#
+# Performs a voluntary exit of one or more validators.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e
 
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
-source "$this_dir/_portable_jq.sh"
 housekeeping
 
 # -------------------------- PRECONDITIONS ------------------------------------
@@ -14,20 +19,20 @@ housekeeping
 assert_on_node_server
 assert_sudo
 
-portable_jq__preconditions
-
 reset_checks
+check_is_defined filter_active
 check_is_valid_ethereum_network ethereum_network
-check_user_exists prysmctl_user
-check_group_exists prysmctl_group
 check_executable_exists --sudo prysmctl_bin
 check_directory_exists --sudo prysm_validator_wallet_dir
 check_file_exists --sudo prysm_validator_wallet_password_file
+for _command in jq; do
+	check_command_exists_on_path _command
+done
 print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -ne "${color_green}${bold}"
+echo -n "${color_green}${bold}"
 cat <<'EOF'
                     $$\   $$\     
                     \__|  $$ |    
@@ -38,22 +43,16 @@ $$   ____| $$  $$<  $$ |  $$ |$$\
 \$$$$$$$\ $$  /\$$\ $$ |  \$$$$  |
  \_______|\__/  \__|\__|   \____/ 
 EOF
-echo -ne "${color_reset}"
+echo -n "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<'EOF'
 Performs a voluntary exit of one or more validators.
 EOF
+press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
-
-portable_jq__reconnaissaince
-
-# variables set in jq recon
-reset_checks
-check_is_defined filter_active
-print_failed_checks --error
 
 # -------------------------- EXECUTION ----------------------------------------
 
@@ -88,7 +87,7 @@ echo -e "\nEnter a comma-separated list of validator public keys (e.g. ${theme_e
 read_default "Validators to exit" "all" chosen_pubkeys_csv
 if [[ $chosen_pubkeys_csv == "all" ]]; then
 	prysm_param_validators="--exit-all"
-elif [[ $chosen_pubkeys_csv =~ $regex_eth_addr_csv ]]; then
+elif [[ $chosen_pubkeys_csv =~ $regex_eth_validator_pubkey_csv ]]; then
 	prysm_param_validators="--public-keys $chosen_pubkeys_csv"
 else
 	printerr 'expected "all" or a comma-separated list of hexadecimal numbers'
@@ -96,22 +95,14 @@ else
 fi
 printf '\n'
 
-# TODO keep this section as reference until script tests OK
-
-# # need to invoke prysmctl as `prysmvalidator`, in a directory where both
-# # the current user and `prysmvalidator` have read/write/execute permissions
-# install_dir="/var/lib/prysm/prysmctl"
-# assert_sudo
-# sudo mkdir -p "$install_dir"
-# sudo mv -f "$prysmctl_bin" "$install_dir"
-# sudo chown -R "${USER}:${prysm_validator_user}" "$install_dir"
-# sudo chmod -R 770 "$install_dir"
-# popd >/dev/null
-# pushd "$install_dir" >/dev/null
+# need to invoke prysmctl as validator user, in a directory where both
+# current user and validator user have read/write/execute permissions
+sudo chown -R "${USER}:${prysm_validator_user}" "$temp_dir"
+sudo chmod -R 770 "$temp_dir"
 
 cat <<EOF
 Ready to invoke prysmctl the following way:${theme_command}
-sudo -u "$prysmctl_user" "$prysmctl_bin" validator exit \\
+sudo -u "$prysm_validator_user" "$prysmctl_bin" validator exit \\
 	--wallet-dir "$prysm_validator_wallet_dir" \\
 	--wallet-password-file "$prysm_validator_wallet_password_file" \\
 	--accept-terms-of-use \\
@@ -123,8 +114,7 @@ EOF
 
 continue_or_exit
 
-# TODO verify this works; original was invoked as `prysmvalidator` user
-sudo -u "$prysmctl_user" "$prysmctl_bin" validator exit \
+sudo -u "$prysm_validator_user" "$prysmctl_bin" validator exit \
 	--wallet-dir "$prysm_validator_wallet_dir" \
 	--wallet-password-file "$prysm_validator_wallet_password_file" \
 	--accept-terms-of-use \

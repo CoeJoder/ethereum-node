@@ -26,6 +26,7 @@ check_is_valid_ethereum_address suggested_fee_recipient
 check_user_does_not_exist prysm_validator_user
 check_group_does_not_exist prysm_validator_group
 check_directory_does_not_exist --sudo prysm_validator_datadir
+check_group_exists prysmctl_group
 
 print_failed_checks --error
 
@@ -94,6 +95,7 @@ sudo useradd --no-create-home --shell /bin/false "$prysm_validator_user"
 sudo mkdir -p "$prysm_validator_datadir"
 sudo chown -R "${prysm_validator_user}:${prysm_validator_group}" "$prysm_validator_datadir"
 sudo chmod -R 700 "$prysm_validator_datadir"
+sudo usermod -a -G "$prysmctl_group" "$prysm_validator_user"
 
 # prysm-validator install
 printinfo "Downloading prysm-validator..."
