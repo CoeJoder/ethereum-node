@@ -7,8 +7,7 @@
 - [ ] client PC is powered on and able to SSH into the node server
 
 ## Postconditions
-- validator(s) will be exited and their stakes sent to their respective withdrawal addressses
-- if all validators are exited, node server can be wiped & decommissioned
+- validator(s) will be exited and their stakes sent to their respective withdrawal addresses
 
 ## Configurable Values
 As in the initial setup guide, this guide is written using the following configurable values:
@@ -32,15 +31,12 @@ cd ethereum-node
 ./exit.sh
 ```
 
-- [ ] verify that `beaconcha.in` website reflects exiting status (may take several minutes):
-```
-mainnet: https://beaconcha.in/validator/[index or pubkey]
-holesky: https://holesky.beaconcha.in/validator/[index or pubkey]
-```
+- [ ] verify that beaconchain website reflects exiting status (may take several minutes):
+	- mainnet - https://beaconcha.in/validator/[index or pubkey]
+	- holesky - https://holesky.beaconcha.in/validator/[index or pubkey]
 
 ### Next Steps
 If all validators have been exited, you may safely shutdown and decommission the node server.  Otherwise:
 
 - [Add Validators](./add-validators.md)
-
 
