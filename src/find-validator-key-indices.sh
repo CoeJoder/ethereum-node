@@ -257,7 +257,7 @@ for ((i = 0; i < num_pubkeys; i++)); do
 	fi
 done
 
-# print sorted indices to stdout
+# print sorted indices to file
 num_found=${#indices_found[@]}
 if [[ $num_found -ne 0 ]]; then
 	printinfo "Found $num_found matches:"

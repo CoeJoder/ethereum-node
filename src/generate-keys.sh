@@ -181,11 +181,18 @@ fi
 
 [[ -z $deposit_cli_bin ]] && staking_deposit_cli__reconnaissance
 
+# prompt to delete destination directory if present
+assert_sudo
+if sudo test -d "$validator_keys_dir"; then
+	printwarn "Destination already exists: $validator_keys_dir"
+	continue_or_exit 1 "Overwrite?"
+	sudo rm -rfv --interactive=never "$validator_keys_dir"
+fi
+
 # prompt for keystore password if not passed as script arg
 if [[ -z $keystore_password ]]; then
 	log_pause "keystore password entry"
-	echo "Create a password that secures your validator keystore(s). You will \
-	need to re-enter this to decrypt them when you setup your Ethereum validators"
+	echo "Create a password that secures your validator keystore(s). You will need to re-enter this to decrypt them when you setup your Ethereum validators"
 	enter_password_and_confirm "Choose a keystore password" \
 		"$errmsg_keystore_password" \
 		check_is_valid_keystore_password \

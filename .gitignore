@@ -24,6 +24,7 @@
 !src/find-validator-key-indices.sh
 !src/generate-bls-to-execution-change-message.sh
 !src/generate-keys.sh
+!src/generate-next-keys.sh
 !src/get-validator-statuses.sh
 !src/init.sh
 !src/print-env.sh
@@ -41,6 +42,7 @@
 !test/tests.sh
 
 !docs/
+!docs/add-validators.md
 !docs/hardware-requirements.md
 !docs/initial-setup.md
 !docs/node-setup.md

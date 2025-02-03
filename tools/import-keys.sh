@@ -86,6 +86,7 @@ trap 'on_err_retry' ERR
 # chown the `DATA` dir and pushd into it
 printinfo "Chowning the source files..."
 sudo chown -R "$USER:$USER" "$usb_dist_dir"
+sudo chmod 700 "$usb_dist_dir"
 pushd "$usb_dist_dir" >/dev/null
 
 # 1. create remote tempdir
@@ -99,6 +100,11 @@ function on_exit() {
 	# 4. delete the remote tempdir if it exists
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
 		rm -rf --interactive=never \"$remote_temp_dir\" >/dev/null"
+
+	# 5. reseal the USB deployment
+	sudo chown -R root:root "$usb_dist_dir"
+	sudo chmod 0 "$usb_dist_dir"
+
 	print_ok
 }
 trap 'on_exit' EXIT
@@ -147,7 +153,7 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 # -------------------------- POSTCONDITIONS -----------------------------------
 
 printinfo "Verify that the new accounts are listed here:"
-ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
+ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 	sudo -u \"$prysm_validator_user\" validator accounts list \\
 		--wallet-dir=\"$prysm_validator_wallet_dir\" \\
 		--wallet-password-file=\"$prysm_validator_wallet_password_file\" \\

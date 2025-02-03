@@ -52,11 +52,13 @@ filter_active='.[] | select(.status == "active_ongoing") | {
 	pubkey: .validator.pubkey,
 	bls_withdrawal_credentials: .validator.withdrawal_credentials
 }'
-filter_indices='.[] | select(.status == "active_ongoing") |
+filter_active_indices='.[] | select(.status == "active_ongoing") |
 	.index'
-filter_pubkeys='.[] | select(.status == "active_ongoing") |
+filter_active_pubkeys='.[] | select(.status == "active_ongoing") |
 	.validator.pubkey'
-filter_bls_withdrawal_credentials='.[] | select(.status == "active_ongoing") |
+filter_all_pubkeys='.[] |
+	.validator.pubkey'
+filter_active_bls_withdrawal_credentials='.[] | select(.status == "active_ongoing") |
 	.validator.withdrawal_credentials'
 
 # e.g. "0xAbC123"

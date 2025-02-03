@@ -128,12 +128,26 @@ exit
 
 ### 5. Deposit 32 ETH Per Validator
 
+- [ ] unseal the USB files:
+
+```bash
+cd /media/mint/DATA/
+source ./unseal.sh
+```
+
 - [ ] browse to the Ethereum Staking Launchpad page:
 	- [mainnet](https://launchpad.ethereum.org/en/overview) or [holesky](https://holesky.launchpad.ethereum.org/en/overview)
 - [ ] keep clicking <kbd>Continue</kbd> and <kbd>I Accept</kbd> until you reach the `Upload deposit data` page (no need to fill out the forms along the way)
 - [ ] follow the website instructions to upload the `deposit_data-XYZ.json` file from the `validator_keys` directory of the `DATA` USB flash drive
 - [ ] follow the website instructions to connect your MetaMask wallet and complete the deposits: one for each validator
 	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the "ethstaker" Discord server if needed.
+
+- [ ] reseal the USB files:
+
+```bash
+cd /media/mint/DATA/ethereum-node
+source ./seal.sh
+```
 
 ### 6. Enable Validator Service
 
@@ -151,7 +165,7 @@ cd ethereum-node
 # press `ctrl + c` to exit the log
 ```
 
-### Next Steps
+## Next Steps
 
 - [Add validators](./add-validators.md)
 - [Withdraw validators](./partial-withdrawal.md)

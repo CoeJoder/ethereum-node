@@ -149,9 +149,9 @@ printinfo "Active validators:"
 echo "$active_validators" >&2
 
 # create parallel arrays to hold validator info
-readarray -t indices < <(jq -r "$filter_indices" "$validator_statuses_json")
-readarray -t pubkeys < <(jq -r "$filter_pubkeys" "$validator_statuses_json")
-readarray -t bls_withdrawal_credentials < <(jq -r "$filter_bls_withdrawal_credentials" "$validator_statuses_json")
+readarray -t indices < <(jq -r "$filter_active_indices" "$validator_statuses_json")
+readarray -t pubkeys < <(jq -r "$filter_active_pubkeys" "$validator_statuses_json")
+readarray -t bls_withdrawal_credentials < <(jq -r "$filter_active_bls_withdrawal_credentials" "$validator_statuses_json")
 
 # map the validators by pubkey
 declare -A pubkey_map

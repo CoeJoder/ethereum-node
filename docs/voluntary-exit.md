@@ -35,7 +35,7 @@ cd ethereum-node
 	- mainnet - https://beaconcha.in/validator/[index or pubkey]
 	- holesky - https://holesky.beaconcha.in/validator/[index or pubkey]
 
-### Next Steps
+## Next Steps
 If all validators have been exited, you may safely shutdown and decommission the node server.  Otherwise:
 
 - [Add Validators](./add-validators.md)

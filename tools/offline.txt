@@ -6,6 +6,7 @@ _staking-deposit-cli.sh
 find-validator-key-indices.sh
 generate-bls-to-execution-change-message.sh
 generate-keys.sh
+generate-next-keys.sh
 init.sh
 partial-withdrawal.sh
 seal.sh

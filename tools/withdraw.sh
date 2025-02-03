@@ -5,7 +5,7 @@
 # Uploads the `bls-to-execution-change` message from the `DATA` flash drive
 # to the node server, then submits it via prysm-beacon, initiating withdrawal.
 #
-# Meant to be executed on the client PC
+# Meant to be executed on the client PC.
 
 # -------------------------- HEADER -------------------------------------------
 
@@ -108,11 +108,12 @@ function on_exit() {
 	# 4. delete the remote tempdir if it exists
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
 		rm -rf --interactive=never \"$remote_temp_dir\" >/dev/null"
-	print_ok
 
 	# 5. reseal the USB deployment
 	sudo chown -R root:root "$usb_dist_dir"
 	sudo chmod 0 "$usb_dist_dir"
+	
+	print_ok
 }
 trap 'on_exit' EXIT
 
