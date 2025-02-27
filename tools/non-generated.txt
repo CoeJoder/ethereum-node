@@ -21,3 +21,4 @@ setup-node.sh
 setup-prysmctl.sh
 setup-validator.sh
 submit-bls-to-execution-change-message.sh
+update.sh
