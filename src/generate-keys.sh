@@ -38,6 +38,7 @@ function show_usage() {
 
 _parsed_args=$(getopt --options='h' --longoptions='keystore_password:,num_validators:,validator_start_index:,mnemonic:,deposit_cli:,no_logging,no_banner,help' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
+(($? != 0)) && exit 1
 eval set -- "$_parsed_args"
 unset _parsed_args
 

@@ -26,6 +26,7 @@ function show_usage() {
 
 _parsed_args=$(getopt --options='h' --longoptions='help,path:' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
+(($? != 0)) && exit 1
 eval set -- "$_parsed_args"
 unset _parsed_args
 
