@@ -253,6 +253,7 @@ sudo fdisk $secondary_drive
 # Partition number (1-128, default 1): <Enter>
 # First sector (2048-120164351, default 2048): <Enter>
 # Last sector (2048-1250164703, default 1250162687): <Enter>
+# Do you want to remove the signature? [Y]es/[N]o: y
 # Command (m for help): w
 
 # format the new partition
