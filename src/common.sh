@@ -317,7 +317,7 @@ function get_latest_prysm_version() {
 		return 2
 	fi
 	local outvar="$1"
-	_get_latest_version "prysmaticlabs/prysm" "$outvar"
+	_get_latest_version "OffchainLabs/prysm" "$outvar"
 }
 
 # download a file silently (except on error) using `curl`
@@ -359,9 +359,9 @@ function download_prysm() {
 	fi
 	local program="$1" version="$2" outvar="$3"
 	local program_bin="${program}-${version}-linux-amd64"
-	local program_bin_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin}"
+	local program_bin_url="https://github.com/OffchainLabs/prysm/releases/download/${version}/${program_bin}"
 	local program_bin_sha256="${program}-${version}-linux-amd64.sha256"
-	local program_bin_sha256_url="https://github.com/prysmaticlabs/prysm/releases/download/${version}/${program_bin_sha256}"
+	local program_bin_sha256_url="https://github.com/OffchainLabs/prysm/releases/download/${version}/${program_bin_sha256}"
 	download_file "$program_bin_url" || return
 	download_file "$program_bin_sha256_url" || return
 	shasum -a 256 -cq "$program_bin_sha256" || return
