@@ -733,7 +733,7 @@ function check_file_exists() {
 
 function check_is_valid_ethereum_network() {
 	if _check_is_defined $1; then
-		if [[ ${!1} != 'mainnet' && ${!1} != 'holesky' ]]; then
+		if [[ ${!1} != 'mainnet' && ${!1} != 'hoodi' ]]; then
 			_check_failures+=("invalid Ethereum network: ${!1}")
 		fi
 	fi

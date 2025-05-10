@@ -92,11 +92,11 @@ Prysm-beacon P2P quic port: ${color_green}$prysm_beacon_p2p_quic_port${color_res
 Prysm-beacon P2P TCP port: ${color_green}$prysm_beacon_p2p_tcp_port${color_reset}
 EOF
 
-# only use checkpoint-sync on 'holesky' testnet, due to trust required
+# only use checkpoint-sync on 'hoodi' testnet, due to trust required
 # see: https://docs.prylabs.network/docs/prysm-usage/checkpoint-sync
 prysm_beacon_cpsync_opts=""
-if [[ $ethereum_network == 'holesky' ]]; then
-	printinfo "holesky network detected: checkpoint-sync enabled"
+if [[ $ethereum_network == 'hoodi' ]]; then
+	printinfo "hoodi network detected: checkpoint-sync enabled"
 	prysm_beacon_cpsync_opts="--checkpoint-sync-url=\"$prysm_beacon_checkpoint_sync_url\" \\
 	--genesis-beacon-api-url=\"$prysm_beacon_genesis_beacon_api_url\""
 
@@ -105,7 +105,7 @@ if [[ $ethereum_network == 'holesky' ]]; then
 		Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
 	EOF
 else
-	printinfo "non-holesky network detected: checkpoint-sync disabled"
+	printinfo "non-hoodi network detected: checkpoint-sync disabled"
 	prysm_beacon_checkpoint_sync_url=""
 	prysm_beacon_genesis_beacon_api_url=""
 fi

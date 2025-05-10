@@ -59,7 +59,7 @@ cat <<EOF >"$env_sh"
 suggested_fee_recipient=''
 withdrawal=''
 
-# the Ethereum network to use (holesky or mainnet)
+# the Ethereum network to use (hoodi or mainnet)
 ethereum_network='$ethereum_network'
 
 # the local IP address of your router
@@ -100,8 +100,8 @@ prysm_beacon_p2p_udp_port=$prysm_beacon_p2p_udp_port  # UDP
 # prysm max external connections
 prysm_beacon_p2p_max_peers=$prysm_beacon_p2p_max_peers
 
-# the hard-coded behavior is to use checkpoint-sync only on 'holesky' testnet 
-# these variables are ignored unless \`ethereum_network\` is set to 'holesky'
+# the hard-coded behavior is to use checkpoint-sync only on 'hoodi' testnet 
+# these variables are ignored unless \`ethereum_network\` is set to 'hoodi'
 prysm_beacon_checkpoint_sync_url='$prysm_beacon_checkpoint_sync_url'
 prysm_beacon_genesis_beacon_api_url='$prysm_beacon_genesis_beacon_api_url'
 

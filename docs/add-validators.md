@@ -72,7 +72,7 @@ source ./unseal.sh
 ```
 
 - [ ] browse to the Ethereum Staking Launchpad page:
-	- [mainnet](https://launchpad.ethereum.org/en/overview) or [holesky](https://holesky.launchpad.ethereum.org/en/overview)
+	- [mainnet](https://launchpad.ethereum.org/en/overview) or [hoodi](https://hoodi.launchpad.ethereum.org/en/overview)
 - [ ] keep clicking <kbd>Continue</kbd> and <kbd>I Accept</kbd> until you reach the `Upload deposit data` page (no need to fill out the forms along the way)
 - [ ] follow the website instructions to upload the `deposit_data-XYZ.json` file from the `validator_keys` directory of the `DATA` USB flash drive
 - [ ] follow the website instructions to connect your MetaMask wallet and complete the deposits: one for each validator
