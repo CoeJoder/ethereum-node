@@ -33,6 +33,7 @@ press_any_key_to_continue
 
 cat <<EOF
 suggested_fee_recipient=${color_green}$suggested_fee_recipient${color_reset}
+withdrawal=${color_green}$withdrawal${color_reset}
 
 ethereum_network=${color_green}$ethereum_network${color_reset}
 
