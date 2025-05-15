@@ -173,7 +173,7 @@ if [[ $no_banner == false ]]; then
 
 	cat <<-EOF
 		$preamble
-		See: https://github.com/ethereum/staking-deposit-cli?tab=readme-ov-file#step-2-create-keys-and-deposit_data-json
+		See: https://deposit-cli.ethstaker.cc/quick_setup.html#step-3-usage
 	EOF
 	press_any_key_to_continue
 fi
@@ -275,6 +275,9 @@ if [[ $mode_new == true ]]; then
 	EOF
 	continue_or_exit
 
+	# if logging isn't paused, ethstaker-deposit-cli glitches when showing the mnemonic
+	log_pause "new mnemonic generation"
+
 	# generate the key(s)
 	"$deposit_cli_bin" --language=English --non_interactive new-mnemonic \
 		--keystore_password="$keystore_password" \
@@ -282,6 +285,9 @@ if [[ $mode_new == true ]]; then
 		--mnemonic_language=English \
 		--chain="$ethereum_network" \
 		--folder="$validator_keys_parent_dir"
+	
+	log_resume "new mnemonic generation"
+
 else
 	# confirmation message
 	cat <<-EOF

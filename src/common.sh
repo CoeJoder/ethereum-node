@@ -81,7 +81,7 @@ regex_eth_validator_bls_withdrawal_credentials='^0x[[:xdigit:]]{64}$'
 # see: https://eips.ethereum.org/EIPS/eip-2334#validator-keys
 regex_eth_validator_signing_key_path='m/12381/3600/([[:digit:]]+)/0/0'
 
-# prompted by the staking deposit CLI
+# prompted by the EthStaker Deposit CLI
 regex_keystore_password='^.{8,}$'
 errmsg_keystore_password='expected a valid keystore password of at least 8-digits'
 
@@ -300,14 +300,14 @@ function _get_latest_version() {
 	printf -v "$outvar" "$version"
 }
 
-# get the latest Ethereum Staking Deposit CLI release version
+# get the latest EthStaker Deposit CLI release version
 function get_latest_deposit_cli_version() {
 	if [[ $# -ne 1 ]]; then
 		printerr "usage: get_latest_deposit_cli_version outvar"
 		return 2
 	fi
 	local outvar="$1"
-	_get_latest_version "ethereum/staking-deposit-cli" "$outvar"
+	_get_latest_version "eth-educators/ethstaker-deposit-cli" "$outvar"
 }
 
 # get the latest prysm release version

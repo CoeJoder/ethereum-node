@@ -76,12 +76,13 @@ prysmctl_group='prysmctl'
 prysmctl_bin='/usr/local/bin/prysmctl'
 prysmctl_datadir='/var/lib/prysm/prysmctl'
 
-# Ethereum Staking Deposit CLI values
-ethereum_staking_deposit_cli_version='v2.8.0'
-ethereum_staking_deposit_cli_sha256_checksum='ef021252abd2591ef6d3558fb3258b35f478c20333f2dff4a17cc79b573c3879'
-ethereum_staking_deposit_cli_basename='staking_deposit-cli-948d3fc-linux-amd64.tar.gz'
-ethereum_staking_deposit_cli_basename_sha256="${ethereum_staking_deposit_cli_basename}.sha256"
-ethereum_staking_deposit_cli_url="https://github.com/ethereum/staking-deposit-cli/releases/download/$ethereum_staking_deposit_cli_version/$ethereum_staking_deposit_cli_basename"
+# EthStaker Deposit CLI values
+ethstaker_deposit_cli_version='v1.2.0'
+ethstaker_deposit_cli_sha256_checksum='d17758a9a2dfd2f657a30cef8f5f8f16c95cc49e63e81e19b9fa2ac73aadd257'
+ethstaker_deposit_cli_basename='ethstaker_deposit-cli-18b7608-linux-amd64.tar.gz'
+ethstaker_deposit_cli_basename_sha256="${ethstaker_deposit_cli_basename}.sha256"
+ethstaker_deposit_cli_url="https://github.com/eth-educators/ethstaker-deposit-cli/releases/download/$ethstaker_deposit_cli_version/$ethstaker_deposit_cli_basename"
+ethstaker_deposit_cli_sha256_url="https://github.com/eth-educators/ethstaker-deposit-cli/releases/download/$ethstaker_deposit_cli_version/$ethstaker_deposit_cli_basename_sha256"
 
 # Portable `jq` values
 jq_version='jq-1.7.1'

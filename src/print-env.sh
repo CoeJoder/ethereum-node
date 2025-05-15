@@ -89,11 +89,13 @@ prysmctl_group=${color_green}$prysmctl_group${color_reset}
 prysmctl_bin=${color_green}$prysmctl_bin${color_reset}
 prysmctl_datadir=${color_green}$prysmctl_datadir${color_reset}
 
-ethereum_staking_deposit_cli_version=${color_green}$ethereum_staking_deposit_cli_version${color_reset}
-ethereum_staking_deposit_cli_sha256_checksum=${color_green}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}
-ethereum_staking_deposit_cli_basename=${color_green}$ethereum_staking_deposit_cli_basename${color_reset}
-ethereum_staking_deposit_cli_basename_sha256=${color_green}$ethereum_staking_deposit_cli_basename_sha256${color_reset}
-ethereum_staking_deposit_cli_url=${color_green}$ethereum_staking_deposit_cli_url${color_reset}
+ethstaker_deposit_cli_version=${color_green}$ethstaker_deposit_cli_version${color_reset}
+ethstaker_deposit_cli_sha256_checksum=${color_green}$ethstaker_deposit_cli_sha256_checksum${color_reset}
+ethstaker_deposit_cli_basename=${color_green}$ethstaker_deposit_cli_basename${color_reset}
+ethstaker_deposit_cli_basename_sha256=${color_green}$ethstaker_deposit_cli_basename_sha256${color_reset}
+ethstaker_deposit_cli_url=${color_green}$ethstaker_deposit_cli_url${color_reset}
+ethstaker_deposit_cli_sha256_url=${color_green}$ethstaker_deposit_cli_sha256_url${color_reset}
+
 
 jq_version=${color_green}$jq_version${color_reset}
 jq_bin=${color_green}$jq_bin${color_reset}

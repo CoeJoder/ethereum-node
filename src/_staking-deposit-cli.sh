@@ -2,7 +2,7 @@
 
 # _staking_deposit_cli.sh
 #
-# Common subroutines used with the Ethereum Staking Deposit CLI.
+# Common subroutines used with the EthStaker Deposit CLI.
 # Not meant to be run as a top-level script.
 
 function staking_deposit_cli__preconditions() {
@@ -12,12 +12,12 @@ function staking_deposit_cli__preconditions() {
 
 	reset_checks
 	check_is_defined this_dir
-	check_is_defined ethereum_staking_deposit_cli_version
-	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
-	check_is_defined ethereum_staking_deposit_cli_url
+	check_is_defined ethstaker_deposit_cli_version
+	check_is_defined ethstaker_deposit_cli_sha256_checksum
+	check_is_defined ethstaker_deposit_cli_url
 
-	deposit_cli="$this_dir/$ethereum_staking_deposit_cli_basename"
-	deposit_cli_sha256="$this_dir/$ethereum_staking_deposit_cli_basename_sha256"
+	deposit_cli="$this_dir/$ethstaker_deposit_cli_basename"
+	deposit_cli_sha256="$this_dir/$ethstaker_deposit_cli_basename_sha256"
 
 	check_file_exists --sudo deposit_cli
 	check_file_exists --sudo deposit_cli_sha256
@@ -25,13 +25,11 @@ function staking_deposit_cli__preconditions() {
 }
 
 function staking_deposit_cli__reconnaissance() {
-	printf '%s' \
-		"Using an online PC, navigate to " \
-		"${color_blue}https://github.com/ethereum/staking-deposit-cli/releases/tag/${ethereum_staking_deposit_cli_version}${color_reset} " \
-		"and verify the ${color_lightgray}SHA256 Checksum${color_reset} of ${theme_filename}$ethereum_staking_deposit_cli_basename${color_reset}"
-	printf '\n'
-	if ! yes_or_no --default-no "Does it match this? ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"; then
-		printerr "unexpected checksum; ensure that ${color_lightgray}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
+	printf '%s\n  %s\n' \
+		"Using an online PC, please run:" \
+		"${theme_command}wget -qO - '$ethstaker_deposit_cli_sha256_url' | cat${color_reset}"
+	if ! yes_or_no --default-no "Does the output match this? ${theme_value}$ethstaker_deposit_cli_sha256_checksum${color_reset}"; then
+		printerr "unexpected checksum; ensure that ${theme_value}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		return 1
 	fi
 	printf '\n'
@@ -58,10 +56,10 @@ function staking_deposit_cli__unpack_tarball() {
 
 	# unpack tarball
 	printinfo "Unpacking tarball..."
-	tar xvzf "$ethereum_staking_deposit_cli_basename"
+	tar xvzf "$ethstaker_deposit_cli_basename"
 	printf '\n'
 
-	local deposit_cli_dir="${dest_dir}/${ethereum_staking_deposit_cli_basename%%.*}"
+	local deposit_cli_dir="${dest_dir}/${ethstaker_deposit_cli_basename%%.*}"
 	deposit_cli_bin="$deposit_cli_dir/deposit"
 
 	# verify extraction success

@@ -60,9 +60,9 @@ check_is_defined dist_dirname
 if [[ $usb_mode == true ]]; then
 	check_directory_exists --sudo client_pc_usb_data_drive
 	check_is_defined usb_dist_dir
-	check_is_defined ethereum_staking_deposit_cli_version
-	check_is_defined ethereum_staking_deposit_cli_sha256_checksum
-	check_is_defined ethereum_staking_deposit_cli_url
+	check_is_defined ethstaker_deposit_cli_version
+	check_is_defined ethstaker_deposit_cli_sha256_checksum
+	check_is_defined ethstaker_deposit_cli_url
 	check_is_defined jq_bin
 	check_is_defined jq_bin_sha256
 else
@@ -115,20 +115,18 @@ press_any_key_to_continue
 if [[ $usb_mode == true ]]; then
 	get_latest_deposit_cli_version latest_deposit_cli_version
 
-	if [[ $latest_deposit_cli_version != $ethereum_staking_deposit_cli_version ]]; then
-		printerr "latest version is different than expected ($ethereum_staking_deposit_cli_version)"
-		printerr "update the ${color_lightgray}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} and relaunch this script"
+	if [[ $latest_deposit_cli_version != $ethstaker_deposit_cli_version ]]; then
+		printerr "latest version is different than expected ($ethstaker_deposit_cli_version)"
+		printerr "update the ${color_lightgray}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} and relaunch this script"
 		exit 1
 	fi
+	printf '\n'
 
-	printf '\n'
-	printf '%s' \
-		"Please navigate to " \
-		"${color_blue}https://github.com/ethereum/staking-deposit-cli/releases/tag/${ethereum_staking_deposit_cli_version}${color_reset} " \
-		"and verify the ${theme_value}SHA256 Checksum${color_reset} of ${theme_filename}$ethereum_staking_deposit_cli_basename${color_reset}"
-	printf '\n'
-	if ! yes_or_no --default-no "Does it match this? ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"; then
-		printerr "unexpected checksum; ensure that ${theme_value}ethereum_staking_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
+	printinfo "Verifying ${theme_value}ethstaker-deposit-cli${color_reset} SHA256 checksum of the release page matches our saved value..."
+	fetched_ethstaker_deposit_cli_sha265="$(wget -qO - "$ethstaker_deposit_cli_sha256_url" | cat)"
+	if [[ $fetched_ethstaker_deposit_cli_sha265 != $ethstaker_deposit_cli_sha256_checksum ]]; then
+		printerr "Found: $fetched_ethstaker_deposit_cli_sha265\nExpected: $ethstaker_deposit_cli_sha256_checksum\n" \
+			"Ensure that ${theme_value}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		exit 1
 	fi
 	printf '\n'
@@ -152,13 +150,13 @@ if [[ $usb_mode == true ]]; then
 
 	assert_sudo
 
-	printinfo "Downloading Ethereum Staking Deposit CLI..."
-	download_file "$ethereum_staking_deposit_cli_url"
+	printinfo "Downloading EthStaker Deposit CLI..."
+	download_file "$ethstaker_deposit_cli_url"
 
-	# construct a .sha256 file from the value listed on the release page and run shasum with it
-	echo "$ethereum_staking_deposit_cli_sha256_checksum  $ethereum_staking_deposit_cli_basename" >"$ethereum_staking_deposit_cli_basename_sha256"
-	if ! sha256sum -c "$ethereum_staking_deposit_cli_basename_sha256"; then
-		printerr "checksum failed; expected: ${theme_value}$ethereum_staking_deposit_cli_sha256_checksum${color_reset}"
+	# construct a .sha256 file from the value we saved from the release page and perform checksum
+	echo "$ethstaker_deposit_cli_sha256_checksum  $ethstaker_deposit_cli_basename" >"$ethstaker_deposit_cli_basename_sha256"
+	if ! sha256sum -c "$ethstaker_deposit_cli_basename_sha256"; then
+		printerr "checksum failed; expected: ${theme_value}$ethstaker_deposit_cli_sha256_checksum${color_reset}"
 		exit 1
 	fi
 
@@ -172,8 +170,8 @@ if [[ $usb_mode == true ]]; then
 	sudo mkdir -p "$usb_dist_dir"
 	sudo chown -R "$USER:$USER" "$usb_dist_dir"
 	sudo chmod 775 "$usb_dist_dir"
-	cp -vf "$ethereum_staking_deposit_cli_basename" "$usb_dist_dir"
-	cp -vf "$ethereum_staking_deposit_cli_basename_sha256" "$usb_dist_dir"
+	cp -vf "$ethstaker_deposit_cli_basename" "$usb_dist_dir"
+	cp -vf "$ethstaker_deposit_cli_basename_sha256" "$usb_dist_dir"
 	cp -vf "$jq_bin" "$usb_dist_dir"
 	cp -vf "$jq_bin_sha256" "$usb_dist_dir"
 
@@ -233,8 +231,8 @@ fi
 
 if [[ $usb_mode == true ]]; then
 	reset_checks
-	deposit_cli_dest="$usb_dist_dir/$ethereum_staking_deposit_cli_basename"
-	deposit_cli_sha256_dest="$usb_dist_dir/$ethereum_staking_deposit_cli_basename_sha256"
+	deposit_cli_dest="$usb_dist_dir/$ethstaker_deposit_cli_basename"
+	deposit_cli_sha256_dest="$usb_dist_dir/$ethstaker_deposit_cli_basename_sha256"
 	jq_bin_dest="$usb_dist_dir/$jq_bin"
 	jq_bin_sha256_dest="$usb_dist_dir/$jq_bin_sha256"
 	check_file_exists --sudo deposit_cli_dest
