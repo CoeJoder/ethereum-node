@@ -32,6 +32,7 @@ check_directory_does_not_exist --sudo prysm_beacon_datadir
 # ports
 check_is_valid_port geth_port
 check_is_valid_port geth_discovery_port
+check_is_valid_port prysm_beacon_http_port
 check_is_valid_port prysm_beacon_p2p_udp_port
 check_is_valid_port prysm_beacon_p2p_quic_port
 check_is_valid_port prysm_beacon_p2p_tcp_port
@@ -209,6 +210,7 @@ ExecStart=$prysm_beacon_bin \\
 	--accept-terms-of-use \\
 	--execution-endpoint="http://localhost:8551" \\
 	$prysm_beacon_cpsync_opts \\
+	--http-port=$prysm_beacon_http_port \\
 	--p2p-udp-port=$prysm_beacon_p2p_udp_port \\
 	--p2p-quic-port=$prysm_beacon_p2p_quic_port \\
 	--p2p-tcp-port=$prysm_beacon_p2p_tcp_port

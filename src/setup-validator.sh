@@ -18,6 +18,8 @@ reset_checks
 check_is_service_active geth_unit_file
 check_is_service_active prysm_beacon_unit_file
 
+check_is_valid_port prysm_beacon_http_port
+
 check_executable_does_not_exist --sudo prysm_validator_bin
 
 check_is_valid_ethereum_network ethereum_network
@@ -122,6 +124,7 @@ ExecStart=$prysm_validator_bin \\
 	--wallet-dir "$prysm_validator_wallet_dir" \\
 	--wallet-password-file "$prysm_validator_wallet_password_file" \\
 	--suggested-fee-recipient "$suggested_fee_recipient" \\
+	--beacon-rest-api-provider "$prysm_validator_beacon_rest_api_endpoint" \\
 	--accept-terms-of-use
 Restart=always
 RestartSec=5

@@ -50,6 +50,7 @@ prysm_beacon_group='prysmbeacon'
 prysm_beacon_bin='/usr/local/bin/beacon-chain'
 prysm_beacon_datadir='/var/lib/prysm/beacon'
 prysm_beacon_unit_file='/etc/systemd/system/eth2-beacon.service'
+prysm_beacon_http_port=3500      # TCP
 prysm_beacon_p2p_tcp_port=13000  # TCP
 prysm_beacon_p2p_quic_port=13000 # UDP
 prysm_beacon_p2p_udp_port=12000  # UDP
@@ -69,6 +70,7 @@ prysm_validator_keys_dir='/var/lib/prysm/validator/validator_keys'
 prysm_validator_wallet_dir='/var/lib/prysm/validator/prysm-wallet-v2'
 prysm_validator_wallet_password_file='/var/lib/prysm/validator/wallet-password.txt'
 prysm_validator_unit_file='/etc/systemd/system/eth2-validator.service'
+prysm_validator_beacon_rest_api_endpoint="http://127.0.0.1:$prysm_beacon_http_port"
 
 # prysmctl values
 prysmctl_user='prysmctl'

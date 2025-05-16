@@ -66,6 +66,7 @@ prysm_beacon_group=${color_green}$prysm_beacon_group${color_reset}
 prysm_beacon_bin=${color_green}$prysm_beacon_bin${color_reset}
 prysm_beacon_datadir=${color_green}$prysm_beacon_datadir${color_reset}
 prysm_beacon_unit_file=${color_green}$prysm_beacon_unit_file${color_reset}
+prysm_beacon_http_port=${color_green}$prysm_beacon_http_port${color_reset}      ${color_lightgray}# TCP${color_reset}
 prysm_beacon_p2p_tcp_port=${color_green}$prysm_beacon_p2p_tcp_port${color_reset}  ${color_lightgray}# TCP${color_reset}
 prysm_beacon_p2p_quic_port=${color_green}$prysm_beacon_p2p_quic_port${color_reset} ${color_lightgray}# UDP${color_reset}
 prysm_beacon_p2p_udp_port=${color_green}$prysm_beacon_p2p_udp_port${color_reset}  ${color_lightgray}# UDP${color_reset}
@@ -83,6 +84,7 @@ prysm_validator_keys_dir=${color_green}$prysm_validator_keys_dir${color_reset}
 prysm_validator_wallet_dir=${color_green}$prysm_validator_wallet_dir${color_reset}
 prysm_validator_wallet_password_file=${color_green}$prysm_validator_wallet_password_file${color_reset}
 prysm_validator_unit_file=${color_green}$prysm_validator_unit_file${color_reset}
+prysm_validator_beacon_rest_api_endpoint=${color_green}$prysm_validator_beacon_rest_api_endpoint${color_reset}
 
 prysmctl_user=${color_green}$prysmctl_user${color_reset}
 prysmctl_group=${color_green}$prysmctl_group${color_reset}
