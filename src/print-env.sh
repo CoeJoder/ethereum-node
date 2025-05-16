@@ -37,8 +37,6 @@ withdrawal=${color_green}$withdrawal${color_reset}
 
 ethereum_network=${color_green}$ethereum_network${color_reset}
 
-router_ip_address=${color_green}$router_ip_address${color_reset}
-
 node_server_ssh_port=${color_green}$node_server_ssh_port${color_reset} ${color_lightgray}# TCP${color_reset}
 node_server_timezone=${color_green}$node_server_timezone${color_reset}
 node_server_hostname=${color_green}$node_server_hostname${color_reset}
@@ -97,7 +95,6 @@ ethstaker_deposit_cli_basename=${color_green}$ethstaker_deposit_cli_basename${co
 ethstaker_deposit_cli_basename_sha256=${color_green}$ethstaker_deposit_cli_basename_sha256${color_reset}
 ethstaker_deposit_cli_url=${color_green}$ethstaker_deposit_cli_url${color_reset}
 ethstaker_deposit_cli_sha256_url=${color_green}$ethstaker_deposit_cli_sha256_url${color_reset}
-
 
 jq_version=${color_green}$jq_version${color_reset}
 jq_bin=${color_green}$jq_bin${color_reset}

@@ -8,9 +8,6 @@
 # the Ethereum network to use (hoodi or mainnet)
 ethereum_network='hoodi'
 
-# the local IP address of your router
-router_ip_address='192.168.1.1'
-
 # node server values used during initial setup
 node_server_ssh_port=55522 # TCP
 node_server_timezone='America/Los_Angeles'

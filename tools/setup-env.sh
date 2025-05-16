@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$tools_dir/../src/common.sh"
 # don't load env; it hasn't been generated yet
@@ -10,6 +12,7 @@ log_timestamp
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
+reset_checks
 check_executable_exists env_base_sh
 print_failed_checks --error || exit
 
@@ -62,9 +65,6 @@ withdrawal=''
 # the Ethereum network to use (hoodi or mainnet)
 ethereum_network='$ethereum_network'
 
-# the local IP address of your router
-router_ip_address='$router_ip_address'
-
 # node server values used during initial setup
 node_server_ssh_port=$node_server_ssh_port # TCP
 node_server_timezone='$node_server_timezone'
@@ -96,6 +96,10 @@ geth_datadir_secondary_ancient="\$geth_datadir_secondary/chaindata/ancient"
 prysm_beacon_p2p_tcp_port=$prysm_beacon_p2p_tcp_port  # TCP
 prysm_beacon_p2p_quic_port=$prysm_beacon_p2p_quic_port # UDP
 prysm_beacon_p2p_udp_port=$prysm_beacon_p2p_udp_port  # UDP
+
+# prysm beacon API port & endpoint
+prysm_beacon_http_port=$prysm_beacon_http_port      # TCP
+prysm_validator_beacon_rest_api_endpoint="http://127.0.0.1:\$prysm_beacon_http_port"
 
 # prysm max external connections
 prysm_beacon_p2p_max_peers=$prysm_beacon_p2p_max_peers
