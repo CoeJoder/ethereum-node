@@ -111,6 +111,11 @@ errmsg_retry="$errmsg_noretry, or just try it again and don't screw it up this t
 # custom sudo-prompt which includes hostname
 sudo_prompt_with_hostname='[sudo] password for %u@%H: '
 
+# used to validate IPv4 addresses
+# source: https://unix.stackexchange.com/a/111852
+IPV4_OCTET='([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
+IPV4_REGEX="^$IPV4_OCTET\.$IPV4_OCTET\.$IPV4_OCTET\.$IPV4_OCTET\$"
+
 # -------------------------- UTILITIES ----------------------------------------
 
 # script init tasks
@@ -743,6 +748,14 @@ function check_is_valid_port() {
 	if _check_is_defined $1; then
 		if [[ ${!1} -lt 1 || ${!1} -gt 65535 ]]; then
 			_check_failures+=("invalid port: ${!1}")
+		fi
+	fi
+}
+
+function check_is_valid_ipv4_address() {
+	if _check_is_defined $1; then
+		if [[ ! ${!1} =~ $IPV4_REGEX ]]; then
+			_check_failures+=("invalid IPv4 address: ${!1}")
 		fi
 	fi
 }

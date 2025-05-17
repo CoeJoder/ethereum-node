@@ -51,6 +51,7 @@
 !docs/voluntary-exit.md
 
 !tools/
+!tools/beacon-api-firewall-rule.sh
 !tools/deploy.sh
 !tools/export.sh
 !tools/generated.txt

@@ -634,6 +634,38 @@ function test_check_executable_exists() {
 	_expect_checkfailures 1
 }
 
+function test_check_is_valid_ipv4_address() {
+	local valid=(
+		'192.168.1.50'
+		'255.255.255.0'
+		'10.10.0.42'
+	)
+	local invalid=(
+		'2600:8801:9a00:c:8aff:8ec2:f651'
+		'256.1.1.1'
+		'google.com'
+	)
+	local i curtest len
+
+	# valid
+	reset_checks
+	len=${#valid[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${valid[i]}"
+		check_is_valid_ipv4_address curtest
+	done
+	_dont_expect_checkfailures
+
+	# invalid
+	reset_checks
+	len=${#invalid[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${invalid[i]}"
+		check_is_valid_ipv4_address curtest
+	done
+	_expect_checkfailures $len
+}
+
 # -------------------------- TEST DRIVER --------------------------------------
 
 assert_sudo
@@ -653,3 +685,4 @@ run_test test_check_file_does_not_exist
 run_test test_check_file_exists
 run_test test_check_executable_does_not_exist
 run_test test_check_executable_exists
+run_test test_check_is_valid_ipv4_address
