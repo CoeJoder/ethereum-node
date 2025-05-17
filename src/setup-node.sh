@@ -210,6 +210,7 @@ ExecStart=$prysm_beacon_bin \\
 	--accept-terms-of-use \\
 	--execution-endpoint="http://localhost:8551" \\
 	$prysm_beacon_cpsync_opts \\
+	--http-host="0.0.0.0" \\
 	--http-port=$prysm_beacon_http_port \\
 	--p2p-udp-port=$prysm_beacon_p2p_udp_port \\
 	--p2p-quic-port=$prysm_beacon_p2p_quic_port \\
