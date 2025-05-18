@@ -93,6 +93,7 @@ for _command in dig ip jq; do
 done
 
 [[ -n $address ]] && check_is_valid_ipv4_address address
+check_is_valid_port prysm_beacon_http_port
 check_is_valid_port node_server_ssh_port
 check_is_defined node_server_username
 check_is_defined node_server_hostname
