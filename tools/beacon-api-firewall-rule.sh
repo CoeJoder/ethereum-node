@@ -139,9 +139,8 @@ print_failed_checks --error
 printinfo "$node_server_hostname has address ${color_yellow}$node_server_ip_address${color_reset}"
 
 # use the commandline option if provided
-if [[ -n $address ]]; then
-	client_pc_ip_address="$address"
-else
+client_pc_ip_address="$address"
+if [[ -z $address ]]; then
 	# detect the IPv4 address of the local interface which connects to the node server
 	client_pc_ip_address="$(ip -4 -j route get "$node_server_ip_address" | jq -r '.[0].prefsrc')"
 	reset_checks
