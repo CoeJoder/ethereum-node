@@ -162,7 +162,7 @@ for i in "${!pubkeys[@]}"; do
 done
 
 # prompt for validators to withdraw
-echo -e "\nEnter a comma-separated list of validator indices (e.g. ${theme_example}1833689,1833692${color_reset}) or ${theme_example}all${color_reset}."
+echo -e "\nEnter a comma-separated list of validator indices (e.g., ${theme_example}1833689,1833692${color_reset}) or ${theme_example}all${color_reset}."
 read_default "Validators to withdraw" "all" chosen_indices_csv
 if [[ $chosen_indices_csv == "all" ]]; then
 	chosen_indices=("${indices[@]}")

@@ -175,7 +175,7 @@ if [[ $usb_mode == true ]]; then
 	cp -vf "$jq_bin" "$usb_dist_dir"
 	cp -vf "$jq_bin_sha256" "$usb_dist_dir"
 
-	# overwrite non-generated files and remove deleted files i.e. those listed in
+	# overwrite non-generated files and remove deleted files i.e., those listed in
 	# includes-file but not existing in source filesystem
 	rsync -avh \
 		--progress \
@@ -208,7 +208,7 @@ else
 
 	printinfo "Deploying..."
 
-	# overwrite non-generated files and remove deleted files i.e. those listed in
+	# overwrite non-generated files and remove deleted files i.e., those listed in
 	# includes-file but not existing in source filesystem
 	rsync -avh -e "ssh -p $node_server_ssh_port" \
 		--progress \

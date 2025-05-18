@@ -61,10 +61,10 @@ filter_all_pubkeys='.[] |
 filter_active_bls_withdrawal_credentials='.[] | select(.status == "active_ongoing") |
 	.validator.withdrawal_credentials'
 
-# e.g. "0xAbC123"
+# e.g., "0xAbC123"
 regex_eth_addr='^0x[[:xdigit:]]{40}$'
 
-# e.g. "0xAbC123,0xdEf456"
+# e.g., "0xAbC123,0xdEf456"
 regex_eth_addr_csv='^0x[[:xdigit:]]{40}(,0x[[:xdigit:]]{40})*$'
 
 # e.g., 183526,182347

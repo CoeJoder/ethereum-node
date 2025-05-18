@@ -83,7 +83,7 @@ printinfo "Active validators:"
 echo "$active_validators" >&2
 
 # ask for comma-separated list of the public hex keys of the validators to exit
-echo -e "\nEnter a comma-separated list of validator public keys (e.g. ${theme_example}0xABC123,0xDEF456${color_reset}) or ${theme_example}all${color_reset}."
+echo -e "\nEnter a comma-separated list of validator public keys (e.g., ${theme_example}0xABC123,0xDEF456${color_reset}) or ${theme_example}all${color_reset}."
 read_default "Validators to exit" "all" chosen_pubkeys_csv
 if [[ $chosen_pubkeys_csv == "all" ]]; then
 	prysm_param_validators="--exit-all"
