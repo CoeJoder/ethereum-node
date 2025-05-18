@@ -14,7 +14,7 @@ log_timestamp
 
 reset_checks
 check_executable_exists env_base_sh
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 

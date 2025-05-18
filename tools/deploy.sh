@@ -82,7 +82,7 @@ check_file_exists includes_generated
 check_file_exists includes_offline
 check_directory_exists deploy_src_dir
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 

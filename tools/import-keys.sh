@@ -2,6 +2,8 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+set -e
+
 tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$tools_dir/../src/common.sh"
 housekeeping
@@ -32,7 +34,7 @@ usb_validator_keys="$usb_dist_dir/validator_keys"
 check_directory_exists --sudo usb_dist_dir
 check_directory_exists --sudo usb_validator_keys
 
-print_failed_checks --error || exit
+print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
