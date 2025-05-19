@@ -124,6 +124,8 @@ cat <<-EOF
 	Adds or deletes a firewall rule allowing access to the Beacon API.
 	Meant to be run on the client PC.
 
+	${color_red}${bold}DON'T USE THIS IN PRODUCTION.  USE SSH TUNNELING INSTEAD.${color_reset}
+
 EOF
 press_any_key_to_continue
 
