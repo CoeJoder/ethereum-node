@@ -25,7 +25,7 @@ function show_usage() {
 	EOF
 }
 
-_parsed_args=$(getopt --options='v:,h' --longoptions='no-banner,help' \
+_parsed_args=$(getopt --options='h' --longoptions='no-banner,help' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
 (($? != 0)) && exit 1
 eval set -- "$_parsed_args"
@@ -142,7 +142,7 @@ target_validator="$validator"
 if [[ $target_validator =~ $regex_eth_validator_pubkey ]]; then
 	printinfo "Converting validator pubkey to index..."
 	target_validator="$(get_validators "id=$validator" | 
-		jq '.data |
+		jq -r '.data |
 		map(.index) |
 		map(tonumber) |
 		first'
@@ -159,7 +159,7 @@ printinfo "Searching for all validators eligible for withdrawal..."
 
 # active and ((0x01 creds with > 32 ETH) or (0x02 creds with > 2048 ETH))
 active="$(get_validators "status=active" | 
-	jq '.data |
+	jq -r '.data |
 	map(.balance |= tonumber) |
 	map(select(
 		((.validator.withdrawal_credentials | startswith("0x01")) and (.balance > 32)) or
@@ -171,7 +171,7 @@ active="$(get_validators "status=active" |
 
 # exited with > 0 ETH
 exited="$(get_validators "status=exited" |
-	jq '.data |
+	jq -r '.data |
 	map(.balance |= tonumber) |
 	map(select(.balance > 0)) |
 	map(.index) |
@@ -180,7 +180,7 @@ exited="$(get_validators "status=exited" |
 
 printinfo "Searching for latest withdrawn validator..."
 latest_withdrawn_validator="$(get_latest_block |
-	jq '.data.message.body.execution_payload.withdrawals |
+	jq -r '.data.message.body.execution_payload.withdrawals |
 	map(.validator_index) |
 	map(tonumber) |
 	sort |
@@ -194,8 +194,8 @@ if [[ $latest_withdrawn_validator == 'null' ]]; then
 fi
 
 cat <<EOF
-  Number of eligible (active): $(jq '. | length' <<<"$active")
-  Number of eligible (exited): $(jq '. | length' <<<"$exited")
+  Number of eligible (active): $(jq -r '. | length' <<<"$active")
+  Number of eligible (exited): $(jq -r '. | length' <<<"$exited")
   Latest withdrawn validator: $latest_withdrawn_validator
   Target validator: ${theme_value}$target_validator${color_reset}
 EOF
