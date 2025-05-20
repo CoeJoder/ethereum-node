@@ -2,8 +2,8 @@
 
 # estimate-time-until-withdrawal.sh
 # 
-# Given a validator index or pubkey, estimate the time until next automatic 
-# withdrawal would occur if eligible.
+# Given a validator index or pubkey, estimate the time until next automatic
+# withdrawal would occur if it were eligible.
 #
 # See: https://beaconcha.in/validators/withdrawals
 
@@ -20,22 +20,28 @@ function show_usage() {
 		Usage:
 		  $(basename ${BASH_SOURCE[0]}) [options] validator
 		Options:
-		  --no-banner             Do not show banner
-		  --help, -h              Show this message
+		  --time-since   Also estimate time since
+		  --no-banner    Do not show banner
+		  --help, -h     Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='no-banner,help' \
+_parsed_args=$(getopt --options='h' --longoptions='time-since,no-banner,help' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
 (($? != 0)) && exit 1
 eval set -- "$_parsed_args"
 unset _parsed_args
 
 validator=''
+time_since=false
 no_banner=false
 
 while true; do
 	case "$1" in
+	--time-since)
+		time_since=true
+		shift
+		;;
 	--no-banner)
 		no_banner=true
 		shift
@@ -93,7 +99,7 @@ if [[ $no_banner == false ]]; then
 
 	cat <<-EOF
 	Given a validator index or pubkey, estimate the time until next automatic 
-	withdrawal would occur if eligible.
+	withdrawal would occur if it were eligible.
 
 	See: ${theme_url}https://beaconcha.in/validators/withdrawals${color_reset}
 
@@ -209,7 +215,7 @@ sorted_indexes="$(jq -sr "add | unique | sort" <<<"$active $exited [$target_vali
 #  1) Latest-is-before-Target: (indexOf(T) - indexOf(L)) / withdrawalRate
 #  2) Latest-is-after-Target:  (queueLength - indexOf(L) - 1 + indexOf(T)) / withdrawalRate
 #  3) Latest-is-Target:        0
-time_until_withdrawal="$(python3 <<EOF
+readarray -t time_until_since < <(python3 <<EOF
 from datetime import timedelta
 import json
 
@@ -222,18 +228,26 @@ target = queue.index($target_validator)
 rate = $withdrawals_per_second
 
 if latest < target:
-	seconds = (target - latest) / rate
+	seconds_until = (target - latest) / rate
+	seconds_since = (len(queue) - target + latest) / rate
 elif latest > target:
-	seconds = (len(queue) - latest - 1 + target) / rate
+	seconds_until = (len(queue) - latest - 1 + target) / rate
+	seconds_since = (latest - target) / rate
 else:
-	seconds = 0
+	seconds_until = 0
+	seconds_since = 0
 
-print(str(timedelta(seconds=round(seconds))))
+print(str(timedelta(seconds=round(seconds_until))))
+print(str(timedelta(seconds=round(seconds_since))))
+
 EOF
-)"
+)
 
-if (( $? == 0 )); then
-	echo "  Approx. time until withdrawal: ${theme_value}$time_until_withdrawal${color_reset}"
+if ((${#time_until_since[@]} == 2)); then
+	echo "  Approx. time until withdrawal: ${theme_value}${time_until_since[0]}${color_reset}"
+	if [[ $time_since == true ]]; then
+		echo "  Approx. time since withdrawal: ${theme_value}${time_until_since[1]}${color_reset}"
+	fi
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
