@@ -210,11 +210,15 @@ EOF
 # target validator and the latest withdrawn validator
 sorted_indexes="$(jq -sr "add | unique | sort" <<<"$active $exited [$target_validator, $latest_withdrawn_validator]")"
 
-# calculate time until target validator's next withdrawal
+# calculate time until & since target validator's next & previous withdrawals, respectively
 # there are 3-cases to handle:
-#  1) Latest-is-before-Target: (indexOf(T) - indexOf(L)) / withdrawalRate
-#  2) Latest-is-after-Target:  (queueLength - indexOf(L) - 1 + indexOf(T)) / withdrawalRate
-#  3) Latest-is-Target:        0
+#  1) Latest-is-before-Target: 
+#     time-until: (indexOf(T) - indexOf(L)) / rate
+#     time-since: (queueLength - indexOf(T) + indexOf(L)) / rate
+#  2) Latest-is-after-Target:
+#     time-until: (queueLength - indexOf(L) + indexOf(T)) / rate
+#     time-since: (indexOf(L) - indexOf(T)) / rate
+#  3) Latest-is-Target: 0
 readarray -t time_until_since < <(python3 <<EOF
 from datetime import timedelta
 import json
@@ -231,7 +235,7 @@ if latest < target:
 	seconds_until = (target - latest) / rate
 	seconds_since = (len(queue) - target + latest) / rate
 elif latest > target:
-	seconds_until = (len(queue) - latest - 1 + target) / rate
+	seconds_until = (len(queue) - latest + target) / rate
 	seconds_since = (latest - target) / rate
 else:
 	seconds_until = 0
