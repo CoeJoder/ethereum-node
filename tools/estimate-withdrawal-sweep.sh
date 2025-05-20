@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# estimate-time-until-withdrawal.sh
+# estimate-withdrawal-sweep.sh
 # 
-# Given a validator index or pubkey, estimate the time until next automatic
-# withdrawal would occur if it were eligible.
+# Given a validator, estimate the time since & until the previous & next
+# automatic withdrawals, respectively, as if it were eligible.
 #
 # See: https://beaconcha.in/validators/withdrawals
 
@@ -20,28 +20,22 @@ function show_usage() {
 		Usage:
 		  $(basename ${BASH_SOURCE[0]}) [options] validator
 		Options:
-		  --time-since   Also estimate time since
-		  --no-banner    Do not show banner
-		  --help, -h     Show this message
+		  --no-banner   Do not show banner
+		  --help, -h    Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='time-since,no-banner,help' \
+_parsed_args=$(getopt --options='h' --longoptions='no-banner,help' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
 (($? != 0)) && exit 1
 eval set -- "$_parsed_args"
 unset _parsed_args
 
 validator=''
-time_since=false
 no_banner=false
 
 while true; do
 	case "$1" in
-	--time-since)
-		time_since=true
-		shift
-		;;
 	--no-banner)
 		no_banner=true
 		shift
@@ -89,17 +83,17 @@ print_failed_checks --error
 if [[ $no_banner == false ]]; then
 	cat <<-EOF
 	${color_green}${bold}
-	┌─┐┌─┐┌┬┐┬┌┬┐┌─┐┌┬┐┌─┐ ┌┬┐┬┌┬┐┌─┐  ┬ ┬┌┐┌┌┬┐┬┬   ┬ ┬┬┌┬┐┬ ┬┌┬┐┬─┐┌─┐┬ ┬┌─┐┬  
-	├┤ └─┐ │ ││││├─┤ │ ├┤───│ ││││├┤───│ ││││ │ ││───││││ │ ├─┤ ││├┬┘├─┤│││├─┤│  
-	└─┘└─┘ ┴ ┴┴ ┴┴ ┴ ┴ └─┘  ┴ ┴┴ ┴└─┘  └─┘┘└┘ ┴ ┴┴─┘ └┴┘┴ ┴ ┴ ┴─┴┘┴└─┴ ┴└┴┘┴ ┴┴─┘
+	┌─┐┌─┐┌┬┐┬┌┬┐┌─┐┌┬┐┌─┐  ┬ ┬┬┌┬┐┬ ┬┌┬┐┬─┐┌─┐┬ ┬┌─┐┬   ┌─┐┬ ┬┌─┐┌─┐┌─┐
+	├┤ └─┐ │ ││││├─┤ │ ├┤───││││ │ ├─┤ ││├┬┘├─┤│││├─┤│───└─┐│││├┤ ├┤ ├─┘
+	└─┘└─┘ ┴ ┴┴ ┴┴ ┴ ┴ └─┘  └┴┘┴ ┴ ┴ ┴─┴┘┴└─┴ ┴└┴┘┴ ┴┴─┘ └─┘└┴┘└─┘└─┘┴  
 	${color_reset}
 	EOF
 
 	# -------------------------- PREAMBLE -----------------------------------------
 
 	cat <<-EOF
-	Given a validator index or pubkey, estimate the time until next automatic 
-	withdrawal would occur if it were eligible.
+	Given a validator, estimate the time since & until the previous & next
+	automatic withdrawals, respectively, as if it were eligible.
 
 	See: ${theme_url}https://beaconcha.in/validators/withdrawals${color_reset}
 
@@ -210,16 +204,16 @@ EOF
 # target validator and the latest withdrawn validator
 sorted_indexes="$(jq -sr "add | unique | sort" <<<"$active $exited [$target_validator, $latest_withdrawn_validator]")"
 
-# calculate time until & since target validator's next & previous withdrawals, respectively
+# calculate time since & until target validator's previous & next withdrawals, respectively
 # there are 3-cases to handle:
 #  1) Latest-is-before-Target: 
-#     time-until: (indexOf(T) - indexOf(L)) / rate
 #     time-since: (queueLength - indexOf(T) + indexOf(L)) / rate
+#     time-until: (indexOf(T) - indexOf(L)) / rate
 #  2) Latest-is-after-Target:
-#     time-until: (queueLength - indexOf(L) + indexOf(T)) / rate
 #     time-since: (indexOf(L) - indexOf(T)) / rate
+#     time-until: (queueLength - indexOf(L) + indexOf(T)) / rate
 #  3) Latest-is-Target: 0
-readarray -t time_until_since < <(python3 <<EOF
+readarray -t time_since_until < <(python3 <<EOF
 from datetime import timedelta
 import json
 
@@ -232,26 +226,26 @@ target = queue.index($target_validator)
 rate = $withdrawals_per_second
 
 if latest < target:
-	seconds_until = (target - latest) / rate
 	seconds_since = (len(queue) - target + latest) / rate
+	seconds_until = (target - latest) / rate
 elif latest > target:
-	seconds_until = (len(queue) - latest + target) / rate
 	seconds_since = (latest - target) / rate
+	seconds_until = (len(queue) - latest + target) / rate
 else:
-	seconds_until = 0
 	seconds_since = 0
+	seconds_until = 0
 
-print(str(timedelta(seconds=round(seconds_until))))
 print(str(timedelta(seconds=round(seconds_since))))
+print(str(timedelta(seconds=round(seconds_until))))
 
 EOF
 )
 
-if ((${#time_until_since[@]} == 2)); then
-	echo "  Approx. time until withdrawal: ${theme_value}${time_until_since[0]}${color_reset}"
-	if [[ $time_since == true ]]; then
-		echo "  Approx. time since withdrawal: ${theme_value}${time_until_since[1]}${color_reset}"
-	fi
+if ((${#time_since_until[@]} == 2)); then
+	cat <<-EOF
+	  Approx. time since last withdrawal: ${theme_value}${time_since_until[0]}${color_reset}
+	  Approx. time until next withdrawal: ${theme_value}${time_since_until[1]}${color_reset}
+	EOF
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
