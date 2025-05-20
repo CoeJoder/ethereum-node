@@ -53,6 +53,7 @@
 !tools/
 !tools/beacon-api-firewall-rule.sh
 !tools/deploy.sh
+!tools/estimate-time-until-withdrawal.sh
 !tools/export.sh
 !tools/generated.txt
 !tools/import-keys.sh

@@ -67,6 +67,9 @@ regex_eth_addr='^0x[[:xdigit:]]{40}$'
 # e.g., "0xAbC123,0xdEf456"
 regex_eth_addr_csv='^0x[[:xdigit:]]{40}(,0x[[:xdigit:]]{40})*$'
 
+# unsigned integer regex e.g., for single validator index
+regex_uint='^[[:digit:]]+$'
+
 # e.g., 183526,182347
 regex_eth_validator_indices_csv='^[[:digit:]]+(,[[:digit:]]+)*$'
 
@@ -98,7 +101,7 @@ if [[ $(command -v tput && tput setaf 1 2>/dev/null) ]]; then
 	color_reset=$(tput sgr0)
 	bold=$(tput bold)
 	theme_filename="${color_green}"
-	theme_value="${color_green}"
+	theme_value="${color_cyan}"
 	theme_url="${color_blue}"
 	theme_command="${color_lightgray}"
 	theme_example="${color_lightgray}"
@@ -858,6 +861,14 @@ function check_is_valid_validator_mnemonic() {
 	if _check_is_defined $1; then
 		if [[ $(printf '%s' "${!1}" | wc -w) -ne 24 ]]; then
 			_check_failures+=("$1: expected a 24-word seed phrase")
+		fi
+	fi
+}
+
+function check_is_valid_validator_index_or_pubkey() {
+	if _check_is_defined $1; then
+		if [[ ! ${!1} =~ $regex_uint && ! ${!1} =~ $regex_eth_validator_pubkey ]]; then
+			_check_failures+=("$1: expected a validator index or pubkey")
 		fi
 	fi
 }
