@@ -178,7 +178,6 @@ exited="$(get_validators "status=exited" |
 	map(tonumber)'
 )"
 
-printinfo "Searching for latest withdrawn validator..."
 latest_withdrawn_validator="$(get_latest_block |
 	jq -r '.data.message.body.execution_payload.withdrawals |
 	map(.validator_index) |
@@ -205,14 +204,6 @@ EOF
 sorted_indexes="$(jq -sr "add | unique | sort" <<<"$active $exited [$target_validator, $latest_withdrawn_validator]")"
 
 # calculate time since & until target validator's previous & next withdrawals, respectively
-# there are 3-cases to handle:
-#  1) Latest-is-before-Target: 
-#     time-since: (queueLength - indexOf(T) + indexOf(L)) / rate
-#     time-until: (indexOf(T) - indexOf(L)) / rate
-#  2) Latest-is-after-Target:
-#     time-since: (indexOf(L) - indexOf(T)) / rate
-#     time-until: (queueLength - indexOf(L) + indexOf(T)) / rate
-#  3) Latest-is-Target: 0
 readarray -t time_since_until < <(python3 <<EOF
 from datetime import timedelta
 import json
