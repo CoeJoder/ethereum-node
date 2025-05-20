@@ -14,6 +14,10 @@ set -E
 # the 'src' folder is renamed to the following on deployment
 dist_dirname='ethereum-node'
 
+# supported networks
+testnet='hoodi'
+mainnet='mainnet'
+
 # set paths based on dev or prod environment
 common_sh_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 if [[ $(basename "$common_sh_dir") == $dist_dirname ]]; then
@@ -741,7 +745,7 @@ function check_file_exists() {
 
 function check_is_valid_ethereum_network() {
 	if _check_is_defined $1; then
-		if [[ ${!1} != 'mainnet' && ${!1} != 'hoodi' ]]; then
+		if [[ ${!1} != "$mainnet" && ${!1} != "$testnet" ]]; then
 			_check_failures+=("invalid Ethereum network: ${!1}")
 		fi
 	fi

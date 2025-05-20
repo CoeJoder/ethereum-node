@@ -62,7 +62,7 @@ cat <<EOF >"$env_sh"
 suggested_fee_recipient=''
 withdrawal=''
 
-# the Ethereum network to use (hoodi or mainnet)
+# the Ethereum network to use
 ethereum_network='$ethereum_network'
 
 # node server values used during initial setup
@@ -104,8 +104,8 @@ prysm_validator_beacon_rest_api_endpoint="http://127.0.0.1:\$prysm_beacon_http_p
 # prysm max external connections
 prysm_beacon_p2p_max_peers=$prysm_beacon_p2p_max_peers
 
-# the hard-coded behavior is to use checkpoint-sync only on 'hoodi' testnet 
-# these variables are ignored unless \`ethereum_network\` is set to 'hoodi'
+# the hard-coded behavior is to use checkpoint-sync only on testnet 
+# these variables are ignored unless \`ethereum_network\` is set to testnet
 prysm_beacon_checkpoint_sync_url='$prysm_beacon_checkpoint_sync_url'
 prysm_beacon_genesis_beacon_api_url='$prysm_beacon_genesis_beacon_api_url'
 
