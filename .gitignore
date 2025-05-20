@@ -33,7 +33,6 @@
 !src/setup-firewall.sh
 !src/setup-node.sh
 !src/setup-prysmctl.sh
-!src/setup-unit-files.sh
 !src/setup-validator.sh
 !src/submit-bls-to-execution-change-message.sh
 !src/update.sh
