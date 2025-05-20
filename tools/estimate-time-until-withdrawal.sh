@@ -18,15 +18,14 @@ housekeeping
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage:
-		  $(basename ${BASH_SOURCE[0]}) [options] command
+		  $(basename ${BASH_SOURCE[0]}) [options] validator
 		Options:
-		  --validator, -v value   Index or pubkey
-			--no-banner             Do not show banner
+		  --no-banner             Do not show banner
 		  --help, -h              Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='v:,h' --longoptions='validator:,no-banner,help' \
+_parsed_args=$(getopt --options='v:,h' --longoptions='no-banner,help' \
 	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
 (($? != 0)) && exit 1
 eval set -- "$_parsed_args"
@@ -37,10 +36,6 @@ no_banner=false
 
 while true; do
 	case "$1" in
-	-v | --validator)
-		validator="$2"
-		shift 2
-		;;
 	--no-banner)
 		no_banner=true
 		shift
@@ -59,6 +54,13 @@ while true; do
 		;;
 	esac
 done
+
+if (($# < 1)); then
+	printerr "must specify validator index or pubkey"
+	exit 1
+fi
+validator="$1"
+shift
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
