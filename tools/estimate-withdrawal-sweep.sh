@@ -74,7 +74,7 @@ check_is_valid_validator_index_or_pubkey validator
 check_is_valid_port node_server_ssh_port
 check_is_defined node_server_username
 check_is_defined node_server_hostname
-check_is_valid_port prysm_beacon_http_port
+check_is_defined prysm_validator_beacon_rest_api_endpoint
 
 print_failed_checks --error
 
@@ -119,7 +119,7 @@ function beacon_api_get() {
 	local query="$1"
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
 		curl -LSsX 'GET' --fail-with-body -H 'Accept: application/json' \
-			"http://127.0.0.1:${prysm_beacon_http_port}${query}"
+			"${prysm_validator_beacon_rest_api_endpoint}${query}"
 	"
 }
 
