@@ -14,6 +14,9 @@ log_timestamp
 
 reset_checks
 check_executable_exists env_base_sh
+check_directory_exists src_dir
+check_is_valid_ethereum_network testnet
+check_is_valid_ethereum_network mainnet
 print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
