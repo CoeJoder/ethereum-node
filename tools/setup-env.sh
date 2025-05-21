@@ -31,20 +31,61 @@ EOF
 
 # -------------------------- PREAMBLE -----------------------------------------
 
-env_sh_stylized="${theme_filename}$env_sh${color_reset}"
-env_sh_basename="${theme_filename}$(basename "$env_sh")${color_reset}"
 cat <<EOF
-Generates $env_sh_basename, an editable config file.
+Generates an editable file containing the project's environment variables.
 EOF
 press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-if [[ -f $env_sh ]]; then
-	printwarn "found existing $env_sh_stylized"
-	continue_or_exit 1 "Overwrite?"
-	printf '\n'
-fi
+function find_available_env_filename() {
+	if (($# != 2)); then
+		printerr "usage: find_available_env_filename network outvar"
+		return 2
+	fi
+	local network="$1" outvar="$2" curfile i
+	curfile="env.${network}.sh"
+	for i in {1..9}; do
+		if [[ ! -f "$src_dir/$curfile" ]]; then
+			printf -v $outvar "$curfile"
+			return 0
+		fi
+		curfile="env.${network}.${i}.sh"
+	done
+	return 1
+}
+
+function shorten_path() {
+	if (($# != 2)); then
+		printerr "usage: shorten_path filepath outvar"
+		return 2
+	fi
+	local filepath="$1" outvar="$2"
+	printf -v $outvar "$(basename "$(dirname "$filepath")")/$(basename "$filepath")"
+}
+
+# generate an env filename based on network
+choose_from_menu "Select network:" chosen_network "$testnet" "$mainnet"
+env_sh_basename="env.sh"
+env_sh="$src_dir/$env_sh_basename"
+shorten_path "$env_sh" env_sh_shortened
+
+# if filename exists and user rejects overwrite, suggest alt filename
+while [[ -f $env_sh ]]; do
+	printwarn "found existing ${theme_filename}$env_sh_shortened${color_reset}"
+	if yes_or_no --default-no "Overwrite?"; then
+		break
+	else
+		if find_available_env_filename "$chosen_network" env_sh_basename; then
+			read_default "Choose filename" "$env_sh_basename" env_sh_basename
+		else
+			read_no_default "Choose filename" env_sh_basename
+		fi
+		env_sh="$src_dir/$env_sh_basename"
+		shorten_path "$env_sh" env_sh_shortened
+	fi
+done
+printf '\n'
 
 # -------------------------- EXECUTION ----------------------------------------
 
@@ -63,7 +104,7 @@ suggested_fee_recipient=''
 withdrawal=''
 
 # the Ethereum network to use
-ethereum_network='$ethereum_network'
+ethereum_network='$chosen_network'
 
 # node server values used during initial setup
 node_server_ssh_port=$node_server_ssh_port # TCP
@@ -120,6 +161,6 @@ check_executable_exists env_sh
 print_failed_checks --error
 
 cat <<EOF
-Success!  Generated ${env_sh_stylized}
+Success!  Generated ${theme_filename}$env_sh_shortened${color_reset}
 Edit the file with your custom values before proceeding to the next step.
 EOF
