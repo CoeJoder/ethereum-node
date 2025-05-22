@@ -13,6 +13,7 @@ set -e
 
 tools_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$tools_dir/../src/common.sh"
+source "$tools_dir/_beacon-api.sh"
 housekeeping
 
 function show_usage() {
@@ -64,18 +65,13 @@ shift
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
-reset_checks
+beacon_api__preconditions
 
+reset_checks
 for _command in jq python3; do
 	check_command_exists_on_path _command
 done
-
 check_is_valid_validator_index_or_pubkey validator
-check_is_valid_port node_server_ssh_port
-check_is_defined node_server_username
-check_is_defined node_server_hostname
-check_is_defined prysm_validator_beacon_rest_api_endpoint
-
 print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
@@ -103,45 +99,19 @@ fi
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
+beacon_api__reconnaissance
+
 # withdrawal sweep rate calculation:
 #   16 withdrawals / slot
 #   1 slot / 12 seconds
 #   :. 4/3 withdrawals / second
 withdrawals_per_second='(4/3)'  # valid Python number expression
 
-node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
-
-function beacon_api_get() {
-	if [[ $# -ne 1 ]]; then
-		printerr "usage: beacon_api_get query"
-		return 1
-	fi
-	local query="$1"
-	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
-		curl -LSsX 'GET' --fail-with-body -H 'Accept: application/json' \
-			"${prysm_validator_beacon_rest_api_endpoint}${query}"
-	"
-}
-
-function get_validators() {
-	if [[ $# -ne 1 ]]; then
-		printerr "usage: get_validators query-params"
-		return 1
-	fi
-	local query_params="$1"
-	beacon_api_get "/eth/v1/beacon/states/head/validators?$query_params"
-}
-
-function get_latest_block() {
-	beacon_api_get "/eth/v2/beacon/blocks/head"
-}
-
-target_validator="$validator"
-
 # if a pubkey was provided, convert to an index
+target_validator="$validator"
 if [[ $target_validator =~ $regex_eth_validator_pubkey ]]; then
 	printinfo "Converting validator pubkey to index..."
-	target_validator="$(get_validators "id=$validator" | 
+	target_validator="$(beacon_api__get_validators "id=$validator" | 
 		jq -r '.data |
 		map(.index) |
 		map(tonumber) |
@@ -158,7 +128,7 @@ fi
 printinfo "Searching for all validators eligible for withdrawal..."
 
 # active and ((0x01 creds with > 32 ETH) or (0x02 creds with > 2048 ETH))
-active="$(get_validators "status=active" | 
+active="$(beacon_api__get_validators "status=active" | 
 	jq -r '.data |
 	map(.balance |= tonumber) |
 	map(select(
@@ -170,7 +140,7 @@ active="$(get_validators "status=active" |
 )"
 
 # exited with > 0 ETH
-exited="$(get_validators "status=exited" |
+exited="$(beacon_api__get_validators "status=exited" |
 	jq -r '.data |
 	map(.balance |= tonumber) |
 	map(select(.balance > 0)) |
@@ -178,7 +148,7 @@ exited="$(get_validators "status=exited" |
 	map(tonumber)'
 )"
 
-latest_withdrawn_validator="$(get_latest_block |
+latest_withdrawn_validator="$(beacon_api__get_latest_block |
 	jq -r '.data.message.body.execution_payload.withdrawals |
 	map(.validator_index) |
 	map(tonumber) |
@@ -205,6 +175,7 @@ sorted_indexes="$(jq -sr "add | unique | sort" <<<"$active $exited [$target_vali
 
 # calculate time since & until target validator's previous & next withdrawals, respectively
 readarray -t time_since_until < <(python3 <<EOF
+
 from datetime import timedelta
 import json
 

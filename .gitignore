@@ -50,6 +50,7 @@
 !docs/voluntary-exit.md
 
 !tools/
+!tools/_beacon-api.sh
 !tools/beacon-api-firewall-rule.sh
 !tools/deploy.sh
 !tools/estimate-withdrawal-sweep.sh
