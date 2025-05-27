@@ -197,8 +197,8 @@ else:
 	seconds_since = 0
 	seconds_until = 0
 
-print(str(timedelta(seconds=round(seconds_since))))
-print(str(timedelta(seconds=round(seconds_until))))
+print(f"-{timedelta(seconds=round(seconds_since))}")
+print(f"{timedelta(seconds=round(seconds_until))}")
 
 EOF
 )
