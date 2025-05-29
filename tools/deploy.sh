@@ -65,6 +65,10 @@ if [[ $usb_mode == true ]]; then
 	check_is_defined ethstaker_deposit_cli_url
 	check_is_defined jq_bin
 	check_is_defined jq_bin_sha256
+	check_is_defined ethdo_version
+	check_is_defined ethdo_sha256_checksum
+	check_is_defined ethereal_version
+	check_is_defined ethereal_sha256_checksum
 else
 	check_is_valid_port node_server_ssh_port
 	check_is_defined node_server_username
@@ -164,6 +168,20 @@ if [[ $usb_mode == true ]]; then
 	download_jq "$jq_bin" "$jq_bin_sha256" "$jq_version"
 	chmod +x "$jq_bin"
 
+	printinfo "Downloading ethdo ${ethdo_version}..."
+	download_wealdtech ethdo \
+		"$ethdo_version" "$ethdo_sha256_checksum" ethdo_bin
+
+	printinfo "Downloading ethereal ${ethereal_version}..."
+	download_wealdtech ethereal \
+		"$ethereal_version" "$ethereal_sha256_checksum" ethereal_bin
+	
+	# construct ethdo & ethereal .sha256 files for add'l offline verification
+	ethdo_bin_sha256="${ethdo_bin}.sha256"
+	ethereal_bin_sha256="${ethereal_bin}.sha256"
+	echo "$ethdo_sha256_checksum  $ethdo_bin" >"$ethdo_bin_sha256"
+	echo "$ethereal_sha256_checksum  $ethereal_bin" >"$ethereal_bin_sha256"
+
 	printinfo "Deploying..."
 
 	# create the usb dist dir if necessary and copy over 3rd party software and checksums
@@ -174,6 +192,10 @@ if [[ $usb_mode == true ]]; then
 	cp -vf "$ethstaker_deposit_cli_basename_sha256" "$usb_dist_dir"
 	cp -vf "$jq_bin" "$usb_dist_dir"
 	cp -vf "$jq_bin_sha256" "$usb_dist_dir"
+	cp -vf "$ethdo_bin" "$usb_dist_dir"
+	cp -vf "$ethdo_bin_sha256" "$usb_dist_dir"
+	cp -vf "$ethereal_bin" "$usb_dist_dir"
+	cp -vf "$ethereal_bin_sha256" "$usb_dist_dir"
 
 	# overwrite non-generated files and remove deleted files i.e., those listed in
 	# includes-file but not existing in source filesystem
@@ -199,6 +221,7 @@ if [[ $usb_mode == true ]]; then
 	sudo cp -fv "$tools_dir/unseal.sh" "$unseal_dest"
 
 	# seal the deployment
+	printinfo "Sealing the deployment..."
 	sudo chown -R root:root "$usb_dist_dir"
 	sudo chown root:root "$unseal_dest"
 	sudo chmod 0 "$usb_dist_dir"
@@ -235,10 +258,18 @@ if [[ $usb_mode == true ]]; then
 	deposit_cli_sha256_dest="$usb_dist_dir/$ethstaker_deposit_cli_basename_sha256"
 	jq_bin_dest="$usb_dist_dir/$jq_bin"
 	jq_bin_sha256_dest="$usb_dist_dir/$jq_bin_sha256"
+	ethdo_bin_dest="$usb_dist_dir/$ethdo_bin"
+	ethdo_bin_sha256_dest="$usb_dist_dir/$ethdo_bin_sha256"
+	ethereal_bin_dest="$usb_dist_dir/$ethereal_bin"
+	ethereal_bin_sha256_dest="$usb_dist_dir/$ethereal_bin_sha256"
 	check_file_exists --sudo deposit_cli_dest
 	check_file_exists --sudo deposit_cli_sha256_dest
 	check_file_exists --sudo jq_bin_dest
 	check_file_exists --sudo jq_bin_sha256_dest
+	check_file_exists --sudo ethdo_bin_dest
+	check_file_exists --sudo ethdo_bin_sha256_dest
+	check_file_exists --sudo ethereal_bin_dest
+	check_file_exists --sudo ethereal_bin_sha256_dest
 	check_file_exists --sudo unseal_dest
 	print_failed_checks --error
 
