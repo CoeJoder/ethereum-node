@@ -417,7 +417,7 @@ function download_wealdtech() {
 	fetched_sha265="$(wget -qO - "$program_bin_sha256_url" | cat)"
 	if [[ $fetched_sha265 != $sha256_checksum ]]; then
 		printerr "Found: $fetched_sha265\nExpected: $sha256_checksum\n" \
-			"Ensure that ${theme_value}ethdo_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
+			"Ensure that ${theme_value}${program}_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		return 1
 	fi
 	echo "$sha256_checksum  "$program_bin"" | shasum -a 256 -cq - || return
