@@ -29,10 +29,18 @@ check_is_defined prysm_validator_bin
 check_user_exists prysm_beacon_user
 check_user_exists prysm_validator_user
 check_user_exists prysmctl_user
+check_user_exists ethdo_user
 
 check_group_exists prysm_beacon_group
 check_group_exists prysm_validator_group
 check_group_exists prysmctl_group
+check_group_exists ethdo_group
+
+# TODO use version-locking for the others too
+check_is_defined ethdo_version
+check_is_defined ethdo_sha256_checksum
+check_is_defined ethereal_version
+check_is_defined ethereal_sha256_checksum
 
 print_failed_checks --error
 
@@ -52,7 +60,7 @@ echo -en "${color_reset}"
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Updates to the latest version all node programs, if installed (geth, prysm-beacon, prysm-validator, prysmctl).
+Updates to the latest version all node programs, if installed (geth, prysm-beacon, prysm-validator, prysmctl, ethdo, ethereal).
 EOF
 press_any_key_to_continue
 
@@ -63,6 +71,8 @@ get_latest_prysm_version latest_prysm_version
 _update_prysmbeacon=false
 _update_prysmvalidator=false
 _update_prysmctl=false
+_update_ethdo=false
+_update_ethereal=false
 
 reset_checks
 check_executable_exists --sudo prysm_beacon_bin
@@ -80,6 +90,30 @@ reset_checks
 check_executable_exists --sudo prysmctl_bin
 if ! has_failed_checks; then
 	_update_prysmctl=true
+fi
+
+reset_checks
+check_executable_exists --sudo ethdo_bin
+if ! has_failed_checks; then
+	_ethdo_current_version="$(sudo "$ethdo_bin" version)"
+	if [[ "v$_ethdo_current_version" != $ethdo_version ]]; then
+		printinfo "ethdo v${_ethdo_current_version} is installed"
+		if yes_or_no --default-no "Replace with ${ethdo_version}?"; then
+			_update_ethdo=true
+		fi
+	fi
+fi
+
+reset_checks
+check_executable_exists --sudo ethereal_bin
+if ! has_failed_checks; then
+	_ethereal_current_version="$(sudo "$ethereal_bin" version)"
+	if [[ "v$_ethereal_current_version" != $ethereal_version ]]; then
+		printinfo "ethereal v${_ethereal_current_version} is installed"
+		if yes_or_no --default-no "Replace with ${ethereal_version}?"; then
+			_update_ethereal=true
+		fi
+	fi
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -120,6 +154,18 @@ if [[ $_update_prysmctl == true ]]; then
 	printinfo "Updating prysmctl..."
 	install_prysm prysmctl \
 		"$latest_prysm_version" "$prysmctl_bin" "$prysmctl_user" "$prysmctl_group"
+fi
+
+if [[ $_update_ethdo == true ]]; then
+	printinfo "Updating ethdo..."
+	install_wealdtech ethdo \
+		"$ethdo_version" "$ethdo_sha256_checksum" "$ethdo_bin" "$ethdo_user" "$ethdo_group"
+fi
+
+if [[ $_update_ethereal == true ]]; then
+	printinfo "Updating ethereal..."
+	install_wealdtech ethereal \
+		"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$ethdo_user" "$ethdo_group"
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------

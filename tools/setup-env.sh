@@ -67,7 +67,7 @@ function shorten_path() {
 	printf -v $outvar "$(basename "$(dirname "$filepath")")/$(basename "$filepath")"
 }
 
-# generate an env filename based on network
+# generate an env based on network
 choose_from_menu "Select network:" chosen_network "$testnet" "$mainnet"
 env_sh_basename="env.sh"
 env_sh="$src_dir/$env_sh_basename"

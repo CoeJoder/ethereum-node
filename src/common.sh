@@ -303,7 +303,7 @@ function _get_latest_version() {
 	local ghproject="$1" outvar="$2" version
 	echo -en "Looking up latest '$ghproject' version..." >&2
 	version="$(get_latest_release "$ghproject")"
-	if [[ ! "$version" =~ v[0-9]\.[0-9]\.[0-9] ]]; then
+	if [[ ! "$version" =~ v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+ ]]; then
 		echo "${color_red}failed${color_reset}." >&2
 		printerr "malformed version string: \"$version\""
 		return 1
@@ -330,6 +330,26 @@ function get_latest_prysm_version() {
 	fi
 	local outvar="$1"
 	_get_latest_version "OffchainLabs/prysm" "$outvar"
+}
+
+# get the latest ethdo release version
+function get_latest_ethdo_version() {
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: get_latest_ethdo_version outvar"
+		return 2
+	fi
+	local outvar="$1"
+	_get_latest_version "wealdtech/ethdo" "$outvar"
+}
+
+# get the latest ethereal release version
+function get_latest_ethereal_version() {
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: get_latest_ethereal_version outvar"
+		return 2
+	fi
+	local outvar="$1"
+	_get_latest_version "wealdtech/ethereal" "$outvar"
 }
 
 # download a file silently (except on error) using `curl`
@@ -380,6 +400,30 @@ function download_prysm() {
 	printf -v "$outvar" "$program_bin"
 }
 
+function download_wealdtech() {
+	if [[ $# -ne 4 || ($1 != 'ethdo' && $1 != 'ethereal') ]]; then
+		printerr "usage: download_wealdtech {ethdo|ethereal} version sha256_checksum outvar"
+		return 2
+	fi
+	local program="$1" version="$2" sha256_checksum="$3" outvar="$4"
+	# filenames exclude the first 'v' of version string
+	local program_bin="${program}-${version:1}-linux-amd64.tar.gz"
+	local program_bin_url="https://github.com/wealdtech/${program}/releases/download/${version}/${program_bin}"
+	local program_bin_sha256="${program}-${version:1}-linux-amd64.tar.gz.sha256"
+	local program_bin_sha256_url="https://github.com/wealdtech/${program}/releases/download/${version}/${program_bin_sha256}"
+	download_file "$program_bin_url" || return
+
+	# expected checksum should match downloaded checksum
+	fetched_sha265="$(wget -qO - "$program_bin_sha256_url" | cat)"
+	if [[ $fetched_sha265 != $sha256_checksum ]]; then
+		printerr "Found: $fetched_sha265\nExpected: $sha256_checksum\n" \
+			"Ensure that ${theme_value}ethdo_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
+		return 1
+	fi
+	echo "$sha256_checksum  "$program_bin"" | shasum -a 256 -cq - || return
+	printf -v "$outvar" "$program_bin"
+}
+
 # downloads and installs a given version of a prysm program
 function install_prysm() {
 	if [[ $# -ne 5 ]]; then
@@ -392,6 +436,21 @@ function install_prysm() {
 	sudo chown -v "${owner}:${group}" "$downloaded_bin" || return
 	sudo chmod -v 550 "$downloaded_bin" || return
 	sudo mv -vf "$downloaded_bin" "$destination_bin" || return
+}
+
+# downloads, extracts, and installs a given version of a wealdtech program
+function install_wealdtech() {
+	if [[ $# -ne 6 || ($1 != 'ethdo' && $1 != 'ethereal')  ]]; then
+		printerr "usage: install_wealdtech {ethdo|ethereal} version sha256_checksum destination_bin owner group"
+		return 2
+	fi
+	local program="$1" version="$2" sha256_checksum="$3" destination_bin="$4" owner="$5" group="$6"
+	local downloaded_tar
+	download_wealdtech "$program" "$version" "$sha256_checksum" downloaded_tar || return
+	tar xvzf "$downloaded_tar" || return
+	sudo chown -v "${owner}:${group}" "./$program" || return
+	sudo chmod -v 550 "./$program" || return
+	sudo mv -vf "./$program" "$destination_bin" || return
 }
 
 # enable a system service

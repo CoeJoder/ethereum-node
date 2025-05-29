@@ -357,6 +357,30 @@ function test_download_prysm() {
 	fi
 }
 
+function test_download_ethdo() {
+	local version='v1.37.4' sha256='a133b5d284f5fb2e6c4406764cae3f0cbb49355edf01081befda132af651c344'
+	local expected='ethdo-1.37.4-linux-amd64.tar.gz' actual
+	if ! download_wealdtech ethdo $version $sha256 actual; then
+		failures+=("failed to download ethdo")
+	elif [[ $expected != $actual ]]; then
+		failures+=("expected: $expected, actual: $actual")
+	elif [[ ! -f $expected ]]; then
+		failures+=("downloaded file not found: $expected")
+	fi
+}
+
+function test_download_ethereal() {
+	local version='v2.11.5' sha256='ed4cc43fc35c16264f21a163fd3ffc0d4cefc79916984ab6718c9a847cd08f8f'
+	local expected='ethereal-2.11.5-linux-amd64.tar.gz' actual
+	if ! download_wealdtech ethereal $version $sha256 actual; then
+		failures+=("failed to download ethereal")
+	elif [[ $expected != $actual ]]; then
+		failures+=("expected: $expected, actual: $actual")
+	elif [[ ! -f $expected ]]; then
+		failures+=("downloaded file not found: $expected")
+	fi
+}
+
 # test for check_directory_does_not_exist() in common.sh
 function test_check_directory_does_not_exist() {
 	local exists=(
@@ -679,6 +703,8 @@ run_test test_yes_or_no
 run_test test_continue_or_exit
 run_test test_get_latest_prysm_version
 run_test test_download_prysm
+run_test test_download_ethdo
+run_test test_download_ethereal
 run_test test_check_directory_does_not_exist
 run_test test_check_directory_exists
 run_test test_check_file_does_not_exist

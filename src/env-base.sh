@@ -75,6 +75,16 @@ prysmctl_group='prysmctl'
 prysmctl_bin='/usr/local/bin/prysmctl'
 prysmctl_datadir='/var/lib/prysm/prysmctl'
 
+# ethdo/ethereal values
+ethdo_user='ethdoer'
+ethdo_group='ethdoer'
+ethdo_version='v1.37.4'
+ethdo_sha256_checksum='a133b5d284f5fb2e6c4406764cae3f0cbb49355edf01081befda132af651c344'
+ethdo_bin='/usr/local/bin/ethdo'
+ethereal_version='v2.11.5'
+ethereal_sha256_checksum='ed4cc43fc35c16264f21a163fd3ffc0d4cefc79916984ab6718c9a847cd08f8f'
+ethereal_bin='/usr/local/bin/ethereal'
+
 # EthStaker Deposit CLI values
 ethstaker_deposit_cli_version='v1.2.0'
 ethstaker_deposit_cli_sha256_checksum='d17758a9a2dfd2f657a30cef8f5f8f16c95cc49e63e81e19b9fa2ac73aadd257'
