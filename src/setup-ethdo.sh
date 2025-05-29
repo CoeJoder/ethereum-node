@@ -74,7 +74,7 @@ if [[ $ethereal_version != $latest_ethereal_version ]]; then
 fi
 
 if [[ $_new_version_detected == true ]]; then
-	printwarn "It is suggested to update env vars with latest versions checksums and then restart script."
+	printwarn "It is suggested to update env vars with latest version checksums and then restart script."
 	continue_or_exit 1 "Continue anyways with older versions?"
 fi
 
