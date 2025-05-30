@@ -29,12 +29,10 @@ check_is_defined prysm_validator_bin
 check_user_exists prysm_beacon_user
 check_user_exists prysm_validator_user
 check_user_exists prysmctl_user
-check_user_exists ethdo_user
 
 check_group_exists prysm_beacon_group
 check_group_exists prysm_validator_group
 check_group_exists prysmctl_group
-check_group_exists ethdo_group
 
 # TODO use version-locking for the others too
 check_is_defined ethdo_version
@@ -159,13 +157,13 @@ fi
 if [[ $_update_ethdo == true ]]; then
 	printinfo "Updating ethdo..."
 	install_wealdtech ethdo \
-		"$ethdo_version" "$ethdo_sha256_checksum" "$ethdo_bin" "$ethdo_user" "$ethdo_group"
+		"$ethdo_version" "$ethdo_sha256_checksum" "$ethdo_bin" "$USER" "$USER"
 fi
 
 if [[ $_update_ethereal == true ]]; then
 	printinfo "Updating ethereal..."
 	install_wealdtech ethereal \
-		"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$ethdo_user" "$ethdo_group"
+		"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$USER" "$USER"
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------

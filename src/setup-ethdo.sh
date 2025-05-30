@@ -13,9 +13,6 @@ housekeeping
 assert_on_node_server
 assert_sudo
 
-check_user_does_not_exist ethdo_user
-check_group_does_not_exist ethdo_group
-
 check_is_defined ethdo_version
 check_is_defined ethdo_sha256_checksum
 check_executable_does_not_exist --sudo ethdo_bin
@@ -95,23 +92,21 @@ trap 'on_exit' EXIT
 
 assert_sudo
 
-# ethdo user, group, filesystem
-printinfo "Creating user, group, and datadir for ethdo & ethereal..."
-sudo useradd --no-create-home --shell /bin/false "$ethdo_user"
-sudo mkdir -p "$ethdo_datadir"
-sudo chown -R "${ethdo_user}:${ethdo_group}" "$ethdo_datadir"
-sudo chmod -R 700 "$ethdo_datadir"
-sudo usermod --home "$ethdo_datadir" "$ethdo_user"
-
 # ethdo install
 printinfo "Installing ethdo..."
 install_wealdtech ethdo \
-	"$ethdo_version" "$ethdo_sha256_checksum" "$ethdo_bin" "$ethdo_user" "$ethdo_group"
+	"$ethdo_version" "$ethdo_sha256_checksum" "$ethdo_bin" "$USER" "$USER"
 
 # ethereal install
 printinfo "Installing ethereal..."
 install_wealdtech ethereal \
-	"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$ethdo_user" "$ethdo_group"
+	"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$USER" "$USER"
+
+printinfo "Configuring bash completion..."
+ethdo_bashcompletions='/etc/bash_completion.d/ethdo'
+ethereal_bashcompletions='/etc/bash_completion.d/ethereal'
+sudo ethdo completion bash | sudo tee "$ethdo_bashcompletions" >/dev/null
+sudo ethereal completion bash | sudo tee "$ethereal_bashcompletions" >/dev/null
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
@@ -119,10 +114,10 @@ assert_sudo
 
 reset_checks
 
-check_user_exists ethdo_user
-check_group_exists ethdo_group
 check_executable_exists --sudo ethdo_bin
 check_executable_exists --sudo ethereal_bin
+check_file_exists --sudo ethdo_bashcompletions
+check_file_exists --sudo ethereal_bashcompletions
 
 print_failed_checks --error
 

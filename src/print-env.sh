@@ -90,9 +90,6 @@ prysmctl_group=${color_green}$prysmctl_group${color_reset}
 prysmctl_bin=${color_green}$prysmctl_bin${color_reset}
 prysmctl_datadir=${color_green}$prysmctl_datadir${color_reset}
 
-ethdo_user=${color_green}$ethdo_user${color_reset}
-ethdo_group=${color_green}$ethdo_group${color_reset}
-ethdo_datadir=${color_green}$ethdo_datadir${color_reset}
 ethdo_version=${color_green}$ethdo_version${color_reset}
 ethdo_sha256_checksum=${color_green}$ethdo_sha256_checksum${color_reset}
 ethdo_bin=${color_green}$ethdo_bin${color_reset}
