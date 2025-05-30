@@ -78,6 +78,7 @@ prysmctl_datadir='/var/lib/prysm/prysmctl'
 # ethdo/ethereal values
 ethdo_user='ethdoer'
 ethdo_group='ethdoer'
+ethdo_datadir='/var/lib/ethdoer'
 ethdo_version='v1.37.4'
 ethdo_sha256_checksum='a133b5d284f5fb2e6c4406764cae3f0cbb49355edf01081befda132af651c344'
 ethdo_bin='/usr/local/bin/ethdo'

@@ -95,9 +95,13 @@ trap 'on_exit' EXIT
 
 assert_sudo
 
-# ethdo user/group
-printinfo "Creating ethdo user & group, used by both ethdo and ethereal..."
+# ethdo user, group, filesystem
+printinfo "Creating user, group, and datadir for ethdo & ethereal..."
 sudo useradd --no-create-home --shell /bin/false "$ethdo_user"
+sudo mkdir -p "$ethdo_datadir"
+sudo chown -R "${ethdo_user}:${ethdo_group}" "$ethdo_datadir"
+sudo chmod -R 700 "$ethdo_datadir"
+sudo usermod --home "$ethdo_datadir" "$ethdo_user"
 
 # ethdo install
 printinfo "Installing ethdo..."
