@@ -101,7 +101,6 @@ press_any_key_to_continue
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 staking_deposit_cli__reconnaissance
-portable_jq__reconnaissaince
 
 # prompt for mnemonic if not passed as script arg
 if [[ -z $mnemonic ]]; then
@@ -264,15 +263,15 @@ printinfo "EIP-2334 validator start index:\n${validator_start_index}"
 printf '\n'
 
 # obnoxious confirmation message
-printwarn "IMPORTANT: ensure that ${theme_command}execution_address${color_reset} below is set to your withdrawal wallet address!!!"
-printwarn "IMPORTANT: ensure that ${theme_command}execution_address${color_reset} below is set to your withdrawal wallet address!!!"
-printwarn "IMPORTANT: ensure that ${theme_command}execution_address${color_reset} below is set to your withdrawal wallet address!!!"
+printwarn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
+printwarn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
+printwarn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
 
 cat <<EOF
 Ready to run the following command:${theme_command}
 "$deposit_cli_bin" --language=English --non_interactive generate-bls-to-execution-change \\
 	--mnemonic=<hidden> \\
-	--execution_address="$withdrawal" \\
+	--withdrawal_address="$withdrawal" \\
 	--bls_to_execution_changes_folder="$usb_bls_to_execution_changes_parent_dir" \\
 	--bls_withdrawal_credentials_list="$final_bls_csv" \\
 	--validator_start_index=$validator_start_index \\
@@ -285,7 +284,7 @@ continue_or_exit
 # generate the signed message
 "$deposit_cli_bin" --language=English --non_interactive generate-bls-to-execution-change \
 	--mnemonic="$mnemonic" \
-	--execution_address="$withdrawal" \
+	--withdrawal_address="$withdrawal" \
 	--bls_to_execution_changes_folder="$usb_bls_to_execution_changes_parent_dir" \
 	--bls_withdrawal_credentials_list="$final_bls_csv" \
 	--validator_start_index=$validator_start_index \

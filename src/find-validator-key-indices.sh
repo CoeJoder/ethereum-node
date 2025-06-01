@@ -230,6 +230,7 @@ validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 	--validator_start_index=$validator_start_index \
 	--num_validators=$num_validators \
 	--chain="$ethereum_network" \
+	--withdrawal_address='' \
 	--folder="$validator_keys_parent_dir" >/dev/null
 printf '\n'
 
