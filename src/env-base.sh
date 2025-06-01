@@ -84,9 +84,9 @@ ethereal_sha256_checksum='ed4cc43fc35c16264f21a163fd3ffc0d4cefc79916984ab6718c9a
 ethereal_bin='/usr/local/bin/ethereal'
 
 # EthStaker Deposit CLI values
-ethstaker_deposit_cli_version='v1.2.0'
-ethstaker_deposit_cli_sha256_checksum='d17758a9a2dfd2f657a30cef8f5f8f16c95cc49e63e81e19b9fa2ac73aadd257'
-ethstaker_deposit_cli_basename='ethstaker_deposit-cli-18b7608-linux-amd64.tar.gz'
+ethstaker_deposit_cli_version='v1.2.2'
+ethstaker_deposit_cli_sha256_checksum='04af3f4fd2fdccf4ae060abde47637622a31114d9f2e53e62722a694a4d5b206'
+ethstaker_deposit_cli_basename='ethstaker_deposit-cli-b13dcb9-linux-amd64.tar.gz'
 ethstaker_deposit_cli_basename_sha256="${ethstaker_deposit_cli_basename}.sha256"
 ethstaker_deposit_cli_url="https://github.com/eth-educators/ethstaker-deposit-cli/releases/download/$ethstaker_deposit_cli_version/$ethstaker_deposit_cli_basename"
 ethstaker_deposit_cli_sha256_url="https://github.com/eth-educators/ethstaker-deposit-cli/releases/download/$ethstaker_deposit_cli_version/$ethstaker_deposit_cli_basename_sha256"
