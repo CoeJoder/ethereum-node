@@ -59,7 +59,12 @@ source ./seal.sh
 cd ethereum-node
 ./tools/deploy.sh
 ./tools/import-keys.sh
-# ignore any warnings that appear
+# ignore the following warnings: 
+#   "error creating directory"
+#   "accept-terms-of-use"
+#   "You are using an insecure gRPC connection"
+# when prompted for a wallet password, enter the one created during `set-wallet-password.sh` during initial validator setup
+# when prompted for the account password, enter the passphrase just created during `generate-next-keys.sh`
 ```
 
 ### 3. Deposit 32 ETH Per New Validator
@@ -69,18 +74,19 @@ cd ethereum-node
 ```bash
 cd /media/mint/DATA/
 source ./unseal.sh
+nemo ./validator_keys/
 ```
 
 - [ ] browse to the Ethereum Staking Launchpad page:
 	- [mainnet](https://launchpad.ethereum.org/en/overview) or [hoodi](https://hoodi.launchpad.ethereum.org/en/overview)
 - [ ] keep clicking <kbd>Continue</kbd> and <kbd>I Accept</kbd> until you reach the `Upload deposit data` page (no need to fill out the forms along the way)
-- [ ] follow the website instructions to upload the `deposit_data-XYZ.json` file from the `validator_keys` directory of the `DATA` USB flash drive
+- [ ] drag-and-drop the `deposit_data-XYZ.json` file from the `validator_keys` directory onto the webpage when prompted
 - [ ] follow the website instructions to connect your MetaMask wallet and complete the deposits: one for each validator
 	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the "ethstaker" Discord server if needed.
+- [ ] close the file explorer
 - [ ] reseal the USB files:
 
 ```bash
-cd /media/mint/DATA/ethereum-node
 source ./seal.sh
 ```
 
