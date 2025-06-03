@@ -95,4 +95,4 @@ source ./seal.sh
 - [Add validators](./add-validators.md)
 - [Withdraw validators](./partial-withdrawal.md)
 - [Exit validators](./voluntary-exit.md)
-
+- [Compound or Consolidate validators](./compound_or_consolidate.md)

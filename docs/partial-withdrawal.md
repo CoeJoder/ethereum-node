@@ -1,4 +1,6 @@
 # Partial Withdrawal
+Also known as: &nbsp; ***Conversion to 0x01 credentials.***
+
 Sets a withdrawal address for one or more validators.  A validator can have its withdrawal address set only once, so be careful!
 
 ## Preconditions
@@ -67,4 +69,7 @@ cd ethereum-node
 ```
 
 ## Next Steps
-- [Validator Exit](./voluntary-exit.md)
+- [Add validators](./add-validators.md)
+- [Withdraw validators](./partial-withdrawal.md)
+- [Exit validators](./voluntary-exit.md)
+- [Compound or Consolidate validators](./compound_or_consolidate.md)
