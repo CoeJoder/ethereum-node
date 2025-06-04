@@ -72,7 +72,7 @@ cd ethereum-node
 - [ ] unseal the USB files:
 
 ```bash
-cd /media/mint/DATA/
+cd /media/$USER/DATA/
 source ./unseal.sh
 nemo ./validator_keys/
 ```
