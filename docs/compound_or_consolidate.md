@@ -4,7 +4,7 @@ The Pectra upgrade has enabled two additional validator operations:
 ### Compound
 Also known as: &nbsp; ***Conversion to 0x02 credentials.***
 
-Convert a **0x01** validator to **0x02**, thereby halting "sweeping" withdrawals and enabling compounding staking rewards.  This is an irreversible operation, so be careful!
+Converts a **0x01** validator to **0x02**, thereby halting "sweeping" withdrawals and enabling compounding staking rewards.  This is an irreversible operation, so be careful!
 
 ### Consolidate
 Transfers the balance of a **0x01** or **0x02** validator to a **0x02** validator.  This will exit the source validator and move its remaining balance to the balance of the target validator.  This is also irreversible.

@@ -134,7 +134,7 @@ exit
 ```bash
 cd /media/$USER/DATA/
 source ./unseal.sh
-nemo ./validator_keys/
+(nemo ./validator_keys/ &>/dev/null &)
 ```
 
 - [ ] browse to the Ethereum Staking Launchpad page:
