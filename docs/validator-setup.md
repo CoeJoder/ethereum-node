@@ -46,12 +46,10 @@ exit
 - [ ] wipe the drive and create an EXT4 partition:
 
 ```bash
-# list all SCSI drives and identify the intended USB flash drive
-lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
-
-# once identified, assign its device path to the variable `flashdrive`
-# e.g., /dev/xyz
-flashdrive=/dev/xyz
+# get the device path of the USB 'DATA' drive
+flashdrive="/dev/$(lsblk -I 8 --json | jq --arg USER "$USER" -r '.blockdevices | 
+	map(select(.children[].mountpoints[] | contains("/media/\($USER)/DATA" ))) |
+	first | .name')" && echo $flashdrive
 
 # unmount any mounted partitions of the USB flash drive
 sudo umount ${flashdrive}?*
