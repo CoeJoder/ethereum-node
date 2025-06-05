@@ -128,12 +128,5 @@ sudo -u "$prysmctl_user" "$prysmctl_bin" validator withdraw \
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
-beaconchain_url_subdomain=''
-if [[ $ethereum_network != 'mainnet' ]]; then
-	beaconchain_url_subdomain="${ethereum_network}."
-fi
-beaconchain_validator_url="https://${beaconchain_url_subdomain}beaconcha.in/validator/[pubkey or index]"
-
-cat <<EOF
-To confirm on-chain, browse to $beaconchain_validator_url and check that your validator(s) have withdrawal credentials prefixed with \`0x01\`.
-EOF
+beaconchain_base_url "$ethereum_network" base_url
+echo "To confirm on-chain, browse to ${theme_url}$base_url/validator/[pubkey or index]${color_reset} and check that your validator(s) have withdrawal credentials prefixed with \`0x01\`."

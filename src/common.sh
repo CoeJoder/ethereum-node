@@ -650,6 +650,19 @@ function choose_from_menu() {
 	printf -v $outvar "${options[$cur]}"
 }
 
+function beaconchain_base_url() {
+	if (($# != 2)); then
+		printerr "usage: beaconchain_base_url network outvar"
+		return 2
+	fi
+	local network="$1" outvar="$2"
+	local beaconchain_url_subdomain=""
+	if [[ $network != $mainnet ]]; then
+		beaconchain_url_subdomain="${network}."
+	fi
+	printf -v $outvar "https://${beaconchain_url_subdomain}beaconcha.in"
+}
+
 # -------------------------- ASSERTIONS ---------------------------------------
 
 # assert sudoer status, and include hostname in prompt
