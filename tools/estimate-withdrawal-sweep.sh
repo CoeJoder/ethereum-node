@@ -2,8 +2,8 @@
 
 # estimate-withdrawal-sweep.sh
 # 
-# Given a validator, estimate the time since & until the previous & next
-# automatic withdrawals, respectively, as if it were eligible.
+# For each given validator, estimate the time since & until the previous &
+# next automatic withdrawals, respectively, as if it were eligible.
 #
 # See: https://beaconcha.in/validators/withdrawals
 
@@ -19,7 +19,7 @@ housekeeping
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage:
-		  $(basename ${BASH_SOURCE[0]}) [options] validator
+		  $(basename ${BASH_SOURCE[0]}) [options] validator1 [validator2 ...]
 		Options:
 		  --no-banner   Do not show banner
 		  --help, -h    Show this message
@@ -32,7 +32,6 @@ _parsed_args=$(getopt --options='h' --longoptions='no-banner,help' \
 eval set -- "$_parsed_args"
 unset _parsed_args
 
-validator=''
 no_banner=false
 
 while true; do
@@ -57,11 +56,12 @@ while true; do
 done
 
 if (($# < 1)); then
-	printerr "must specify validator index or pubkey"
+	printerr "must specify a list of validators by index or pubkey"
 	exit 1
 fi
-validator="$1"
-shift
+
+validators=( "$@" )
+shift $#
 
 # -------------------------- PRECONDITIONS ------------------------------------
 
@@ -71,7 +71,10 @@ reset_checks
 for _command in jq python3; do
 	check_command_exists_on_path _command
 done
-check_is_valid_validator_index_or_pubkey validator
+for _validator in "${validators[@]}"; do
+	check_is_valid_validator_index_or_pubkey _validator
+done
+check_is_valid_ethereum_network ethereum_network
 print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
@@ -87,11 +90,13 @@ if [[ $no_banner == false ]]; then
 
 	# -------------------------- PREAMBLE -----------------------------------------
 
-	cat <<-EOF
-	Given a validator, estimate the time since & until the previous & next
-	automatic withdrawals, respectively, as if it were eligible.
+	beaconchain_base_url "$ethereum_network" base_url
 
-	See: ${theme_url}https://beaconcha.in/validators/withdrawals${color_reset}
+	cat <<-EOF
+	For each given validator, estimate the time since & until the previous &
+	next automatic withdrawals, respectively, as if it were eligible.
+
+	See: ${theme_url}${base_url}/validators/withdrawals${color_reset}
 
 	EOF
 	press_any_key_to_continue
@@ -107,21 +112,31 @@ beacon_api__reconnaissance
 #   :. 4/3 withdrawals / second
 withdrawals_per_second='(4/3)'  # valid Python number expression
 
-# if a pubkey was provided, convert to an index
-target_validator="$validator"
-if [[ $target_validator =~ $regex_eth_validator_pubkey ]]; then
-	printinfo "Converting validator pubkey to index..."
-	target_validator="$(beacon_api__get_validators "id=$validator" | 
-		jq -r '.data |
-		map(.index) |
-		map(tonumber) |
-		first'
-	)"
-	if [[ $target_validator == 'null' ]]; then
-		printerr "Validator index not found: ${theme_value}$validator${color_reset}"
-		exit 1
+printinfo "Converting any validator pubkeys to indexes..."
+target_validators=()
+has_lookup_errors=false
+for _validator in "${validators[@]}"; do
+	if [[ $_validator =~ $regex_eth_validator_pubkey ]]; then
+		_target_validator="$(beacon_api__get_validators "id=$_validator" | 
+			jq -r '.data |
+			map(.index) |
+			map(tonumber) |
+			first'
+		)"
+		if [[ $_target_validator != 'null' ]]; then
+			target_validators+=("$_target_validator")
+		else
+			printerr "Validator index not found: ${theme_value}$_validator${color_reset}"
+			has_lookup_errors=true
+		fi
+	else
+		# treat as valid index, as the estimate is given for hypothetical validators too
+		target_validators+=("$_validator")
 	fi
-fi
+done
+[[ $has_lookup_errors == true ]] && exit 1
+
+target_validators_csv="$(join_arr ',' "${target_validators[@]}")"
 
 # -------------------------- EXECUTION ----------------------------------------
 
@@ -166,14 +181,13 @@ cat <<EOF
   Number of eligible (active): $(jq -r '. | length' <<<"$active")
   Number of eligible (exited): $(jq -r '. | length' <<<"$exited")
   Latest withdrawn validator: $latest_withdrawn_validator
-  Target validator: ${theme_value}$target_validator${color_reset}
 EOF
 
 # create an ascending sorted-set of all eligible validators, including the
-# target validator and the latest withdrawn validator
-sorted_indexes="$(jq -sr "add | unique | sort" <<<"$active $exited [$target_validator, $latest_withdrawn_validator]")"
+# target validators and the latest withdrawn validator
+sorted_indexes="$(jq -sr "add | unique | sort" <<<"$active $exited [$target_validators_csv,$latest_withdrawn_validator]")"
 
-# calculate time since & until target validator's previous & next withdrawals, respectively
+# calculate time since & until target validators' previous & next withdrawals, respectively
 readarray -t time_since_until < <(python3 <<EOF
 
 from datetime import timedelta
@@ -182,32 +196,41 @@ import json
 queue = json.loads('''
 	$sorted_indexes
 ''')
-
-latest = queue.index($latest_withdrawn_validator)
-target = queue.index($target_validator)
 rate = $withdrawals_per_second
+target_validators = [$target_validators_csv]
+latest = queue.index($latest_withdrawn_validator)
 
-if latest < target:
-	seconds_since = (len(queue) - target + latest) / rate
-	seconds_until = (target - latest) / rate
-elif latest > target:
-	seconds_since = (latest - target) / rate
-	seconds_until = (len(queue) - latest + target) / rate
-else:
-	seconds_since = 0
-	seconds_until = 0
+for target_validator in target_validators:
+	target = queue.index(target_validator)
 
-print(f"-{timedelta(seconds=round(seconds_since))}")
-print(f"{timedelta(seconds=round(seconds_until))}")
+	if latest < target:
+		seconds_since = (len(queue) - target + latest) / rate
+		seconds_until = (target - latest) / rate
+	elif latest > target:
+		seconds_since = (latest - target) / rate
+		seconds_until = (len(queue) - latest + target) / rate
+	else:
+		seconds_since = 0
+		seconds_until = 0
+
+	print(f"{target_validator}")
+	print(f"-{timedelta(seconds=round(seconds_since))}")
+	print(f"{timedelta(seconds=round(seconds_until))}")
 
 EOF
 )
 
-if ((${#time_since_until[@]} == 2)); then
-	cat <<-EOF
-	  Approx. time since last withdrawal: ${theme_value}${time_since_until[0]}${color_reset}
-	  Approx. time until next withdrawal: ${theme_value}${time_since_until[1]}${color_reset}
-	EOF
+if ((${#time_since_until[@]} % 3 != 0)); then
+	printerr "Expected output chunks of length = 3 but found:\n${time_since_until[@]}"
+	exit 1
 fi
+for ((i = 0; i < ${#time_since_until[@]}; ((i += 3)))); do
+	cat <<-EOF
+
+		Target validator: ${theme_value}${time_since_until[i]}${color_reset}
+		Approx. time since last withdrawal: ${theme_value}${time_since_until[i+1]}${color_reset}
+		Approx. time until next withdrawal: ${theme_value}${time_since_until[i+2]}${color_reset}
+	EOF
+done
 
 # -------------------------- POSTCONDITIONS -----------------------------------
