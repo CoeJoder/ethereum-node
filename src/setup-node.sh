@@ -39,7 +39,7 @@ check_is_valid_port prysm_beacon_p2p_tcp_port
 
 check_file_does_not_exist --sudo eth_jwt_file
 check_is_valid_ethereum_network ethereum_network
-check_is_valid_ethereum_address suggested_fee_recipient
+[[ -n $suggested_fee_recipient ]] && check_is_valid_ethereum_address suggested_fee_recipient
 
 print_failed_checks --error
 
@@ -86,6 +86,11 @@ else
 	printinfo "non-testnet: checkpoint-sync disabled"
 	prysm_beacon_checkpoint_sync_url=""
 	prysm_beacon_genesis_beacon_api_url=""
+fi
+
+suggested_fee_recipient_opt=""
+if [[ -n $suggested_fee_recipient ]]; then
+	suggested_fee_recipient_opt="--suggested-fee-recipient=\"$suggested_fee_recipient\""
 fi
 continue_or_exit
 printf '\n'
@@ -204,7 +209,7 @@ ExecStart=$prysm_beacon_bin \\
 	--$ethereum_network \\
 	--datadir="$prysm_beacon_datadir" \\
 	--p2p-max-peers=$prysm_beacon_p2p_max_peers \\
-	--suggested-fee-recipient=$suggested_fee_recipient \\
+	$suggested_fee_recipient_opt \\
 	--jwt-secret="$eth_jwt_file" \\
 	--monitoring-host="0.0.0.0" \\
 	--accept-terms-of-use \\
