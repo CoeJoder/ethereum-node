@@ -171,7 +171,9 @@ ExecStart=$geth_bin \\
 	--port $geth_port \\
 	--discovery.port $geth_discovery_port \\
 	--http \\
-	--http.api eth,net,engine,admin
+	--http.api eth,net,engine,admin \\
+	--db-engine=pebble \\
+	--state.scheme=path 
 Restart=always
 RestartSec=5
 
