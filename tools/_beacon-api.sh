@@ -42,3 +42,7 @@ function beacon_api__get_validators() {
 function beacon_api__get_latest_block() {
 	beacon_api__get "/eth/v2/beacon/blocks/head"
 }
+
+function beacon_api__get_sync_status() {
+	beacon_api__get "/eth/v1/node/syncing"
+}
