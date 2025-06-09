@@ -41,8 +41,8 @@ This guide is written using the following configurable values:
 - [ ] browse to the [Ubuntu Server download page](https://ubuntu.com/download/server) and download the latest .iso file
 - [ ] plug-in the next flash drive and repeat same process as above using `USB Image Writer`, labeling this one as `Ubuntu Server`
 
-### 2. Update BIOS and UEFI of the Node Server
-These are the steps for updating the BIOS and UEFI of the `NUC10i7FNH`, the recommended node server device in [Full-Node Hardware Requirements](./hardware-requirements.md).
+### 2. Update BIOS of the Node Server
+These are the steps for updating the BIOS of the `NUC10i7FNH`, the recommended node server device in [Full-Node Hardware Requirements](./hardware-requirements.md).
 
 #### On the Client PC:
 - [ ] plug-in the next USB flash drive 
@@ -81,27 +81,14 @@ sudo eject $flashdrive
 
 - [ ] unplug the flash drive and plug it back in.  It should be auto-mounted by the operating system
 - [ ] browse to [BIOS & Firmware for NUC10i7FNH](https://www.asus.com/supportonly/nuc10i7fnh/helpdesk_bios/) and download the latest BIOS update
-- [ ] extract the .zip file, open the extracted folder `BIOS Flash through Utility/XXX.UEFI` and copy the .CAP and .efi files to the flash drive
+- [ ] extract the .zip file, open the extracted folder `Capsule File for BIOS Flash through F7` and copy the .CAP file to the flash drive
 - [ ] safely eject the flash drive, unplug it, and label it as `Data`
 
 #### On the Node Server:
 - [ ] plug the `Data` flash drive into the front USB port
-- [ ] power-on the node server and immediately press <kbd>F2</kbd> repeatedly to enter BIOS setup
-- [ ] go to _Boot > Secure Boot > Secure Boot_
-- [ ] disable **Secure Boot**, if enabled
-- [ ] go to _Boot > Boot Priority > Internal UEFI Shell_
-- [ ] enable **Internal UEFI Shell**
-- [ ] press <kbd>F10</kbd> to save changes and exit BIOS Setup
-- [ ] press <kbd>F10</kbd> repeatedly to open the Boot Menu
-- [ ] select **UEFI: Built-in EFI Shell**
-- [ ] change the current directory to the USB flash drive by entering the command `fsX:` where X is the drive number of the USB flash drive from the device mapping list
-	- Example: if your USB drive is fs0, then type `fs0:` and press <kbd>Enter</kbd>
-- [ ] type: `iFlashVEfi64.efi XXX.CAP` (where XXX.CAP is the name of the .CAP file), then press <kbd>Enter</kbd>
-- [ ] press <kbd>y</kbd> to begin the update
-- [ ] when the BIOS/UEFI update is complete, press <kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>delete</kbd> to reboot again
-- [ ] press <kbd>F2</kbd> repeatedly to enter BIOS setup, then disable **Internal UEFI Shell** and enable **Secure Boot**
-- [ ] press <kbd>F10</kbd> to save changes and exit BIOS Setup
-- [ ] after reboot, shutdown the node server completely by holding the power button for about 12 seconds (until all lights go out), then remove the flash drive
+- [ ] power-on the node server and immediately press <kbd>F7</kbd> repeatedly until the BIOS flash screen is displayed
+- [ ] select the flash drive from the list, and select the .CAP file
+- [ ] when the BIOS update is complete, shutdown the node server by holding the power button for about 12 seconds (until all lights go out), then remove the flash drive
 
 ### 3. Install Ubuntu Server
 
