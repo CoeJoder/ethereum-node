@@ -28,6 +28,12 @@ check_executable_does_not_exist --sudo prysm_beacon_bin
 check_user_does_not_exist prysm_beacon_user
 check_group_does_not_exist prysm_beacon_group
 check_directory_does_not_exist --sudo prysm_beacon_datadir
+check_is_defined prysm_beacon_enable_checkpoint_sync
+
+if [[ $prysm_beacon_enable_checkpoint_sync == true ]]; then
+	check_is_defined prysm_beacon_checkpoint_sync_url
+	check_is_defined prysm_beacon_genesis_beacon_api_url
+fi
 
 # ports
 check_is_valid_port geth_port
@@ -70,11 +76,9 @@ press_any_key_to_continue
 
 get_latest_prysm_version latest_prysm_version
 
-# only use checkpoint-sync on testnet, due to trust required
-# see: https://docs.prylabs.network/docs/prysm-usage/checkpoint-sync
 prysm_beacon_cpsync_opts=""
-if [[ $ethereum_network == $testnet ]]; then
-	printinfo "$testnet network detected: checkpoint-sync enabled"
+if [[ $prysm_beacon_enable_checkpoint_sync == true ]]; then
+	printinfo "checkpoint-sync enabled"
 	prysm_beacon_cpsync_opts="--checkpoint-sync-url=\"$prysm_beacon_checkpoint_sync_url\" \\
 	--genesis-beacon-api-url=\"$prysm_beacon_genesis_beacon_api_url\""
 
@@ -83,7 +87,7 @@ if [[ $ethereum_network == $testnet ]]; then
 		Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
 	EOF
 else
-	printinfo "non-testnet: checkpoint-sync disabled"
+	printinfo "checkpoint-sync disabled"
 	prysm_beacon_checkpoint_sync_url=""
 	prysm_beacon_genesis_beacon_api_url=""
 fi

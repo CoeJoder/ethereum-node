@@ -148,8 +148,8 @@ prysm_validator_beacon_rest_api_endpoint="http://127.0.0.1:\$prysm_beacon_http_p
 # prysm max external connections
 prysm_beacon_p2p_max_peers=$prysm_beacon_p2p_max_peers
 
-# the hard-coded behavior is to use checkpoint-sync only on testnet 
-# these variables are ignored unless \`ethereum_network\` is set to testnet
+# checkpoint-sync is now considered more secure than syncing from genesis
+prysm_beacon_enable_checkpoint_sync=$prysm_beacon_enable_checkpoint_sync
 prysm_beacon_checkpoint_sync_url='$prysm_beacon_checkpoint_sync_url'
 prysm_beacon_genesis_beacon_api_url='$prysm_beacon_genesis_beacon_api_url'
 

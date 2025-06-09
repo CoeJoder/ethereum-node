@@ -70,8 +70,8 @@ prysm_beacon_p2p_quic_port=${color_green}$prysm_beacon_p2p_quic_port${color_rese
 prysm_beacon_p2p_udp_port=${color_green}$prysm_beacon_p2p_udp_port${color_reset}  ${color_lightgray}# UDP${color_reset}
 prysm_beacon_p2p_max_peers=${color_green}$prysm_beacon_p2p_max_peers${color_reset}
 
-${color_lightgray}# the hard-coded behavior is to use checkpoint-sync only on testnet${color_reset}
-${color_lightgray}# these variables are ignored unless \`ethereum_network\` is set to testnet${color_reset}
+${color_lightgray}# checkpoint-sync is now considered more secure than syncing from genesis${color_reset}
+prysm_beacon_enable_checkpoint_sync=${color_green}$prysm_beacon_enable_checkpoint_sync${color_reset}
 prysm_beacon_checkpoint_sync_url=${color_green}$prysm_beacon_checkpoint_sync_url${color_reset}
 prysm_beacon_genesis_beacon_api_url=${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
 
