@@ -228,6 +228,11 @@ sudo rm -rf /etc/cloud/ && sudo rm -rf /var/lib/cloud/
 sudo rm -f /etc/ssh/sshd_config.d/50-cloud-init.conf
 ```
 
+- [ ] update system firmware:
+```bash
+sudo fwupdmgr update
+```
+
 - [ ] restart the node server, wait one minute, then try logging in using key+passphrase:
 
 ```bash
