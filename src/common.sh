@@ -917,7 +917,7 @@ function check_string_contains() {
 
 function check_current_directory_is() {
 	if _check_is_defined $1; then
-		resolved_dir="$(realpath "${!1}")"
+		local resolved_dir="$(realpath "${!1}")"
 		if [[ $(pwd) != $resolved_dir ]]; then
 			_check_failures+=("current directory is not $resolved_dir")
 		fi
@@ -926,7 +926,7 @@ function check_current_directory_is() {
 
 function check_current_directory_is_not() {
 	if _check_is_defined $1; then
-		resolved_dir="$(realpath "${!1}")"
+		local resolved_dir="$(realpath "${!1}")"
 		if [[ $(pwd) == $resolved_dir ]]; then
 			_check_failures+=("current directory is $resolved_dir")
 		fi
