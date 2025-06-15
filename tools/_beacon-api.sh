@@ -25,7 +25,7 @@ function beacon_api__get() {
 	fi
 	local query="$1"
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
-		curl -LSsX 'GET' --fail-with-body -H 'Accept: application/json' \
+		curl -LSsX 'GET' -H 'Accept: application/json' \
 			"${prysm_validator_beacon_rest_api_endpoint}${query}"
 	"
 }
