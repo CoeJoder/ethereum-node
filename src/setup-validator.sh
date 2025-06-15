@@ -8,6 +8,43 @@ this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 
+function show_usage() {
+	cat >&2 <<-EOF
+		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		  --unit-file-only   If present, only generate the unit file
+		  --help, -h         Show this message
+	EOF
+}
+
+_parsed_args=$(getopt --options='h' --longoptions='help,unit-file-only' \
+	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
+(($? != 0)) && exit 1
+eval set -- "$_parsed_args"
+unset _parsed_args
+
+unit_file_only=false
+
+while true; do
+	case "$1" in
+	-h | --help)
+		show_usage
+		exit 0
+		;;
+	--unit-file-only)
+		unit_file_only=true
+		shift
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		printerr "unknown argument: $1"
+		exit 1
+		;;
+	esac
+done
+
 # -------------------------- PRECONDITIONS ------------------------------------
 
 assert_on_node_server
@@ -15,20 +52,29 @@ assert_sudo
 
 reset_checks
 
-check_is_service_active geth_unit_file
-check_is_service_active prysm_beacon_unit_file
+if [[ $unit_file_only == true ]]; then
+	check_executable_exists --sudo prysm_validator_bin
 
-check_is_valid_port prysm_beacon_http_port
+	check_user_exists prysm_validator_user
+	check_group_exists prysm_validator_group
+	check_directory_exists --sudo prysm_validator_datadir
+	check_group_exists prysmctl_group
+else
+	check_executable_does_not_exist --sudo prysm_validator_bin
 
-check_executable_does_not_exist --sudo prysm_validator_bin
+	check_user_does_not_exist prysm_validator_user
+	check_group_does_not_exist prysm_validator_group
+	check_directory_does_not_exist --sudo prysm_validator_datadir
+	check_group_exists prysmctl_group
+fi
 
 check_is_valid_ethereum_network ethereum_network
 check_is_valid_ethereum_address suggested_fee_recipient
 
-check_user_does_not_exist prysm_validator_user
-check_group_does_not_exist prysm_validator_group
-check_directory_does_not_exist --sudo prysm_validator_datadir
-check_group_exists prysmctl_group
+check_is_service_active geth_unit_file
+check_is_service_active prysm_beacon_unit_file
+
+check_is_valid_port prysm_beacon_http_port
 
 print_failed_checks --error
 
@@ -52,6 +98,9 @@ echo -ne "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 
+if [[ $unit_file_only == true ]]; then
+	echo "${theme_value}[UNIT FILE ONLY]${color_reset}"
+fi
 cat <<EOF
 Installs prysm-validator and configures it to run as a service.
 EOF
@@ -86,26 +135,28 @@ trap 'on_exit' EXIT
 
 assert_sudo
 
-# system and app list updates
-printinfo Running APT update and upgrade...
-sudo apt-get -y update
-sudo apt-get -y upgrade
+if [[ $unit_file_only == false ]]; then
+	# system and app list updates
+	printinfo Running APT update and upgrade...
+	sudo apt-get -y update
+	sudo apt-get -y upgrade
 
-# prysm-validator filesystem
-printinfo "Setting up prysm-validator user, group, datadir..."
-sudo useradd --no-create-home --shell /bin/false "$prysm_validator_user"
-sudo mkdir -p "$prysm_validator_datadir"
-sudo chown -R "${prysm_validator_user}:${prysm_validator_group}" "$prysm_validator_datadir"
-sudo chmod -R 700 "$prysm_validator_datadir"
-sudo usermod -a -G "$prysmctl_group" "$prysm_validator_user"
+	# prysm-validator filesystem
+	printinfo "Setting up prysm-validator user, group, datadir..."
+	sudo useradd --no-create-home --shell /bin/false "$prysm_validator_user"
+	sudo mkdir -p "$prysm_validator_datadir"
+	sudo chown -R "${prysm_validator_user}:${prysm_validator_group}" "$prysm_validator_datadir"
+	sudo chmod -R 700 "$prysm_validator_datadir"
+	sudo usermod -a -G "$prysmctl_group" "$prysm_validator_user"
 
-# prysm-validator install
-printinfo "Downloading prysm-validator..."
-install_prysm validator \
-	"$latest_prysm_version" "$prysm_validator_bin" "$prysm_validator_user" "$prysm_validator_group"
+	# prysm-validator install
+	printinfo "Downloading prysm-validator..."
+	install_prysm validator \
+		"$latest_prysm_version" "$prysm_validator_bin" "$prysm_validator_user" "$prysm_validator_group"
+fi
 
 # prysm-validator unit file
-echo -e "\n${theme_filename}$prysm_validator_unit_file${color_reset}"
+printinfo "Generating ${theme_filename}$prysm_validator_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$prysm_validator_unit_file"
 [Unit]
 Description=prysm validator service
