@@ -136,6 +136,9 @@ geth_discovery_port=$geth_discovery_port # UDP
 geth_datadir_secondary="\$node_server_secondary_storage/geth"
 geth_datadir_secondary_ancient="\$geth_datadir_secondary/chaindata/ancient"
 
+# geth include only postmerge chain history
+geth_history_chain_postmerge_only=$geth_history_chain_postmerge_only
+
 # external prysm ports
 prysm_beacon_p2p_tcp_port=$prysm_beacon_p2p_tcp_port  # TCP
 prysm_beacon_p2p_quic_port=$prysm_beacon_p2p_quic_port # UDP

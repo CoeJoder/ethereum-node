@@ -40,6 +40,7 @@ geth_port=30303           # TCP
 geth_discovery_port=30303 # UDP
 geth_datadir_secondary="$node_server_secondary_storage/geth"
 geth_datadir_secondary_ancient="$geth_datadir_secondary/chaindata/ancient"
+geth_history_chain_postmerge_only=true
 
 # prysm-beacon values
 prysm_beacon_user='prysmbeacon'

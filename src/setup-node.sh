@@ -59,6 +59,7 @@ check_group_does_not_exist geth_group
 check_directory_does_not_exist --sudo geth_datadir
 check_directory_does_not_exist --sudo geth_datadir_secondary
 check_directory_does_not_exist --sudo geth_datadir_secondary_ancient
+check_is_defined geth_history_chain_postmerge_only
 
 # prysm-beacon
 check_executable_does_not_exist --sudo prysm_beacon_bin
@@ -113,6 +114,11 @@ EOF
 press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
+
+geth_history_chain="all"
+if [[ $geth_history_chain_postmerge_only == true ]]; then
+	geth_history_chain="postmerge"
+fi
 
 get_latest_prysm_version latest_prysm_version
 
@@ -226,6 +232,7 @@ ExecStart=$geth_bin \\
 	--authrpc.jwtsecret "$eth_jwt_file" \\
 	--datadir "$geth_datadir" \\
 	--datadir.ancient "$geth_datadir_secondary_ancient" \\
+	--history.chain $geth_history_chain \\
 	--port $geth_port \\
 	--discovery.port $geth_discovery_port \\
 	--http \\

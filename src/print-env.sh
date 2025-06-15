@@ -55,6 +55,7 @@ geth_bin=${color_green}$geth_bin${color_reset}
 geth_datadir=${color_green}$geth_datadir${color_reset}
 geth_datadir_secondary=${color_green}$geth_datadir_secondary${color_reset}
 geth_datadir_secondary_ancient=${color_green}$geth_datadir_secondary_ancient${color_reset}
+geth_history_chain_postmerge_only=${color_green}$geth_history_chain_postmerge_only${color_reset}
 geth_unit_file=${color_green}$geth_unit_file${color_reset}
 geth_port=${color_green}$geth_port${color_reset}           ${color_lightgray}# TCP${color_reset}
 geth_discovery_port=${color_green}$geth_discovery_port${color_reset} ${color_lightgray}# UDP${color_reset}
