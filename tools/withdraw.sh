@@ -91,6 +91,7 @@ elif ((${#bls_messages[@]} == 1)); then
 else
 	printwarn "Multiple bls messages found!"
 	choose_from_menu "Please select one to submit:" bls_message "${bls_messages[@]}"
+	continue_or_exit
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
