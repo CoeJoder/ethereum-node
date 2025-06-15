@@ -52,21 +52,43 @@ assert_sudo
 
 reset_checks
 
-# geth
-check_command_does_not_exist_on_path geth_bin
-check_user_does_not_exist geth_user
-check_group_does_not_exist geth_group
-check_directory_does_not_exist --sudo geth_datadir
-check_directory_does_not_exist --sudo geth_datadir_secondary
-check_directory_does_not_exist --sudo geth_datadir_secondary_ancient
-check_is_defined geth_history_chain_postmerge_only
+if [[ $unit_files_only == true ]]; then
+	# geth
+	check_command_exists_on_path geth_bin
+	check_user_exists geth_user
+	check_group_exists geth_group
+	check_directory_exists --sudo geth_datadir
+	check_directory_exists --sudo geth_datadir_secondary
+	check_directory_exists --sudo geth_datadir_secondary_ancient
+	check_is_defined geth_history_chain_postmerge_only
 
-# prysm-beacon
-check_executable_does_not_exist --sudo prysm_beacon_bin
-check_user_does_not_exist prysm_beacon_user
-check_group_does_not_exist prysm_beacon_group
-check_directory_does_not_exist --sudo prysm_beacon_datadir
-check_is_defined prysm_beacon_enable_checkpoint_sync
+	# prysm-beacon
+	check_executable_exists --sudo prysm_beacon_bin
+	check_user_exists prysm_beacon_user
+	check_group_exists prysm_beacon_group
+	check_directory_exists --sudo prysm_beacon_datadir
+	check_is_defined prysm_beacon_enable_checkpoint_sync
+
+	check_file_exists --sudo eth_jwt_file
+else
+	# geth
+	check_command_does_not_exist_on_path geth_bin
+	check_user_does_not_exist geth_user
+	check_group_does_not_exist geth_group
+	check_directory_does_not_exist --sudo geth_datadir
+	check_directory_does_not_exist --sudo geth_datadir_secondary
+	check_directory_does_not_exist --sudo geth_datadir_secondary_ancient
+	check_is_defined geth_history_chain_postmerge_only
+
+	# prysm-beacon
+	check_executable_does_not_exist --sudo prysm_beacon_bin
+	check_user_does_not_exist prysm_beacon_user
+	check_group_does_not_exist prysm_beacon_group
+	check_directory_does_not_exist --sudo prysm_beacon_datadir
+	check_is_defined prysm_beacon_enable_checkpoint_sync
+
+	check_file_does_not_exist --sudo eth_jwt_file
+fi
 
 if [[ $prysm_beacon_enable_checkpoint_sync == true ]]; then
 	check_is_defined prysm_beacon_checkpoint_sync_url
@@ -81,7 +103,6 @@ check_is_valid_port prysm_beacon_p2p_udp_port
 check_is_valid_port prysm_beacon_p2p_quic_port
 check_is_valid_port prysm_beacon_p2p_tcp_port
 
-check_file_does_not_exist --sudo eth_jwt_file
 check_is_valid_ethereum_network ethereum_network
 [[ -n $suggested_fee_recipient ]] && check_is_valid_ethereum_address suggested_fee_recipient
 
@@ -237,7 +258,7 @@ ExecStart=$geth_bin \\
 	--discovery.port $geth_discovery_port \\
 	--http \\
 	--http.api eth,net,engine,admin \\
-	--db-engine pebble \\
+	--db.engine pebble \\
 	--state.scheme path 
 Restart=always
 RestartSec=5
