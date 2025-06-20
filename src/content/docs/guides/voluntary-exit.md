@@ -1,5 +1,9 @@
-# Voluntary Exit
-
+---
+title: Voluntary Exit
+description: Exit the validators running on the Ethereum node.
+sidebar:
+  order: 7
+---
 ## Preconditions
 - [ ] [partial withdrawal](./partial-withdrawal.md) has been completed
 - [ ] node server is powered on and running geth (EL) and prysm-beacon (CL) as services

@@ -1,6 +1,9 @@
-# Add Validators
-Adds new validators to your existing validator node service using an existing mnemonic.
-
+---
+title: Add Validators
+description: Adds new validators to your existing validator node service using an existing mnemonic.
+sidebar:
+  order: 4
+---
 ## Preconditions
 - [ ] [validator setup](./validator-setup.md) has been completed
 - [ ] you have at least 32 ETH available to stake in your MetaMask wallet per new validator

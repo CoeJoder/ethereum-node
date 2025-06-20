@@ -1,4 +1,9 @@
-# Partial Withdrawal
+---
+title: Partial Withdrawal
+description: Sets a withdrawal address for one or more validators.
+sidebar:
+  order: 6
+---
 Also known as: &nbsp; ***Conversion to 0x01 credentials.***
 
 Sets a withdrawal address for one or more validators.  A validator can have its withdrawal address set only once, so be careful!

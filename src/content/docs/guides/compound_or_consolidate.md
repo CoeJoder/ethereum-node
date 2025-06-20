@@ -1,4 +1,9 @@
-# Compound or Consolidate
+---
+title: Compound or Consolidate
+description: Convert a validator into a compounding type, or consolidate into another.
+sidebar:
+  order: 5
+---
 The Pectra upgrade has enabled two additional validator operations:
 
 ### Compound

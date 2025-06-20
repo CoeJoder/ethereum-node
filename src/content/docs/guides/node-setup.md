@@ -1,5 +1,9 @@
-# Node Setup
-
+---
+title: Node Setup
+description: Setup the EL and CL of the Ethereum Node.
+sidebar:
+  order: 2
+---
 ## Preconditions
 - [ ] [initial setup](./initial-setup.md) has been completed
 - [ ] node server is powered on and connected to the network

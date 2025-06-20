@@ -1,5 +1,9 @@
-# Validator Setup
-
+---
+title: Validator Setup
+description: Setup the validator service alongside the EL and CL of the Ethereum Node.
+sidebar:
+  order: 3
+---
 ## Preconditions
 - [ ] you have at least 32 ETH available to stake per validator in your MetaMask wallet
 - [ ] [node setup](./node-setup.md) has been completed

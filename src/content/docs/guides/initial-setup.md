@@ -1,5 +1,9 @@
-# Initial Setup
-
+---
+title: Initial Setup
+description: The first steps in setting up an Ethereum Node.
+sidebar:
+  order: 1
+---
 ## Preconditions
 - [ ] all [required hardware](./hardware-requirements.md) is obtained
 - [ ] router has [OpenWRT](https://openwrt.org/) installed and is connected to the internet

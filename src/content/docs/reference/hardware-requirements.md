@@ -1,4 +1,9 @@
-# Full-Node Hardware Requirements
+---
+title: Hardware Requirements
+description: Describes the hardware requirements for running and administering an Ethereum node as described in the guides.
+sidebar:
+  order: 1
+---
 ## Node Server
 - headless, always-online computer, running Ubuntu Server and the Ethereum node software
 - Mini PC form factor is ideal for its power efficiency
