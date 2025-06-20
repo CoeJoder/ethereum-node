@@ -1,0 +1,22 @@
+{
+  "name": "ethereum-node",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Helper scripts for managing an Ethereum node",
+  "author": "CoeJoder",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:CoeJoder/ethereum-node.git"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.34.4",
+    "astro": "^5.10.0",
+    "sharp": "^0.34.2"
+  }
+}

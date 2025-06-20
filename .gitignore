@@ -5,8 +5,37 @@
 !LICENSE
 !.editorconfig
 !.gitignore
+!astro.config.mjs
+!package-lock.json
+!package.json
+!tsconfig.json
+
+!public/
+!public/favicon.ico
+!public/robots.txt
 
 !src/
+!src/assets/
+!src/assets/ethnode-logo.webp
+
+!src/content/
+!src/content/docs/
+!src/content/docs/index.mdx
+
+!src/content/docs/guides/
+!src/content/docs/guides/add-validators.md
+!src/content/docs/guides/compound_or_consolidate.md
+!src/content/docs/guides/initial-setup.md
+!src/content/docs/guides/node-setup.md
+!src/content/docs/guides/partial-withdrawal.md
+!src/content/docs/guides/validator-setup.md
+!src/content/docs/guides/voluntary-exit.md
+
+!src/content/docs/reference/
+!src/content/docs/reference/hardware-requirements.md
+
+!src/content.config.ts
+
 !src/__script_template.sh
 !src/_portable_jq.sh
 !src/_staking-deposit-cli.sh
@@ -40,16 +69,6 @@
 
 !test/
 !test/tests.sh
-
-!docs/
-!docs/add-validators.md
-!docs/compound_or_consolidate.md
-!docs/hardware-requirements.md
-!docs/initial-setup.md
-!docs/node-setup.md
-!docs/partial-withdrawal.md
-!docs/validator-setup.md
-!docs/voluntary-exit.md
 
 !tools/
 !tools/_beacon-api.sh
