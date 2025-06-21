@@ -4,9 +4,9 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://CoeJoder.github.io',
+  base: '/ethereum-node',
   integrations: [starlight({
-    site: 'https://CoeJoder.github.io',
-    base: '/ethereum-node',
     title: 'ethereum-node',
     favicon: '/favicon.ico',
     social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/CoeJoder/ethereum-node' }],
