@@ -5,7 +5,7 @@ sidebar:
   order: 7
 ---
 ## Preconditions
-- [ ] [partial withdrawal](./partial-withdrawal.md) has been completed
+- [ ] [partial withdrawal](../partial-withdrawal/) has been completed
 - [ ] node server is powered on and running geth (EL) and prysm-beacon (CL) as services
 - [ ] EL and CL are fully synced to the Ethereum network
 - [ ] client PC is powered on and able to SSH into the node server
@@ -42,5 +42,5 @@ cd ethereum-node
 ## Next Steps
 If all validators have been exited, you may safely shutdown and decommission the node server.  Otherwise:
 
-- [Add Validators](./add-validators.md)
+- [Add Validators](../add-validators/)
 

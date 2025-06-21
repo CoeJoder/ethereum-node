@@ -39,7 +39,7 @@ Keep in mind that it will take at least **27.3 hours** to complete the conversio
 
 ### 2. Convert source validator to **0x01** if not already
 
-See [conversion to 0x01 credentials](./partial-withdrawal.md).
+See [conversion to 0x01 credentials](../partial-withdrawal/).
 
 Wait for the **0x01** conversion to be finalized.  In the meantime, move a small amount of ETH to the withdrawal address to pay for the gas of the `ConsolidationRequest`.
 
@@ -50,7 +50,7 @@ Wait for the **0x01** conversion to be finalized.  In the meantime, move a small
 - follow the directions on-page
 
 ## Next Steps
-- [Add validators](./add-validators.md)
-- [Withdraw validators](./partial-withdrawal.md)
-- [Exit validators](./voluntary-exit.md)
-- [Compound or Consolidate validators](./compound_or_consolidate.md)
+- [Add validators](../add-validators/)
+- [Withdraw validators](../partial-withdrawal/)
+- [Exit validators](../voluntary-exit/)
+- [Compound or Consolidate validators](../compound_or_consolidate/)

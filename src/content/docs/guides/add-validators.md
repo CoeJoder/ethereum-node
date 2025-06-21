@@ -5,12 +5,12 @@ sidebar:
   order: 4
 ---
 ## Preconditions
-- [ ] [validator setup](./validator-setup.md) has been completed
+- [ ] [validator setup](../validator-setup/) has been completed
 - [ ] you have at least 32 ETH available to stake in your MetaMask wallet per new validator
 - [ ] EL and CL are fully synced to the Ethereum network
 - [ ] client PC is powered on and able to SSH into the node server
-- [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](./initial-setup.md)
-- [ ] the `Data` USB flash drive formatted to EXT4 during [validator setup](./validator-setup.md) is on-hand
+- [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](../initial-setup/#1-download-mint-and-ubuntu-server)
+- [ ] the `Data` USB flash drive formatted to EXT4 during [validator setup](../validator-setup/#2-format-the-data-flash-drive-to-ext4-and-deploy-to-it) is on-hand
 
 ## Postconditions
 - the new validator(s) will be running on your validator node service
@@ -95,7 +95,7 @@ source ./seal.sh
 
 ## Next Steps
 
-- [Add validators](./add-validators.md)
-- [Withdraw validators](./partial-withdrawal.md)
-- [Exit validators](./voluntary-exit.md)
-- [Compound or Consolidate validators](./compound_or_consolidate.md)
+- [Add validators](../add-validators/)
+- [Withdraw validators](../partial-withdrawal/)
+- [Exit validators](../voluntary-exit/)
+- [Compound or Consolidate validators](../compound_or_consolidate/)

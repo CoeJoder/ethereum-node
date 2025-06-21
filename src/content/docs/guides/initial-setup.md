@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 ## Preconditions
-- [ ] all [required hardware](./hardware-requirements.md) is obtained
+- [ ] all [required hardware](../../reference/hardware-requirements/) is obtained
 - [ ] router has [OpenWRT](https://openwrt.org/) installed and is connected to the internet
 - [ ] LAN is secured by a strong WiFi encryption protocol and a strong password, or Wifi is disabled
 - [ ] client PC has [Mint](https://linuxmint.com/) installed and is connected to the router by ethernet cable or WiFi
@@ -22,7 +22,7 @@ sidebar:
 	- `Ubuntu Server` - the latest Ubuntu Server ISO disk image
 	- `Mint` - the latest the Mint ISO disk image
 	- `Data` - a single bootable FAT32 disk partition
-- you will be ready to [setup the Ethereum node software](./node-setup.md)
+- you will be ready to [setup the Ethereum node software](../node-setup/)
 
 ## Configurable Values
 This guide is written using the following configurable values:
@@ -46,7 +46,7 @@ This guide is written using the following configurable values:
 - [ ] plug-in the next flash drive and repeat same process as above using `USB Image Writer`, labeling this one as `Ubuntu Server`
 
 ### 2. Update BIOS of the Node Server
-These are the steps for updating the BIOS of the `NUC10i7FNH`, the recommended node server device in [Full-Node Hardware Requirements](./hardware-requirements.md).
+These are the steps for updating the BIOS of the `NUC10i7FNH`, the recommended node server device in [Hardware Requirements](../../reference/hardware-requirements/).
 
 #### On the Client PC:
 - [ ] plug-in the next USB flash drive 
@@ -320,4 +320,4 @@ sudo timedatectl set-timezone America/Los_Angeles
 - [ ] logout and enjoy a refreshing beverage, you've earned it!
 
 ## Next Steps
-You are now ready for [node setup](./node-setup.md).
+You are now ready for [node setup](../node-setup/).

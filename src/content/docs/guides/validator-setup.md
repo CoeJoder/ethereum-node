@@ -6,11 +6,11 @@ sidebar:
 ---
 ## Preconditions
 - [ ] you have at least 32 ETH available to stake per validator in your MetaMask wallet
-- [ ] [node setup](./node-setup.md) has been completed
+- [ ] [node setup](../node-setup/) has been completed
 - [ ] node server is powered on and running geth (EL) and prysm-beacon (CL) as services
 - [ ] EL and CL are fully synced to the Ethereum network
 - [ ] client PC is powered on and able to SSH into the node server
-- [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](./initial-setup.md)
+- [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](../initial-setup/#1-download-mint-and-ubuntu-server)
 - [ ] the `Data` USB flash drive created during initial setup is on-hand
 
 ## Postconditions
@@ -46,7 +46,7 @@ exit
 ### 2. Format the `Data` flash drive to EXT4 and Deploy to it
 
 #### On the Client PC:
-- [ ] plug-in the USB flash drive labeled `DATA` which was formatted to FAT32 during [initial setup](./initial-setup.md)
+- [ ] plug-in the USB flash drive labeled `DATA` which was formatted to FAT32 during [initial setup](../initial-setup/#2-update-bios-of-the-node-server)
 - [ ] wipe the drive and create an EXT4 partition:
 
 ```bash
@@ -170,7 +170,7 @@ cd ethereum-node
 
 ## Next Steps
 
-- [Add validators](./add-validators.md)
-- [Withdraw validators](./partial-withdrawal.md)
-- [Exit validators](./voluntary-exit.md)
-- [Compound or Consolidate validators](./compound_or_consolidate.md)
+- [Add validators](../add-validators/)
+- [Withdraw validators](../partial-withdrawal/)
+- [Exit validators](../voluntary-exit/)
+- [Compound or Consolidate validators](../compound_or_consolidate/)

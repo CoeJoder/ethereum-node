@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 ## Preconditions
-- [ ] [initial setup](./initial-setup.md) has been completed
+- [ ] [initial setup](../initial-setup/) has been completed
 - [ ] node server is powered on and connected to the network
 - [ ] client PC is powered on and able to SSH into the node server
 - [ ] ***IMPORTANT: your ISP plan includes unlimited data***
@@ -14,7 +14,7 @@ sidebar:
 - client PC will have the [ethereum-node](https://github.com/CoeJoder/ethereum-node) helper scripts installed and configured
 - node server will also have the helper scripts installed and configured
 - node server will be running geth (EL), prysm-beacon (CL) as services
-- you will be ready to [setup one or more validators](./validator-setup.md)
+- you will be ready to [setup one or more validators](../validator-setup/)
 
 ## Configurable Values
 As in the initial setup guide, this guide is written using the following configurable values:
@@ -99,4 +99,4 @@ cd ethereum-node
 ```
 
 ## Next Steps
-You are now ready for [validator setup](./validator-setup.md).
+You are now ready for [validator setup](../validator-setup/).
