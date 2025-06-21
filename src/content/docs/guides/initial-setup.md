@@ -286,7 +286,7 @@ ssh -p 55522 eth-node-mainnet
 
 mount -l | grep SECONDARY
 # it should output something like:
-# /dev/wxy1 on /mnt/secondary type ext4 (rw,relatime,errors=remount-ro,stripe=8191) [SECONDARY]
+# /dev/wxy1 on /mnt/secondary type ext4 (rw,noatime,errors=remount-ro,stripe=8191) [SECONDARY]
 ```
 
 ### 6. Finish Up
