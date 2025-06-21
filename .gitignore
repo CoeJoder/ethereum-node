@@ -37,6 +37,7 @@
 
 !src/content/docs/reference/
 !src/content/docs/reference/hardware-requirements.md
+!src/content/docs/reference/external-resources.md
 
 !src/content.config.ts
 
