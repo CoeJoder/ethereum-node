@@ -274,7 +274,7 @@ sudo mkdir -p /mnt/secondary
 sudo nano /etc/fstab
 
 # append this entry to the file, then save and close it (ctrl+s, ctrl+x)
-LABEL=SECONDARY /mnt/secondary ext4 errors=remount-ro 0 1
+LABEL=SECONDARY /mnt/secondary ext4 errors=remount-ro,noatime 0 1
 ```
 - [ ] reboot the node server and confirm that the secondary drive is auto-mounted
 ```bash
