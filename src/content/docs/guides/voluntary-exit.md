@@ -36,8 +36,8 @@ cd ethereum-node
 ```
 
 - [ ] verify that beaconchain website reflects exiting status (may take several minutes):
-	- mainnet: https://beaconcha.in/validator/[index or pubkey]
-	- hoodi:   https://hoodi.beaconcha.in/validator/[index or pubkey]
+	- mainnet: https://beaconcha.in/validator/[index-or-pubkey]
+	- hoodi:   https://hoodi.beaconcha.in/validator/[index-or-pubkey]
 
 ## Next Steps
 If all validators have been exited, you may safely shutdown and decommission the node server.  Otherwise:
