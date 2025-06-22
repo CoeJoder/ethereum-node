@@ -8,6 +8,9 @@ export default defineConfig({
   base: '/ethereum-node',
   integrations: [starlight({
     title: 'ethereum-node',
+    logo: {
+      src: './src/assets/ethnode-logo-trimmed.webp',
+    },
     favicon: '/favicon.ico',
     social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/CoeJoder/ethereum-node' }],
     sidebar: [
