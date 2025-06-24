@@ -27,17 +27,17 @@
 !src/content/docs/index.mdx
 
 !src/content/docs/guides/
-!src/content/docs/guides/add-validators.md
-!src/content/docs/guides/compound_or_consolidate.md
-!src/content/docs/guides/initial-setup.md
-!src/content/docs/guides/node-setup.md
-!src/content/docs/guides/partial-withdrawal.md
-!src/content/docs/guides/validator-setup.md
-!src/content/docs/guides/voluntary-exit.md
+!src/content/docs/guides/add-validators.mdx
+!src/content/docs/guides/compound_or_consolidate.mdx
+!src/content/docs/guides/initial-setup.mdx
+!src/content/docs/guides/node-setup.mdx
+!src/content/docs/guides/partial-withdrawal.mdx
+!src/content/docs/guides/validator-setup.mdx
+!src/content/docs/guides/voluntary-exit.mdx
 
 !src/content/docs/reference/
-!src/content/docs/reference/hardware-requirements.md
-!src/content/docs/reference/external-resources.md
+!src/content/docs/reference/hardware-requirements.mdx
+!src/content/docs/reference/external-resources.mdx
 
 !src/content.config.ts
 
