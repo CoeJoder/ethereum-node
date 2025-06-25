@@ -4,7 +4,13 @@ description: The first steps in setting up an Ethereum Node.
 sidebar:
   order: 1
 ---
+import Checklist from '../../../components/Checklist.astro';
+import ResetButton from '../../../components/ResetButton.astro';
+
+<ResetButton />
+
 ## Preconditions
+<Checklist name="preconditions">
 - [ ] all [required hardware](../../reference/hardware-requirements/) is obtained
 - [ ] router has [OpenWRT](https://openwrt.org/) installed and is connected to the internet
 - [ ] LAN is secured by a strong WiFi encryption protocol and a strong password, or Wifi is disabled
@@ -13,6 +19,7 @@ sidebar:
 - [ ] node server is fully assembled with a mouse, keyboard, and monitor attached
 - [ ] node server is connected to the router by ethernet cable
 - [ ] node server is powered off (not just hibernating or sleeping)
+</Checklist>
 
 ## Postconditions
 - node server will be running headless Ubuntu Server, with the latest firmware & software
@@ -39,18 +46,22 @@ This guide is written using the following configurable values:
 ### 1. Download Mint and Ubuntu Server
 
 #### On the Client PC:
+<Checklist name="download-mint-and-ubuntu-server">
 - [ ] browse to the [Linux Mint download page](https://www.linuxmint.com/download.php) and download an .iso file of your choice
 - [ ] plug-in a USB flash drive, launch the program `USB Image Writer`, select the .iso image, and select the flash drive.  Click `Verify` to verify the integrity of the .iso, and then click `Write`
 - [ ] safely eject the flash drive, unplug it, and label it as `Mint`
 - [ ] browse to the [Ubuntu Server download page](https://ubuntu.com/download/server) and download the latest .iso file
 - [ ] plug-in the next flash drive and repeat same process as above using `USB Image Writer`, labeling this one as `Ubuntu Server`
+</Checklist>
 
 ### 2. Update BIOS of the Node Server
 These are the steps for updating the BIOS of the `NUC10i7FNH`, the recommended node server device in [Hardware Requirements](../../reference/hardware-requirements/).
 
 #### On the Client PC:
+<Checklist name="update-bios-of-the-node-server-1">
 - [ ] plug-in the next USB flash drive 
 - [ ] wipe the drive and create a bootable FAT32 partition:
+</Checklist>
 ```bash
 # list all SCSI drives and identify the intended USB flash drive
 lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
@@ -82,21 +93,25 @@ sudo mkfs.vfat -n DATA ${flashdrive}1
 # safely eject the drive
 sudo eject $flashdrive
 ```
-
+<Checklist name="update-bios-of-the-node-server-2">
 - [ ] unplug the flash drive and plug it back in.  It should be auto-mounted by the operating system
 - [ ] browse to [BIOS & Firmware for NUC10i7FNH](https://www.asus.com/supportonly/nuc10i7fnh/helpdesk_bios/) and download the latest BIOS update
 - [ ] extract the .zip file, open the extracted folder `Capsule File for BIOS Flash through F7` and copy the .CAP file to the flash drive
 - [ ] safely eject the flash drive, unplug it, and label it as `Data`
+</Checklist>
 
 #### On the Node Server:
+<Checklist name="update-bios-of-the-node-server-3">
 - [ ] plug the `Data` flash drive into the front USB port
 - [ ] power-on the node server and immediately press <kbd>F7</kbd> repeatedly until the BIOS flash screen is displayed
 - [ ] select the flash drive from the list, and select the .CAP file
 - [ ] when the BIOS update is complete, shutdown the node server by holding the power button for about 12 seconds (until all lights go out), then remove the flash drive
+</Checklist>
 
 ### 3. Install Ubuntu Server
 
 #### On the Node Server:
+<Checklist name="install-ubuntu-server-1">
 - [ ] plug the `Ubuntu Server` flash drive into the front USB port
 - [ ] power-on the node server and immediately press <kbd>F10</kbd> repeatedly until the Boot Menu appears
 - [ ] select the USB flash drive from the options
@@ -112,6 +127,7 @@ sudo eject $flashdrive
 - [ ] on the storage configuration screen, **select** `Use Entire Disk`, choose the NVMe disk, **deselect** `Setup this disk as an LVM group`, then go to the next screen
 - [ ] confirm that the `Used Devices` section shows the NVMe disk with two partitions: a FAT32 partition mounted at `/boot/efi`, and an EXT4 partition mounted at `/`, then go to next screen
 - [ ] pick a username, password, and server name.  Save the password in your client PC's password manager, then go to next screen:
+</Checklist>
 ```
 Your name: coejoder
 Your server's name: eth-node-mainnet
@@ -119,16 +135,20 @@ Pick a username: coejoder
 Choose a password: ********
 Confirm your password: ********
 ```
+<Checklist name="install-ubuntu-server-2">
 - [ ] decline to use `Ubuntu Pro` when prompted and go to next screen
 - [ ] **select**  `Install OpenSSH Server` and `Allow password authentication over SSH` and go to next screen
 - [ ] decline to install additional software when prompted and go to next screen
 - [ ] when installation is complete, follow the on-screen instructions. It will reboot and present a terminal command prompt.  Leave it there and begin the setup of the client PC
+</Checklist>
 
 ### 4. Configure SSH
 
 #### On the Client PC:
+<Checklist name="configure-ssh-1">
 - [ ] login as the local user that will be interacting with the node server.  If this PC is your main Desktop computer, your existing user account is fine to use
 - [ ] edit `/etc/hosts` and add an entry at the bottom which associates the node server's static IP address to its hostname:
+</Checklist>
 
 ```bash
 sudo nano /etc/hosts
@@ -136,8 +156,9 @@ sudo nano /etc/hosts
 # append this entry to the file, then save and close it (ctrl+s, ctrl+x)
 192.168.1.25 eth-node-mainnet
 ```
-
+<Checklist name="configure-ssh-2">
 - [ ] try logging into the node server via SSH, entering the password for `coejoder@eth-node-mainnet` (the password chosen during Ubuntu Server installation) when prompted:
+</Checklist>
 
 ```bash
 ssh coejoder@eth-node-mainnet
@@ -148,28 +169,32 @@ ssh coejoder@eth-node-mainnet
 # logout and continue to next step (type `exit` or press `ctrl+d`)
 exit
 ```
-
+<Checklist name="configure-ssh-3">
 - [ ] create a SSH public/private keypair secured with a passphrase and save the passphrase in your password manager:
+</Checklist>
 
 ```bash
 ssh-keygen -t ed25519 -a 100 -f ~/.ssh/eth-node-mainnet_ed25519
 # Enter passphrase (empty for no passphrase): <passphrase>
 # Enter same passphrase again: <passphrase>
 ```
-
+<Checklist name="configure-ssh-4">
 - [ ] add the public key to the node server, entering the password for `coejoder@eth-node-mainnet` when prompted:
+</Checklist>
 
 ```bash
 ssh-copy-id -i ~/.ssh/eth-node-mainnet_ed25519.pub coejoder@eth-node-mainnet
 # coejoder@eth-node-mainnet's password: <password>
 ```
-
+<Checklist name="configure-ssh-5">
 - [ ] create a directory for SSH sockets
+</Checklist>
 ```bash
 mkdir -p ~/.ssh/sockets/
 ```
-
+<Checklist name="configure-ssh-6">
 - [ ] create or edit `~/.ssh/config` and add a section to the bottom of the file:
+</Checklist>
 
 ```bash
 nano ~/.ssh/config
@@ -186,8 +211,9 @@ Host eth-node-mainnet
 	IdentitiesOnly yes
 	PreferredAuthentications publickey
 ```
-
+<Checklist name="configure-ssh-7">
 - [ ] login to the node server again, and update the SSH server settings:
+</Checklist>
 
 ```bash
 ssh coejoder@eth-node-mainnet
@@ -210,21 +236,25 @@ sudo nano /etc/ssh/sshd_config
 # then save and close the file (ctrl+s, ctrl+x)
 # stay logged in for the next step
 ```
-
+<Checklist name="configure-ssh-8">
 - [ ] while still logged into the node server, uninstall `cloud-init` and delete its configuration files:
+</Checklist>
 
 ```bash
 sudo apt purge cloud-init
 sudo rm -rf /etc/cloud/ && sudo rm -rf /var/lib/cloud/
 sudo rm -f /etc/ssh/sshd_config.d/50-cloud-init.conf
 ```
-
+<Checklist name="configure-ssh-9">
 - [ ] update system firmware:
+</Checklist>
+
 ```bash
 sudo fwupdmgr update
 ```
-
+<Checklist name="configure-ssh-10">
 - [ ] restart the node server, wait one minute, then try logging in using key+passphrase:
+</Checklist>
 
 ```bash
 sudo reboot
@@ -242,7 +272,10 @@ ssh -p 55522 eth-node-mainnet
 ### 5. Format and Mount Secondary Drive
 
 #### On the Client PC:
+<Checklist name="format-and-mount-secondary-drive-1">
 - [ ] while logged into the node server via SSH, partition and format the secondary drive:
+</Checklist>
+
 ```bash
 # list all SCSI drives and identify the secondary drive
 lsblk -I 8 -ndo PATH,SIZE,VENDOR,MODEL
@@ -268,7 +301,11 @@ sudo fdisk $secondary_drive
 # format the new partition
 sudo mkfs.ext4 -L SECONDARY -E lazy_itable_init=0 ${secondary_drive}1
 ```
+
+<Checklist name="format-and-mount-secondary-drive-2">
 - [ ] create a mount point and configure auto-mounting
+</Checklist>
+
 ```bash
 sudo mkdir -p /mnt/secondary
 sudo nano /etc/fstab
@@ -276,7 +313,11 @@ sudo nano /etc/fstab
 # append this entry to the file, then save and close it (ctrl+s, ctrl+x)
 LABEL=SECONDARY /mnt/secondary ext4 errors=remount-ro,noatime 0 1
 ```
+
+<Checklist name="format-and-mount-secondary-drive-3">
 - [ ] reboot the node server and confirm that the secondary drive is auto-mounted
+</Checklist>
+
 ```bash
 sudo reboot
 # wait for node server to reboot
@@ -292,21 +333,25 @@ mount -l | grep SECONDARY
 ### 6. Finish Up
 
 #### On the Client PC:
-
+<Checklist name="finish-up-1">
 - [ ] while still logged into the node server via SSH, shutdown the node server
+</Checklist>
+
 ```bash
 sudo shutdown now
 ```
 
 #### On the Node Server:
-
+<Checklist name="finish-up-2">
 - [ ] disconnect the mouse, keyboard, and monitor
 - [ ] move the node server to its permanent home, likely near the router and UPS battery backup
 - [ ] plug-in the network cable and the power cable, then power it on
+</Checklist>
 
 #### On the Client PC:
-
+<Checklist name="finish-up-3">
 - [ ] log into the node server via SSH, install the latest system updates, remove orphaned dependencies, set the timezone, and sync the system clock via NTP:
+</Checklist>
 
 ```bash
 ssh -p 55522 eth-node-mainnet
@@ -317,7 +362,9 @@ sudo apt autoremove
 sudo timedatectl set-ntp on
 sudo timedatectl set-timezone America/Los_Angeles
 ```
+<Checklist name="finish-up-4">
 - [ ] logout and enjoy a refreshing beverage, you've earned it!
+</Checklist>
 
 ## Next Steps
 You are now ready for [node setup](../node-setup/).

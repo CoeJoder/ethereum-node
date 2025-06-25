@@ -1,0 +1,37 @@
+---
+import { Icon } from "@astrojs/starlight/components";
+---
+
+<button class="reset">
+  <Icon name="approve-check" size="1.5em" /><span>Reset All</span>
+</button>
+
+<style>
+  .reset {
+    display: none;
+    align-items: center;
+    gap: 0.5em;
+  }
+</style>
+
+<script>
+  import progressStore from "./ProgressStore";
+
+  const reset = document.querySelector(".reset") as HTMLElement;
+
+  reset.addEventListener("click", function () {
+    const checkboxes = document.querySelectorAll(
+      'check-list input[type="checkbox"]'
+    ) as NodeListOf<HTMLInputElement>;
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+
+    progressStore.resetProgress();
+  });
+
+  progressStore.subscribeAnyProgress((hasAnyProgress) => {
+    reset.style.display = hasAnyProgress ? "flex" : "none";
+  });
+</script>

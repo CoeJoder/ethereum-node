@@ -4,7 +4,12 @@ description: Convert a validator into a compounding type, or consolidate into an
 sidebar:
   order: 5
 ---
-The Pectra upgrade has enabled two additional validator operations:
+import Checklist from '../../../components/Checklist.astro';
+import ResetButton from '../../../components/ResetButton.astro';
+
+<ResetButton />
+
+The Pectra upgrade has enabled two additional validator operations: **Compound** and **Consolidate**.
 
 ### Compound
 Also known as: &nbsp; ***Conversion to 0x02 credentials.***
@@ -16,10 +21,11 @@ Transfers the balance of a **0x01** or **0x02** validator to a **0x02** validato
 
 ## Preconditions
 See [Pectra maxEB docs](https://ethereum.org/en/roadmap/pectra/maxeb) for full list of validator preconditions.
+<Checklist name="preconditions">
 - [ ] node server is powered on and running geth (EL), prysm-beacon (CL), and prysm-validator (validator(s)) as services
 - [ ] EL and CL are fully synced to the Ethereum network and validator(s) are active
 - [ ] client PC is powered on and able to SSH into the node server
-
+</Checklist>
 
 ## Steps
 

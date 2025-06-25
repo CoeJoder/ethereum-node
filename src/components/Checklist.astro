@@ -1,0 +1,64 @@
+---
+/*
+ * Enables GFM tasklist items to be ticked, and tracks their state in localStorage.
+ *
+ * ---------------------
+ *
+ * The implementation is a simplified version of the `Checklist` component found
+ * in the Astro Docs repository.
+ *
+ * See: https://github.com/withastro/docs/blob/main/src/components/Checklist.astro
+ */
+
+export interface Props {
+  name: string;
+}
+
+const { name = "default" } = Astro.props as Props;
+---
+
+<check-list data-name={name}>
+  <div class="checklist"><slot /></div>
+</check-list>
+
+<style>
+  check-list {
+    display: block;
+  }
+</style>
+
+<script>
+  import progressStore from "./ProgressStore";
+
+  class CheckList extends HTMLElement {
+    private readonly name: string;
+
+    constructor() {
+      super();
+      this.name = this.dataset["name"]!;
+      const ul = this.querySelector(".checklist ul");
+      if (ul) {
+        const items = Array.from(ul.children);
+        progressStore.initializeList(this.name, items.length);
+        items.forEach((li, index) => this.upgradeTaskItem(li, index));
+      }
+    }
+
+    /** Upgrade an item in a GitHub-Flavoured Markdown task list. */
+    private upgradeTaskItem(li: Element, index: number) {
+      // Re-enable checkboxes, hydrate state & listen for changes.
+      const checkbox = li.querySelector(
+        'input[type="checkbox"]'
+      ) as HTMLInputElement;
+      checkbox.removeAttribute("disabled");
+      checkbox.checked = progressStore.getListItem(this.name, index);
+      checkbox.addEventListener("change", (e) => {
+        const input = e.currentTarget as HTMLInputElement;
+        const { checked } = input;
+        progressStore.setListItem(this.name, index, checked);
+      });
+    }
+  }
+
+  customElements.define("check-list", CheckList);
+</script>

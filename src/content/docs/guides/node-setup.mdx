@@ -4,11 +4,18 @@ description: Setup the EL and CL of the Ethereum Node.
 sidebar:
   order: 2
 ---
+import Checklist from '../../../components/Checklist.astro';
+import ResetButton from '../../../components/ResetButton.astro';
+
+<ResetButton />
+
 ## Preconditions
+<Checklist name="preconditions-1">
 - [ ] [initial setup](../initial-setup/) has been completed
 - [ ] node server is powered on and connected to the network
 - [ ] client PC is powered on and able to SSH into the node server
 - [ ] ***IMPORTANT: your ISP plan includes unlimited data***
+</Checklist>
 
 ## Postconditions
 - client PC will have the [ethereum-node](https://github.com/CoeJoder/ethereum-node) helper scripts installed and configured
@@ -24,16 +31,20 @@ As in the initial setup guide, this guide is written using the following configu
 ## Steps
 
 All of these steps are performed on the client PC.  Most of the work is performed by helper scripts; you just need to run them in the correct order.
-
+<Checklist name="preconditions-2">
 - [ ] download the `ethereum-node` helper scripts:
+</Checklist>
+
 ```bash
 sudo apt install -y git
 cd
 git clone https://github.com/CoeJoder/ethereum-node.git
 ```
 
+<Checklist name="steps-1">
 - [ ] configure the project environment variables:
 	- **IMPORTANT:** ensure that `suggested_fee_recipient` and `withdrawal` are set now, if you're going to be running a validator.  This guide does not cover how to update these values later, so do it now.  The `suggested_fee_recipient` is the Ethereum wallet address which will receive tips from user transactions.  The `withdrawal` is the Ethereum wallet address which will receive validator income rewards and also the full withdrawal of funds upon exiting.  These can be set to the same address if you'd prefer:
+</Checklist>
 
 ```bash
 cd ethereum-node
@@ -48,14 +59,18 @@ cd ethereum-node
 nano ./src/env.sh
 ```
 
+<Checklist name="steps-2">
 - [ ] deploy the helper scripts to the node server:
+</Checklist>
 
 ```bash
 # copy the scripts to the node server, in directory `~/ethereum-node/`
 ./tools/deploy.sh
 ```
 
+<Checklist name="steps-3">
 - [ ] login to the node server via SSH, and review the full list of project environment variables, including any customized values:
+</Checklist>
 
 ```bash
 ssh -p 55522 eth-node-mainnet
@@ -67,7 +82,9 @@ cd ethereum-node
 # after reviewing, stay logged in for the next steps
 ```
 
+<Checklist name="steps-4">
 - [ ] configure the software firewall and enable it:
+</Checklist>
 
 ```bash
 # set firewall's rules and enable it
@@ -75,8 +92,10 @@ cd ethereum-node
 ./setup-firewall.sh
 ```
 
+<Checklist name="steps-5">
 - [ ] login to your router via web browser, and manually configure port forwarding using the same configuration described by the output of the previous command
 - [ ] install the Ethereum node software: **geth** (Execution Layer), **prysm-beacon** (Consensus Layer), **prysmctl**, **ethdo**, and **ethereal**:
+</Checklist>
 
 ```bash
 # install EL and CL, and configure them to run as services
@@ -89,7 +108,9 @@ cd ethereum-node
 ./setup-ethdo.sh
 ```
 
+<Checklist name="steps-6">
 - [ ] enable the EL and CL services:
+</Checklist>
 
 ```bash
 # start each service and follow its log

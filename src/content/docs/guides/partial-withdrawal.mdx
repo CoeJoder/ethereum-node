@@ -4,17 +4,24 @@ description: Sets a withdrawal address for one or more validators.
 sidebar:
   order: 6
 ---
+import Checklist from '../../../components/Checklist.astro';
+import ResetButton from '../../../components/ResetButton.astro';
+
+<ResetButton />
+
 Also known as: &nbsp; ***Conversion to 0x01 credentials.***
 
 Sets a withdrawal address for one or more validators.  A validator can have its withdrawal address set only once, so be careful!
 
 ## Preconditions
+<Checklist name="preconditions">
 - [ ] [validator setup](../validator-setup) has been completed
 - [ ] node server is powered on and running geth (EL), prysm-beacon (CL), and prysm-validator (validator(s)) as services
 - [ ] EL and CL are fully synced to the Ethereum network and validator(s) are active
 - [ ] client PC is powered on and able to SSH into the node server
 - [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](../initial-setup/#1-download-mint-and-ubuntu-server)
 - [ ] `Data` USB drive formatted to EXT4 during [validator setup](../validator-setup/#2-format-the-data-flash-drive-to-ext4-and-deploy-to-it) is on-hand
+</Checklist>
 
 ## Postconditions
 - validators will still be active, but their balances in excess of the staked 32 ETH will be periodically withdrawn to the wallet address specified by the `withdrawal` variable in `env.sh`
@@ -29,9 +36,10 @@ As in the initial setup guide, this guide is written using the following configu
 ### 1. Pick Which Validators to Withdraw
 
 #### On the Client PC:
-
+<Checklist name="pick-which-validators-to-withdraw-1">
 - [ ] plug-in the `Data` USB drive
 - [ ] generate a validator status report:
+</Checklist>
 
 ```bash
 cd ethereum-node
@@ -43,12 +51,15 @@ cd ethereum-node
 ./tools/export.sh
 ```
 
+<Checklist name="pick-which-validators-to-withdraw-2">
 - [ ] safely eject the USB drive
+</Checklist>
 
 #### On the Air-Gapped PC:
-
+<Checklist name="pick-which-validators-to-withdraw-3">
 - [ ] plug-in the USB drive
 - [ ] pick the validators to withdraw and generate a signed `bls-to-execution-change` message: 
+</Checklist>
 
 ```bash
 cd /media/mint/DATA/
@@ -57,14 +68,17 @@ source ./unseal.sh
 source ./seal.sh
 ```
 
+<Checklist name="pick-which-validators-to-withdraw-4">
 - [ ] safely eject the USB drive
+</Checklist>
 
 ### 2. Broadcast the Signed Message to the Ethereum Network
 
 #### On the Client PC:
-
+<Checklist name="broadcast-the-signed-message-to-the-ethereum-network-1">
 - [ ] plug-in the USB drive
 - [ ] submit the signed message via the node server:
+</Checklist>
 
 ```bash
 cd ethereum-node

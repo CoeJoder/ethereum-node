@@ -1,4 +1,5 @@
 import { defineConfig } from "astro/config";
+import { rehypeTasklistEnhancer } from './config/plugins/rehype-tasklist-enhancer';
 
 import starlight from "@astrojs/starlight";
 
@@ -22,6 +23,11 @@ export default defineConfig({
         label: 'Reference',
         autogenerate: { directory: 'reference' },
       },
-    ],
-  })]
+    ]
+  })],
+  markdown: {
+    rehypePlugins: [
+      rehypeTasklistEnhancer(),
+    ]
+  }
 });

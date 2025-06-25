@@ -4,7 +4,13 @@ description: Setup the validator service alongside the EL and CL of the Ethereum
 sidebar:
   order: 3
 ---
+import Checklist from '../../../components/Checklist.astro';
+import ResetButton from '../../../components/ResetButton.astro';
+
+<ResetButton />
+
 ## Preconditions
+<Checklist name="preconditions">
 - [ ] you have at least 32 ETH available to stake per validator in your MetaMask wallet
 - [ ] [node setup](../node-setup/) has been completed
 - [ ] node server is powered on and running geth (EL) and prysm-beacon (CL) as services
@@ -12,6 +18,7 @@ sidebar:
 - [ ] client PC is powered on and able to SSH into the node server
 - [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](../initial-setup/#1-download-mint-and-ubuntu-server)
 - [ ] the `Data` USB flash drive created during initial setup is on-hand
+</Checklist>
 
 ## Postconditions
 - node server will be running the EL, the CL, and prysm-validator (validator(s)) as a service
@@ -29,8 +36,9 @@ As in the initial setup guide, this guide is written using the following configu
 ### 1. Install Validator Software
 
 #### On the Client PC:
-
+<Checklist name="install-validator-software">
 - [ ] login to the node server via SSH and install **prysm-validator**:
+</Checklist>
 
 ```bash
 ssh -p 55522 eth-node-mainnet
@@ -46,8 +54,10 @@ exit
 ### 2. Format the `Data` flash drive to EXT4 and Deploy to it
 
 #### On the Client PC:
+<Checklist name="format-the-data-flash-drive-to-ext4-and-deploy-to-it-1">
 - [ ] plug-in the USB flash drive labeled `DATA` which was formatted to FAT32 during [initial setup](../initial-setup/#2-update-bios-of-the-node-server)
 - [ ] wipe the drive and create an EXT4 partition:
+</Checklist>
 
 ```bash
 # get the device path of the USB 'DATA' drive
@@ -76,19 +86,26 @@ sudo mkfs.ext4 -L DATA -E lazy_itable_init=0 ${flashdrive}1
 sudo eject $flashdrive
 ```
 
+<Checklist name="format-the-data-flash-drive-to-ext4-and-deploy-to-it-2">
 - [ ] unplug the flash drive and plug it back in.  It should be auto-mounted by the operating system
 - [ ] change into the project directory and deploy to the flash drive:
+</Checklist>
+
 ```bash
 cd ethereum-node
 ./tools/deploy.sh --usb
 ```
+<Checklist name="format-the-data-flash-drive-to-ext4-and-deploy-to-it-3">
 - [ ] safely eject the flash drive and unplug it
+</Checklist>
 
 ### 3. Generate Mnemonic and Validator Keys
 
 #### On the Air-Gapped PC:
+<Checklist name="generate-mnemonic-and-validator-keys-1">
 - [ ] plug-in the flash drive
 - [ ] open a terminal and generate a mnemonic seed & validator keys:
+</Checklist>
 
 ```bash
 cd /media/mint/DATA/
@@ -97,14 +114,18 @@ source ./unseal.sh
 source ./seal.sh
 ```
 
+<Checklist name="generate-mnemonic-and-validator-keys-2">
 - [ ] save the passphrase in your client PC's password manager
 - [ ] save the seedphrase/mnemonic offline, e.g. engraved on metal plates in a fireproof safe, with encrypted off-site backups
 - [ ] safely eject the flash drive and unplug it
+</Checklist>
 
 ### 4. Import Validator Keys and Create Wallet
 
 #### On the Client PC:
+<Checklist name="import-validator-keys-and-create-wallet-1">
 - [ ] login to the node server via SSH and set the wallet password:
+</Checklist>
 
 ```bash
 ssh -p 55522 eth-node-mainnet
@@ -117,8 +138,11 @@ cd ethereum-node
 exit
 ```
 
+<Checklist name="import-validator-keys-and-create-wallet-2">
 - [ ] plug-in the flash drive
 - [ ] open a terminal and import the validator keys:
+</Checklist>
+
 ```bash
 ./tools/import-keys.sh
 # ignore the following warnings: 
@@ -130,8 +154,9 @@ exit
 ```
 
 ### 5. Deposit 32 ETH Per Validator
-
+<Checklist name="deposit-32-eth-per-validator-1">
 - [ ] unseal the USB files and explore the `validator_keys` directory:
+</Checklist>
 
 ```bash
 cd /media/$USER/DATA/
@@ -139,6 +164,7 @@ source ./unseal.sh
 (nemo ./validator_keys/ &>/dev/null &)
 ```
 
+<Checklist name="deposit-32-eth-per-validator-2">
 - [ ] browse to the Ethereum Staking Launchpad page:
 	- [mainnet](https://launchpad.ethereum.org/en/overview) or [hoodi](https://hoodi.launchpad.ethereum.org/en/overview)
 - [ ] keep clicking <kbd>Continue</kbd> and <kbd>I Accept</kbd> until you reach the `Upload deposit data` page (no need to fill out the forms along the way)
@@ -147,6 +173,7 @@ source ./unseal.sh
 	- if any of the deposit transactions fail, make a copy of `deposit_data-XYZ.json` and edit it, deleting the validators from the top-level array whose deposits were successful.  Submit this edited copy to the launchpad website.  Repeat as necessary until all deposits are complete.  Any copies of `deposit_data-XYZ.json` made in this way should be deleted afterwards, retaining only the original.  Seek support on the "ethstaker" Discord server if needed.
 - [ ] close the file explorer
 - [ ] reseal the USB files:
+</Checklist>
 
 ```bash
 source ./seal.sh
@@ -157,7 +184,9 @@ source ./seal.sh
 It can take over a week for the deposit(s) to arrive in the balance of your validator(s), signaling your official entry as a validating Ethereum node.  At the moment of entry, your validator(s) will be expected to be up-and-running, along with your EL & CL, so start the validator service now and leave it running.
 
 #### On the Client PC
+<Checklist name="enable-validator-service-1">
 - [ ] login to the node server via SSH and start the validator:
+</Checklist>
 
 ```bash
 ssh -p 55522 eth-node-mainnet

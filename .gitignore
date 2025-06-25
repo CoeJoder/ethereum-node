@@ -14,6 +14,10 @@
 !.github/workflows/
 !.github/workflows/deploy.yml
 
+!config/
+!config/plugins/
+!config/plugins/rehype-tasklist-enhancer.ts
+
 !public/
 !public/favicon.ico
 !public/robots.txt
@@ -21,6 +25,11 @@
 !src/
 !src/assets/
 !src/assets/ethnode-logo-trimmed.webp
+
+!src/components/
+!src/components/Checklist.astro
+!src/components/ProgressStore.ts
+!src/components/ResetButton.astro
 
 !src/content/
 !src/content/docs/
