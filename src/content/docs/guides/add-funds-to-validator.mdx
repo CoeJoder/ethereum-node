@@ -1,0 +1,32 @@
+---
+title: Add Funds to Validator
+description: Add funds to a validator not yet at it's max EB, increase its effective staking balance which is used to calculate both rewards and penalties.
+sidebar:
+  order: 6
+---
+import Checklist from '../../../components/Checklist.astro';
+import ResetButton from '../../../components/ResetButton.astro';
+
+<ResetButton />
+
+The max EB for any account with 0x00 (BLS) or 0x01 (regular withdrawals) withdrawal credentials is 32 ETH.  These accounts do not benefit from balances over 32, but can be upgraded to a 0x02 compounding account to support an increased max EF of 2048.
+
+## Preconditions
+<Checklist name="preconditions">
+- [ ] target validator has been [converted to 0x02 credentials](../compound_or_consolidate/)
+- [ ] node server is powered on and running geth (EL), prysm-beacon (CL), and prysm-validator (validator(s)) as services
+- [ ] EL and CL are fully synced to the Ethereum network and validator(s) are active
+- [ ] client PC is powered on and able to SSH into the node server
+</Checklist>
+
+## Steps
+
+### 1. Add funds via Launchpad Page
+
+[Launchpad page (mainnet)](https://launchpad.ethereum.org/en/validator-actions)<br/>
+[Launchpad page (hoodi)](https://hoodi.launchpad.ethereum.org/en/validator-actions)
+<Checklist name="add-funds-via-launchpad-page">
+- [ ] connect withdrawal account via MetaMask
+- [ ] under the section "Add funds to your validator", click "STAKE MORE FUNDS"
+- [ ] follow the directions on-page
+</Checklist>

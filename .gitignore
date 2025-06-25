@@ -36,6 +36,7 @@
 !src/content/docs/index.mdx
 
 !src/content/docs/guides/
+!src/content/docs/guides/add-funds-to-validator.mdx
 !src/content/docs/guides/add-validators.mdx
 !src/content/docs/guides/compound_or_consolidate.mdx
 !src/content/docs/guides/initial-setup.mdx
