@@ -1,6 +1,5 @@
 # offline source files
 
-*/
 _portable_jq.sh
 _staking-deposit-cli.sh
 find-validator-key-indices.sh

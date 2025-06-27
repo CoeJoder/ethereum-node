@@ -1,6 +1,5 @@
 # non-generated source files
 
-*/
 common.sh
 disable-beacon.sh
 disable-geth.sh

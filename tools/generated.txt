@@ -1,4 +1,3 @@
 # generated source files
 
-*/
 env.sh
