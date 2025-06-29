@@ -61,9 +61,9 @@ exit
 
 ```bash
 # get the device path of the USB 'DATA' drive
-flashdrive="/dev/$(lsblk -I 8 --json | jq --arg USER "$USER" -r '.blockdevices | 
-	map(select(.children[].mountpoints[] | contains("/media/\($USER)/DATA" ))) |
-	first | .name')" && echo $flashdrive
+flashdrive="/dev/$(lsblk -I 8 --json | jq --arg USER "$USER" -r '.blockdevices |
+  map(select(.children[].mountpoints | contains(["/media/\($USER)/DATA"]))) |
+  first | .name')" && echo $flashdrive
 
 # unmount any mounted partitions of the USB flash drive
 sudo umount ${flashdrive}?*
