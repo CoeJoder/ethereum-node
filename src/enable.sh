@@ -21,9 +21,9 @@ assert_sudo
 
 reset_checks
 
-check_is_defined geth_unit_file
-check_is_defined prysm_beacon_unit_file
-check_is_defined prysm_validator_unit_file
+check_file_exists --sudo geth_unit_file
+check_file_exists --sudo prysm_beacon_unit_file
+check_file_exists --sudo prysm_validator_unit_file
 
 print_failed_checks --error
 
