@@ -29,7 +29,7 @@ check_is_defined prysm_validator_group
 check_is_defined client_pc_usb_data_drive
 
 # careful changing these as they are params to rsync
-usb_validator_keys="$usb_dist_dir/validator_keys"
+usb_validator_keys="$usb_dist_dir/validator_keys/"
 
 check_directory_exists --sudo usb_dist_dir
 check_directory_exists --sudo usb_validator_keys
@@ -81,6 +81,7 @@ node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
 # 2. file transfer into the tempdir via rsync/SSH
 # 3. perform elevated tasks (copy, chown, chmod) via pseudo-TTY/SSH
 # 4. delete the tempdir on shell-exit
+# 5. reseal the USB deployment
 
 assert_sudo
 trap 'on_err_retry' ERR
