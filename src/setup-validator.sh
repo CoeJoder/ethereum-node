@@ -76,6 +76,8 @@ check_is_service_active prysm_beacon_unit_file
 
 check_is_valid_port prysm_beacon_http_port
 
+check_is_boolean mevboost_enable
+
 print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
@@ -109,6 +111,11 @@ press_any_key_to_continue
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 get_latest_prysm_version latest_prysm_version
+
+prysm_validator_mevboost_opt=""
+if [[ $mevboost_enable == true ]]; then
+	prysm_validator_mevboost_opt="--enable-builder"
+fi
 
 # if unit file already exists, confirm overwrite
 reset_checks
@@ -176,6 +183,7 @@ ExecStart=$prysm_validator_bin \\
 	--wallet-password-file "$prysm_validator_wallet_password_file" \\
 	--suggested-fee-recipient "$suggested_fee_recipient" \\
 	--beacon-rest-api-provider "$prysm_validator_beacon_rest_api_endpoint" \\
+	$prysm_validator_mevboost_opt \\
 	--accept-terms-of-use
 Restart=always
 RestartSec=5

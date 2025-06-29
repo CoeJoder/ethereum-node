@@ -35,11 +35,13 @@ geth_user='goeth'
 geth_group='goeth'
 geth_bin='geth'
 geth_datadir='/var/lib/goeth'
+geth_datadir_secondary="$node_server_secondary_storage/geth"
+geth_datadir_secondary_ancient="$geth_datadir_secondary/chaindata/ancient"
 geth_unit_file='/etc/systemd/system/eth1.service'
 geth_port=30303           # TCP
 geth_discovery_port=30303 # UDP
-geth_datadir_secondary="$node_server_secondary_storage/geth"
-geth_datadir_secondary_ancient="$geth_datadir_secondary/chaindata/ancient"
+
+# geth include only postmerge chain history
 geth_history_chain_postmerge_only=true
 
 # prysm-beacon values
@@ -83,6 +85,22 @@ ethdo_bin='/usr/local/bin/ethdo'
 ethereal_version='v2.11.5'
 ethereal_sha256_checksum='ed4cc43fc35c16264f21a163fd3ffc0d4cefc79916984ab6718c9a847cd08f8f'
 ethereal_bin='/usr/local/bin/ethereal'
+
+# MEV-Boost values
+mevboost_version='v1.9'
+mevboost_sha256_checksum='2056f87e1b0f100c8d6ef9c85abe0e2d5dfb520cb1819237861b0cfa4394736f'
+mevboost_user='mevboost'
+mevboost_group='mevboost'
+mevboost_bin='/usr/local/bin/mev-boost'
+mevboost_addr='127.0.0.1:18550'
+mevboost_unit_file='/etc/systemd/system/mevboost.service'
+
+# MEV-Boost should be enabled for OFAC-compliant block proposals
+mevboost_enable=true
+
+# minimum bid to accept from a MEV-Boost relay (in ETH)
+# set low to discourage OFAC-uncompliant local blocks
+mevboost_min_bid='0.003'
 
 # EthStaker Deposit CLI values
 ethstaker_deposit_cli_version='v1.2.2'

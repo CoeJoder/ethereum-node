@@ -3,7 +3,7 @@
 # update.sh
 #
 # Updates to the latest version all node programs, if installed (geth,
-# prysm-beacon, prysm-validator, prysmctl).
+# prysm-beacon, prysm-validator, prysmctl, ethdo, ethereal, MEV-Boost).
 #
 # Meant to be run on the node server.
 
@@ -25,20 +25,25 @@ reset_checks
 check_is_defined geth_bin
 check_is_defined prysm_beacon_bin
 check_is_defined prysm_validator_bin
+check_is_defined mevboost_bin
 
 check_user_exists prysm_beacon_user
 check_user_exists prysm_validator_user
 check_user_exists prysmctl_user
+check_user_exists mevboost_user
 
 check_group_exists prysm_beacon_group
 check_group_exists prysm_validator_group
 check_group_exists prysmctl_group
+check_group_exists mevboost_group
 
 # TODO use version-locking for the others too
 check_is_defined ethdo_version
 check_is_defined ethdo_sha256_checksum
 check_is_defined ethereal_version
 check_is_defined ethereal_sha256_checksum
+check_is_defined mevboost_version
+check_is_defined mevboost_sha256_checksum
 
 print_failed_checks --error
 
@@ -58,7 +63,7 @@ echo -en "${color_reset}"
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Updates to the latest version all node programs, if installed (geth, prysm-beacon, prysm-validator, prysmctl, ethdo, ethereal).
+Updates to the latest version all node programs, if installed (geth, prysm-beacon, prysm-validator, prysmctl, ethdo, ethereal, MEV-Boost).
 EOF
 press_any_key_to_continue
 
@@ -71,6 +76,7 @@ _update_prysmvalidator=false
 _update_prysmctl=false
 _update_ethdo=false
 _update_ethereal=false
+_update_mevboost=false
 
 reset_checks
 check_executable_exists --sudo prysm_beacon_bin
@@ -110,6 +116,18 @@ if ! has_failed_checks; then
 		printinfo "ethereal v${_ethereal_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${ethereal_version}?"; then
 			_update_ethereal=true
+		fi
+	fi
+fi
+
+reset_checks
+check_executable_exists --sudo mevboost_bin
+if ! has_failed_checks; then
+	read -r _ _mevboost_current_version < <(sudo "$mevboost_bin" --version)
+	if [[ "v$_mevboost_current_version" != $mevboost_version ]]; then
+		printinfo "mevboost v${_mevboost_current_version} is installed"
+		if yes_or_no --default-no "Replace with ${mevboost_version}?"; then
+			_update_mevboost=true
 		fi
 	fi
 fi
@@ -164,6 +182,12 @@ if [[ $_update_ethereal == true ]]; then
 	printinfo "Updating ethereal..."
 	install_wealdtech ethereal \
 		"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$USER" "$USER"
+fi
+
+if [[ $_update_mevboost == true ]]; then
+	printinfo "Updating mevboost..."
+	install_mevboost \
+		"$mevboost_version" "$mevboost_sha256_checksum" "$mevboost_bin" "$mevboost_user" "$mevboost_group"
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------

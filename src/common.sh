@@ -303,7 +303,7 @@ function _get_latest_version() {
 	local ghproject="$1" outvar="$2" version
 	echo -en "Looking up latest '$ghproject' version..." >&2
 	version="$(get_latest_release "$ghproject")"
-	if [[ ! "$version" =~ v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+ ]]; then
+	if [[ ! "$version" =~ v[[:digit:]]+\.[[:digit:]]+(\.[[:digit:]]+)? ]]; then
 		echo "${color_red}failed${color_reset}." >&2
 		printerr "malformed version string: \"$version\""
 		return 1
@@ -350,6 +350,16 @@ function get_latest_ethereal_version() {
 	fi
 	local outvar="$1"
 	_get_latest_version "wealdtech/ethereal" "$outvar"
+}
+
+# get the latest mevboost release version
+function get_latest_mevboost_version() {
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: get_latest_mevboost_version outvar"
+		return 2
+	fi
+	local outvar="$1"
+	_get_latest_version "flashbots/mev-boost" "$outvar"
 }
 
 # download a file silently (except on error) using `curl`
@@ -424,6 +434,29 @@ function download_wealdtech() {
 	printf -v "$outvar" "$program_bin"
 }
 
+function download_mevboost() {
+	if [[ $# -ne 3 ]]; then
+		printerr "usage: download_mevboost version sha256_checksum outvar"
+		return 2
+	fi
+	local version="$1" sha256_checksum="$2" outvar="$3"
+	local program_bin="mev-boost_${version:1}_linux_amd64.tar.gz"
+	local program_bin_url="https://github.com/flashbots/mev-boost/releases/download/${version}/${program_bin}"
+	local program_bin_checksums_txt_url="https://github.com/flashbots/mev-boost/releases/download/${version}/checksums.txt"
+	download_file "$program_bin_url" || return
+
+	# checksum against the fetched value
+	wget -qO - "$program_bin_checksums_txt_url" | cat | shasum --ignore-missing -a 256 -cq - || return
+
+	# checksum against the locally-saved value
+	if ! echo "$sha256_checksum  "$program_bin"" | shasum -a 256 -cq -; then
+		printerr "Checksum failed against locally-saved value!\n" \
+			"Ensure that ${theme_value}mevboost_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
+		return 1
+	fi
+	printf -v "$outvar" "$program_bin"
+}
+
 # downloads and installs a given version of a prysm program
 function install_prysm() {
 	if [[ $# -ne 5 ]]; then
@@ -451,6 +484,21 @@ function install_wealdtech() {
 	sudo chown -v "${owner}:${group}" "./$program" || return
 	sudo chmod -v 550 "./$program" || return
 	sudo mv -vf "./$program" "$destination_bin" || return
+}
+
+# downloads, extracts, and installs a given version of MEV-Boost
+function install_mevboost() {
+	if [[ $# -ne 5 ]]; then
+		printerr "usage: install_mevboost version sha256_checksum destination_bin owner group"
+		return 2
+	fi
+	local version="$1" sha256_checksum="$2" destination_bin="$3" owner="$4" group="$5"
+	local downloaded_tar
+	download_mevboost "$version" "$sha256_checksum" downloaded_tar || return
+	tar xvzf "$downloaded_tar" || return
+	sudo chown -v "${owner}:${group}" "./mev-boost" || return
+	sudo chmod -v 550 "./mev-boost" || return
+	sudo mv -vf "./mev-boost" "$destination_bin" || return
 }
 
 # enable a system service
@@ -977,6 +1025,14 @@ function check_is_valid_keystore_password() {
 	if _check_is_defined $1; then
 		if [[ ! ${!1} =~ $regex_keystore_password ]]; then
 			_check_failures+=("$1: $errmsg_keystore_password")
+		fi
+	fi
+}
+
+function check_is_boolean() {
+	if _check_is_defined $1; then
+		if [[ (${!1} != 'true' && ${!1} != 'false') ]]; then
+			_check_failures+=("$1: expected a boolean value")
 		fi
 	fi
 }

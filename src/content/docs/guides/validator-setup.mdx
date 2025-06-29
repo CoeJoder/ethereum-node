@@ -13,7 +13,7 @@ import ResetButton from '../../../components/ResetButton.astro';
 <Checklist name="preconditions">
 - [ ] you have at least 32 ETH available to stake per validator in your MetaMask wallet
 - [ ] [node setup](../node-setup/) has been completed
-- [ ] node server is powered on and running geth (EL) and prysm-beacon (CL) as services
+- [ ] node server is powered on and running geth (EL), prysm-beacon (CL), and MEV-Boost as services
 - [ ] EL and CL are fully synced to the Ethereum network
 - [ ] client PC is powered on and able to SSH into the node server
 - [ ] air-gapped PC is powered on and running live Linux from the `Mint` USB flash drive created during [initial setup](../initial-setup/#1-download-mint-and-ubuntu-server)
@@ -21,7 +21,7 @@ import ResetButton from '../../../components/ResetButton.astro';
 </Checklist>
 
 ## Postconditions
-- node server will be running the EL, the CL, and prysm-validator (validator(s)) as a service
+- node server will be running the EL, the CL, MEV-Boost, and prysm-validator (validator(s)) as services
 - validator(s) will be attesting, aggregating, and proposing blocks, thus earning ETH income over time
 - ETH income will be added to its respective validator's balance as it is earned
 - for any validator, you will be ready to set a withdrawal address at a future time of your choosing, thus beginning automatic, periodic withdrawals of its balance in excess of the staked 32 ETH

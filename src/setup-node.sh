@@ -106,6 +106,9 @@ check_is_valid_port prysm_beacon_p2p_tcp_port
 check_is_valid_ethereum_network ethereum_network
 [[ -n $suggested_fee_recipient ]] && check_is_valid_ethereum_address suggested_fee_recipient
 
+check_is_boolean mevboost_enable
+check_is_defined mevboost_addr
+
 print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
@@ -159,10 +162,16 @@ else
 	prysm_beacon_genesis_beacon_api_url=""
 fi
 
+prysm_beacon_mevboost_opt=""
+if [[ $mevboost_enable == true ]]; then
+	prysm_beacon_mevboost_opt="--http-mev-relay=http://${mevboost_addr}"
+fi
+
 suggested_fee_recipient_opt=""
 if [[ -n $suggested_fee_recipient ]]; then
 	suggested_fee_recipient_opt="--suggested-fee-recipient=\"$suggested_fee_recipient\""
 fi
+
 continue_or_exit
 printf '\n'
 
@@ -289,6 +298,7 @@ ExecStart=$prysm_beacon_bin \\
 	--jwt-secret="$eth_jwt_file" \\
 	--monitoring-host="0.0.0.0" \\
 	--accept-terms-of-use \\
+	$prysm_beacon_mevboost_opt \\
 	--execution-endpoint="http://localhost:8551" \\
 	$prysm_beacon_cpsync_opts \\
 	--http-port=$prysm_beacon_http_port \\

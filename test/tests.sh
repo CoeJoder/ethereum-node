@@ -381,6 +381,18 @@ function test_download_ethereal() {
 	fi
 }
 
+function test_download_mevboost() {
+	local version='v1.9' sha256='2056f87e1b0f100c8d6ef9c85abe0e2d5dfb520cb1819237861b0cfa4394736f'  
+	local expected='mev-boost_1.9_linux_amd64.tar.gz' actual
+	if ! download_mevboost $version $sha256 actual; then
+		failures+=("failed to download mevboost")
+	elif [[ $expected != $actual ]]; then
+		failures+=("expected: $expected, actual: $actual")
+	elif [[ ! -f $expected ]]; then
+		failures+=("downloaded file not found: $expected")
+	fi
+}
+
 # test for check_directory_does_not_exist() in common.sh
 function test_check_directory_does_not_exist() {
 	local exists=(
@@ -705,6 +717,7 @@ run_test test_get_latest_prysm_version
 run_test test_download_prysm
 run_test test_download_ethdo
 run_test test_download_ethereal
+run_test test_download_mevboost
 run_test test_check_directory_does_not_exist
 run_test test_check_directory_exists
 run_test test_check_file_does_not_exist

@@ -20,7 +20,7 @@ import ResetButton from '../../../components/ResetButton.astro';
 ## Postconditions
 - client PC will have the [ethereum-node](https://github.com/CoeJoder/ethereum-node) helper scripts installed and configured
 - node server will also have the helper scripts installed and configured
-- node server will be running geth (EL), prysm-beacon (CL) as services
+- node server will be running geth (EL), prysm-beacon (CL), and MEV-Boost as services
 - you will be ready to [setup one or more validators](../validator-setup/)
 
 ## Configurable Values
@@ -94,12 +94,15 @@ cd ethereum-node
 
 <Checklist name="steps-5">
 - [ ] login to your router via web browser, and manually configure port forwarding using the same configuration described by the output of the previous command
-- [ ] install the Ethereum node software: **geth** (Execution Layer), **prysm-beacon** (Consensus Layer), **prysmctl**, **ethdo**, and **ethereal**:
+- [ ] install the Ethereum node software: **geth** (Execution Layer), **prysm-beacon** (Consensus Layer), **MEV-Boost**, **prysmctl**, **ethdo**, and **ethereal**:
 </Checklist>
 
 ```bash
 # install EL and CL, and configure them to run as services
 ./setup-node.sh
+
+# install MEV-Boost, and configure it to run as a service
+./setup-mev-boost.sh
 
 # install prysmctl, a CLI utility for common node tasks
 ./setup-prysmctl.sh
@@ -109,14 +112,14 @@ cd ethereum-node
 ```
 
 <Checklist name="steps-6">
-- [ ] enable the EL and CL services:
+- [ ] enable the node services:
 </Checklist>
 
 ```bash
-# start each service and follow its log
-# press `ctrl + c` to exit the log
+./enable-mev-boost.sh
 ./enable-geth.sh
 ./enable-beacon.sh
+# press `ctrl + c` to exit the logs
 ```
 
 ## Next Steps

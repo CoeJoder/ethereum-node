@@ -55,10 +55,12 @@ geth_bin=${color_green}$geth_bin${color_reset}
 geth_datadir=${color_green}$geth_datadir${color_reset}
 geth_datadir_secondary=${color_green}$geth_datadir_secondary${color_reset}
 geth_datadir_secondary_ancient=${color_green}$geth_datadir_secondary_ancient${color_reset}
-geth_history_chain_postmerge_only=${color_green}$geth_history_chain_postmerge_only${color_reset}
 geth_unit_file=${color_green}$geth_unit_file${color_reset}
 geth_port=${color_green}$geth_port${color_reset}           ${color_lightgray}# TCP${color_reset}
 geth_discovery_port=${color_green}$geth_discovery_port${color_reset} ${color_lightgray}# UDP${color_reset}
+
+${color_lightgray}# geth include only postmerge chain history${color_reset}
+geth_history_chain_postmerge_only=${color_green}$geth_history_chain_postmerge_only${color_reset}
 
 prysm_beacon_user=${color_green}$prysm_beacon_user${color_reset}
 prysm_beacon_group=${color_green}$prysm_beacon_group${color_reset}
@@ -97,6 +99,21 @@ ethdo_bin=${color_green}$ethdo_bin${color_reset}
 ethereal_version=${color_green}$ethereal_version${color_reset}
 ethereal_sha256_checksum=${color_green}$ethereal_sha256_checksum${color_reset}
 ethereal_bin=${color_green}$ethereal_bin${color_reset}
+
+${color_lightgray}# MEV-Boost values${color_reset}
+mevboost_version=${color_green}$mevboost_version${color_reset}
+mevboost_sha256_checksum=${color_green}$mevboost_sha256_checksum${color_reset}
+mevboost_user=${color_green}$mevboost_user${color_reset}
+mevboost_group=${color_green}$mevboost_group${color_reset}
+mevboost_bin=${color_green}$mevboost_bin${color_reset}
+mevboost_unit_file=${color_green}$mevboost_unit_file${color_reset}
+
+${color_lightgray}# MEV-Boost should be enabled for OFAC-compliant block proposals${color_reset}
+mevboost_enable=${color_green}$mevboost_enable${color_reset}
+
+${color_lightgray}# minimum bid to accept from a MEV-Boost relay (in ETH)${color_reset}
+${color_lightgray}# set low to discourage OFAC-uncompliant local blocks${color_reset}
+mevboost_min_bid=${color_green}$mevboost_min_bid${color_reset}
 
 ethstaker_deposit_cli_version=${color_green}$ethstaker_deposit_cli_version${color_reset}
 ethstaker_deposit_cli_sha256_checksum=${color_green}$ethstaker_deposit_cli_sha256_checksum${color_reset}

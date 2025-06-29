@@ -156,6 +156,13 @@ prysm_beacon_enable_checkpoint_sync=$prysm_beacon_enable_checkpoint_sync
 prysm_beacon_checkpoint_sync_url='$prysm_beacon_checkpoint_sync_url'
 prysm_beacon_genesis_beacon_api_url='$prysm_beacon_genesis_beacon_api_url'
 
+# MEV-Boost should be enabled for OFAC-compliant block proposals
+mevboost_enable=$mevboost_enable
+
+# minimum bid to accept from a MEV-Boost relay (in ETH)
+# set low to discourage OFAC-uncompliant local blocks
+mevboost_min_bid='$mevboost_min_bid'
+
 EOF
 
 chmod +x "$env_sh"
