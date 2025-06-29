@@ -319,7 +319,7 @@ function get_latest_deposit_cli_version() {
 		return 2
 	fi
 	local outvar="$1"
-	_get_latest_version "eth-educators/ethstaker-deposit-cli" "$outvar"
+	_get_latest_version "ethstaker/ethstaker-deposit-cli" "$outvar"
 }
 
 # get the latest prysm release version
