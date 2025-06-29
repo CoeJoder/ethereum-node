@@ -90,6 +90,9 @@ else
 	check_file_does_not_exist --sudo eth_jwt_file
 fi
 
+check_is_defined geth_unit_file
+check_is_defined prysm_beacon_unit_file
+
 if [[ $prysm_beacon_enable_checkpoint_sync == true ]]; then
 	check_is_defined prysm_beacon_checkpoint_sync_url
 	check_is_defined prysm_beacon_genesis_beacon_api_url
