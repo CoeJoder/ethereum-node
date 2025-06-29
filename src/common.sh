@@ -446,7 +446,7 @@ function download_mevboost() {
 	download_file "$program_bin_url" || return
 
 	# checksum against the fetched value
-	wget -qO - "$program_bin_checksums_txt_url" | cat | shasum --ignore-missing -a 256 -cq - || return
+	shasum --ignore-missing -a 256 -cq - < <(wget -qO - "$program_bin_checksums_txt_url") || return
 
 	# checksum against the locally-saved value
 	if ! echo "$sha256_checksum  "$program_bin"" | shasum -a 256 -cq -; then
