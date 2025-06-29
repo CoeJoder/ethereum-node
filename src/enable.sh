@@ -2,7 +2,7 @@
 
 # enable.sh
 #
-# Starts & enables all node services (geth, prysm-beacon, prysm-validator).
+# Starts & enables all node services (geth, prysm-beacon, prysm-validator, MEV-Boost).
 #
 # Meant to be run on the node server.
 
@@ -24,6 +24,7 @@ reset_checks
 check_file_exists --sudo geth_unit_file
 check_file_exists --sudo prysm_beacon_unit_file
 check_file_exists --sudo prysm_validator_unit_file
+check_file_exists --sudo mevboost_unit_file
 
 print_failed_checks --error
 
@@ -42,7 +43,7 @@ echo -en "${color_reset}"
 # -------------------------- PREAMBLE -----------------------------------------
 
 cat <<EOF
-Starts & enables all node services (geth, prysm-beacon, prysm-validator).
+Starts & enables all node services (geth, prysm-beacon, prysm-validator, MEV-Boost).
 EOF
 press_any_key_to_continue
 
@@ -53,6 +54,7 @@ sudo systemctl daemon-reload
 _start_geth=false
 _start_prysmbeacon=false
 _start_prysmvalidator=false
+_start_mevboost=false
 
 reset_checks
 check_is_service_installed geth_unit_file
@@ -72,6 +74,12 @@ if ! has_failed_checks; then
 	_start_prysmvalidator=true
 fi
 
+reset_checks
+check_is_service_installed mevboost_unit_file
+if ! has_failed_checks; then
+	_start_mevboost=true
+fi
+
 # -------------------------- EXECUTION ----------------------------------------
 
 if [[ $_start_geth == true ]]; then
@@ -84,6 +92,10 @@ fi
 
 if [[ $_start_prysmvalidator == true ]]; then
 	enable_service "$prysm_validator_unit_file"
+fi
+
+if [[ $_start_mevboost == true ]]; then
+	enable_service "$mevboost_unit_file"
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
