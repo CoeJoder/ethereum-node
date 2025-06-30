@@ -75,6 +75,7 @@
 !src/init.sh
 !src/mev-boost-relays.sh
 !src/print-env.sh
+!src/restart.sh
 !src/seal.sh
 !src/set-wallet-password.sh
 !src/setup-ethdo.sh

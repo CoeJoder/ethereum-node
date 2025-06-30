@@ -72,8 +72,8 @@ check_is_valid_ethereum_network ethereum_network
 check_is_valid_ethereum_address suggested_fee_recipient
 
 check_is_defined prysm_validator_unit_file
-check_is_service_active geth_unit_file
-check_is_service_active prysm_beacon_unit_file
+check_is_service_installed geth_unit_file
+check_is_service_installed prysm_beacon_unit_file
 
 check_is_valid_port prysm_beacon_http_port
 

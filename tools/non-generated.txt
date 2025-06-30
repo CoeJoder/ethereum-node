@@ -1,10 +1,12 @@
 # non-generated source files
 
 common.sh
+disable.sh
 disable-beacon.sh
 disable-geth.sh
 disable-mev-boost.sh
 disable-validator.sh
+enable.sh
 enable-beacon.sh
 enable-geth.sh
 enable-mev-boost.sh
@@ -16,6 +18,7 @@ import-keys.sh
 init.sh
 mev-boost-relays.sh
 print-env.sh
+restart.sh
 seal.sh
 set-wallet-password.sh
 setup-ethdo.sh

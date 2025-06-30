@@ -21,10 +21,10 @@ assert_sudo
 
 reset_checks
 
-check_file_exists --sudo geth_unit_file
-check_file_exists --sudo prysm_beacon_unit_file
-check_file_exists --sudo prysm_validator_unit_file
-check_file_exists --sudo mevboost_unit_file
+check_is_defined geth_unit_file
+check_is_defined prysm_beacon_unit_file
+check_is_defined prysm_validator_unit_file
+check_is_defined mevboost_unit_file
 
 print_failed_checks --error
 
@@ -49,6 +49,8 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
+assert_sudo
+
 sudo systemctl daemon-reload
 
 _stop_geth=false
@@ -57,24 +59,28 @@ _stop_prysmvalidator=false
 _stop_mevboost=false
 
 reset_checks
+check_file_exists --sudo geth_unit_file
 check_is_service_installed geth_unit_file
 if ! has_failed_checks; then
 	_stop_geth=true
 fi
 
 reset_checks
+check_file_exists --sudo prysm_beacon_unit_file
 check_is_service_installed prysm_beacon_unit_file
 if ! has_failed_checks; then
 	_stop_prysmbeacon=true
 fi
 
 reset_checks
+check_file_exists --sudo prysm_validator_unit_file
 check_is_service_installed prysm_validator_unit_file
 if ! has_failed_checks; then
 	_stop_prysmvalidator=true
 fi
 
 reset_checks
+check_file_exists --sudo mevboost_unit_file
 check_is_service_installed mevboost_unit_file
 if ! has_failed_checks; then
 	_stop_mevboost=true

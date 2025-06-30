@@ -27,15 +27,15 @@ check_is_defined prysm_beacon_bin
 check_is_defined prysm_validator_bin
 check_is_defined mevboost_bin
 
-check_user_exists prysm_beacon_user
-check_user_exists prysm_validator_user
-check_user_exists prysmctl_user
-check_user_exists mevboost_user
+check_is_defined prysm_beacon_user
+check_is_defined prysm_validator_user
+check_is_defined prysmctl_user
+check_is_defined mevboost_user
 
-check_group_exists prysm_beacon_group
-check_group_exists prysm_validator_group
-check_group_exists prysmctl_group
-check_group_exists mevboost_group
+check_is_defined prysm_beacon_group
+check_is_defined prysm_validator_group
+check_is_defined prysmctl_group
+check_is_defined mevboost_group
 
 # TODO use version-locking for the others too
 check_is_defined ethdo_version
@@ -80,18 +80,24 @@ _update_mevboost=false
 
 reset_checks
 check_executable_exists --sudo prysm_beacon_bin
+check_user_exists prysm_beacon_user
+check_group_exists prysm_beacon_group
 if ! has_failed_checks; then
 	_update_prysmbeacon=true
 fi
 
 reset_checks
 check_executable_exists --sudo prysm_validator_bin
+check_user_exists prysm_validator_user
+check_group_exists prysm_validator_group
 if ! has_failed_checks; then
 	_update_prysmvalidator=true
 fi
 
 reset_checks
 check_executable_exists --sudo prysmctl_bin
+check_user_exists prysmctl_user
+check_group_exists prysmctl_group
 if ! has_failed_checks; then
 	_update_prysmctl=true
 fi

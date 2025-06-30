@@ -501,7 +501,7 @@ function install_mevboost() {
 	sudo mv -vf "./mev-boost" "$destination_bin" || return
 }
 
-# enable a system service
+# start-and-enable a system service
 function enable_service() {
 	if [[ $# -ne 1 ]]; then
 		printerr "usage: enable_service unit_file"
@@ -513,7 +513,7 @@ function enable_service() {
 	sudo systemctl enable "$service_name"
 }
 
-# disable a system service
+# stop-and-disable a system service
 function disable_service() {
 	if [[ $# -ne 1 ]]; then
 		printerr "usage: disable_service unit_file"
@@ -523,6 +523,17 @@ function disable_service() {
 	local service_name="$(basename "$unit_file")"
 	sudo systemctl stop "$service_name"
 	sudo systemctl disable "$service_name"
+}
+
+# restart a system service
+function restart_service() {
+	if [[ $# -ne 1 ]]; then
+		printerr "usage: restart_service unit_file"
+		return 2
+	fi
+	local unit_file="$1"
+	local service_name="$(basename "$unit_file")"
+	sudo systemctl restart "$service_name"
 }
 
 # parses the index number from a validator signing key path per EIP-2334
