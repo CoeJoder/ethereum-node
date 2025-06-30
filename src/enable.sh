@@ -82,6 +82,10 @@ fi
 
 # -------------------------- EXECUTION ----------------------------------------
 
+if [[ $_start_mevboost == true ]]; then
+	enable_service "$mevboost_unit_file"
+fi
+
 if [[ $_start_geth == true ]]; then
 	enable_service "$geth_unit_file"
 fi
@@ -92,10 +96,6 @@ fi
 
 if [[ $_start_prysmvalidator == true ]]; then
 	enable_service "$prysm_validator_unit_file"
-fi
-
-if [[ $_start_mevboost == true ]]; then
-	enable_service "$mevboost_unit_file"
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
