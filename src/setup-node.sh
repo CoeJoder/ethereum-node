@@ -236,7 +236,7 @@ if [[ $unit_files_only == false ]]; then
 	# prysm-beacon filesystem
 	printinfo "Setting up prysm-beacon user, group, datadir..."
 	sudo useradd --no-create-home --shell /bin/false "$prysm_beacon_user"
-	sudo mkdir -p "$prysm_beacon_datadir"
+	sudo mkdir -p "${prysm_beacon_datadir}/beaconchaindata"
 	sudo chown -R "${prysm_beacon_user}:${prysm_beacon_group}" "$prysm_beacon_datadir"
 	sudo chmod -R 700 "$prysm_beacon_datadir"
 
