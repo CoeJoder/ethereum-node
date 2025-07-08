@@ -69,6 +69,7 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
+declare latest_prysm_version
 get_latest_prysm_version latest_prysm_version
 
 _update_prysmbeacon=false
@@ -106,7 +107,7 @@ reset_checks
 check_executable_exists --sudo ethdo_bin
 if ! has_failed_checks; then
 	_ethdo_current_version="$(sudo "$ethdo_bin" version)"
-	if [[ "v$_ethdo_current_version" != $ethdo_version ]]; then
+	if [[ "v$_ethdo_current_version" != "$ethdo_version" ]]; then
 		printinfo "ethdo v${_ethdo_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${ethdo_version}?"; then
 			_update_ethdo=true
@@ -118,7 +119,7 @@ reset_checks
 check_executable_exists --sudo ethereal_bin
 if ! has_failed_checks; then
 	_ethereal_current_version="$(sudo "$ethereal_bin" version)"
-	if [[ "v$_ethereal_current_version" != $ethereal_version ]]; then
+	if [[ "v$_ethereal_current_version" != "$ethereal_version" ]]; then
 		printinfo "ethereal v${_ethereal_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${ethereal_version}?"; then
 			_update_ethereal=true
@@ -129,8 +130,8 @@ fi
 reset_checks
 check_executable_exists --sudo mevboost_bin
 if ! has_failed_checks; then
-	read -r _ _mevboost_current_version < <(sudo "$mevboost_bin" --version)
-	if [[ "v$_mevboost_current_version" != $mevboost_version ]]; then
+	IFS= read -r _ _mevboost_current_version < <(sudo "$mevboost_bin" --version)
+	if [[ "v$_mevboost_current_version" != "$mevboost_version" ]]; then
 		printinfo "mevboost v${_mevboost_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${mevboost_version}?"; then
 			_update_mevboost=true

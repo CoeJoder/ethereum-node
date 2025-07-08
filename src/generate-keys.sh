@@ -20,7 +20,7 @@ set_env
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage:
-		  $(basename ${BASH_SOURCE[0]}) [options] command
+		  $(basename "${BASH_SOURCE[0]}") [options] command
 		Options:
 		  --keystore_password value       Keystore password.  Used to decrypt keystores when during validator import
 		  --num_validators value          Number of validator keys to generate
@@ -37,8 +37,7 @@ function show_usage() {
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='keystore_password:,num_validators:,validator_start_index:,mnemonic:,deposit_cli:,no_logging,no_banner,help' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -91,7 +90,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown option: $1"
+		[[ -n $1 ]] && printerr "unknown option: $1"
 		exit 1
 		;;
 	esac
@@ -281,7 +280,7 @@ if [[ $mode_new == true ]]; then
 	# generate the key(s)
 	"$deposit_cli_bin" --language=English --non_interactive new-mnemonic \
 		--keystore_password="$keystore_password" \
-		--num_validators=$num_validators \
+		--num_validators="$num_validators" \
 		--mnemonic_language=English \
 		--chain="$ethereum_network" \
 		--folder="$validator_keys_parent_dir"
@@ -306,8 +305,8 @@ else
 	# generate the key(s)
 	"$deposit_cli_bin" --language=English --non_interactive existing-mnemonic \
 		--keystore_password="$keystore_password" \
-		--num_validators=$num_validators \
-		--validator_start_index=$validator_start_index \
+		--num_validators="$num_validators" \
+		--validator_start_index="$validator_start_index" \
 		--mnemonic="$mnemonic" \
 		--chain="$ethereum_network" \
 		--folder="$validator_keys_parent_dir"

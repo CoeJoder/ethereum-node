@@ -6,8 +6,14 @@
 
 # -------------------------- HEADER -------------------------------------------
 
+# this file is sourced, so `export` is not required
+# shellcheck disable=SC2034
+
 # propagate top-level ERR traps to subcontexts
 set -E
+
+# enable extended globbing
+shopt -s extglob
 
 # -------------------------- CONSTANTS ----------------------------------------
 
@@ -20,7 +26,7 @@ mainnet='mainnet'
 
 # set paths based on dev or prod environment
 common_sh_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
-if [[ $(basename "$common_sh_dir") == $dist_dirname ]]; then
+if [[ $(basename "$common_sh_dir") == "$dist_dirname" ]]; then
 	# prod
 	proj_dir="$common_sh_dir"
 	src_dir="$common_sh_dir"
@@ -134,13 +140,17 @@ function housekeeping() {
 
 # set the project environment variables
 function set_env() {
+	reset_checks
 	check_executable_exists env_base_sh
 	print_failed_checks --error || exit
+	# shellcheck source=./env-base.sh
 	source "$env_base_sh"
 
 	# warn if private env is missing but don't exit
+	reset_checks
 	check_executable_exists env_sh
 	if print_failed_checks --warn; then
+		# shellcheck source=./env.sh
 		source "$env_sh"
 	else
 		press_any_key_to_continue
@@ -148,6 +158,7 @@ function set_env() {
 }
 
 # append to log file
+# shellcheck disable=SC2120  # optional args
 function log_timestamp() {
 	local _file="$log_file"
 	if [[ $# -gt 0 ]]; then
@@ -158,8 +169,9 @@ function log_timestamp() {
 
 # rotate log file if necessary and begin logging terminal output
 function log_start() {
+	local log_size
 	if [[ -f $log_file ]]; then
-		local log_size=$(stat -c %s "$log_file")
+		log_size=$(stat -c %s "$log_file")
 		if [[ $log_size -ge $max_log_size ]]; then
 			printwarn "log file ≥ $max_log_size B"
 			if yes_or_no --default-yes "Rotate log?"; then
@@ -173,15 +185,16 @@ function log_start() {
 
 # restore stdout & stderr
 function log_pause() {
-	echo -e "[Logging paused] $@" >>"$log_file"
+	echo -e "[Logging paused] $*" >>"$log_file"
 	exec 1>&3 2>&4
 }
 
 # backup stdout & stderr, and redirect both to tee'd logfile
+# shellcheck disable=SC2120  # optional args
 function log_resume() {
 	exec 3>&1 4>&2
 	exec &> >(tee -a "$log_file")
-	echo -e "[Logging resumed] $@" >>"$log_file"
+	echo -e "[Logging resumed] $*" >>"$log_file"
 }
 
 # common logging suffix for INFO messages
@@ -196,7 +209,7 @@ function printinfo() {
 		echo_opts='-en'
 		shift
 	fi
-	echo $echo_opts "${color_green}INFO ${color_reset}$@" >&2
+	echo $echo_opts "${color_green}INFO ${color_reset}$*" >&2
 }
 
 # WARN log-level message to stderr
@@ -206,7 +219,7 @@ function printwarn() {
 		echo_opts='-en'
 		shift
 	fi
-	echo $echo_opts "${color_yellow}WARN ${color_reset}$@" >&2
+	echo $echo_opts "${color_yellow}WARN ${color_reset}$*" >&2
 }
 
 # ERROR log-level message, with optional error code, to stderr
@@ -235,15 +248,16 @@ function printerr() {
 #   `trap 'on_err 2 "failed to launch"' ERR`
 function on_err() {
 	local exit_status=$?
-	local msg="at line $(caller)"
+	local msg
+	msg="at line $(caller)"
 	if [[ $# -eq 2 ]]; then
 		exit_status=$1
 		msg="$2"
 	elif [[ $# -eq 1 ]]; then
 		exit_status=$1
 	fi
-	printerr $exit_status "$msg"
-	exit $exit_status
+	printerr "$exit_status" "$msg"
+	exit "$exit_status"
 }
 
 # callback for ERR trap with a 'retry' msg
@@ -264,14 +278,14 @@ function read_default() {
 	fi
 	local description="$1" default_val="$2" outvar="$3" val
 	echo -e "${description} (default: ${theme_example}$default_val${color_reset}):${theme_value}"
-	read val
+	IFS= read -r val
 	if [[ -z $val ]]; then
 		val="$default_val"
 		# cursor up 1, echo value
 		echo -e "\e[1A${val}"
 	fi
 	echo -en "${color_reset}"
-	printf -v $outvar "$val"
+	printf -v "$outvar" "%s" "$val"
 }
 
 # `read` but stylized like `read_default`
@@ -281,9 +295,9 @@ function read_no_default() {
 		return 1
 	fi
 	local description="$1" outvar="$2" val
-	read -p "${description}: ${theme_value}" val
+	IFS= read -rp "${description}: ${theme_value}" val
 	echo -en "${color_reset}"
-	printf -v $outvar "$val"
+	printf -v "$outvar" "%s" "$val"
 }
 
 # get the latest version string/tag name from a github repo
@@ -294,7 +308,7 @@ function get_latest_release() {
 		sed -E 's/.*"([^"]+)".*/\1/'                                     # Pluck JSON value
 }
 
-# factor; get the latest "vX.Y.Z" version of a GH project
+# factor; get the latest "vX.Y(.Z)" version of a GH project
 function _get_latest_version() {
 	if [[ $# -ne 2 ]]; then
 		printerr "expected two arguments: ghproject, outvar"
@@ -309,7 +323,7 @@ function _get_latest_version() {
 		return 1
 	fi
 	echo -e "${theme_value}${version}${color_reset}" >&2
-	printf -v "$outvar" "$version"
+	printf -v "$outvar" "%s" "$version"
 }
 
 # get the latest EthStaker Deposit CLI release version
@@ -407,7 +421,7 @@ function download_prysm() {
 	download_file "$program_bin_url" || return
 	download_file "$program_bin_sha256_url" || return
 	shasum -a 256 -cq "$program_bin_sha256" || return
-	printf -v "$outvar" "$program_bin"
+	printf -v "$outvar" "%s" "$program_bin"
 }
 
 function download_wealdtech() {
@@ -425,13 +439,13 @@ function download_wealdtech() {
 
 	# expected checksum should match downloaded checksum
 	fetched_sha265="$(wget -qO - "$program_bin_sha256_url" | cat)"
-	if [[ $fetched_sha265 != $sha256_checksum ]]; then
+	if [[ $fetched_sha265 != "$sha256_checksum" ]]; then
 		printerr "Found: $fetched_sha265\nExpected: $sha256_checksum\n" \
 			"Ensure that ${theme_value}${program}_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		return 1
 	fi
-	echo "$sha256_checksum  "$program_bin"" | shasum -a 256 -cq - || return
-	printf -v "$outvar" "$program_bin"
+	echo "$sha256_checksum  $program_bin" | shasum -a 256 -cq - || return
+	printf -v "$outvar" "%s" "$program_bin"
 }
 
 function download_mevboost() {
@@ -449,12 +463,12 @@ function download_mevboost() {
 	shasum --ignore-missing -a 256 -cq - < <(wget -qO - "$program_bin_checksums_txt_url") || return
 
 	# checksum against the locally-saved value
-	if ! echo "$sha256_checksum  "$program_bin"" | shasum -a 256 -cq -; then
+	if ! echo "$sha256_checksum  $program_bin" | shasum -a 256 -cq -; then
 		printerr "Checksum failed against locally-saved value!\n" \
 			"Ensure that ${theme_value}mevboost_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		return 1
 	fi
-	printf -v "$outvar" "$program_bin"
+	printf -v "$outvar" "%s" "$program_bin"
 }
 
 # downloads and installs a given version of a prysm program
@@ -473,7 +487,7 @@ function install_prysm() {
 
 # downloads, extracts, and installs a given version of a wealdtech program
 function install_wealdtech() {
-	if [[ $# -ne 6 || ($1 != 'ethdo' && $1 != 'ethereal')  ]]; then
+	if [[ $# -ne 6 || ($1 != 'ethdo' && $1 != 'ethereal') ]]; then
 		printerr "usage: install_wealdtech {ethdo|ethereal} version sha256_checksum destination_bin owner group"
 		return 2
 	fi
@@ -508,7 +522,8 @@ function enable_service() {
 		return 2
 	fi
 	local unit_file="$1"
-	local service_name="$(basename "$unit_file")"
+	local service_name
+	service_name="$(basename "$unit_file")"
 	sudo systemctl start "$service_name"
 	sudo systemctl enable "$service_name"
 }
@@ -520,7 +535,8 @@ function disable_service() {
 		return 2
 	fi
 	local unit_file="$1"
-	local service_name="$(basename "$unit_file")"
+	local service_name
+	service_name="$(basename "$unit_file")"
 	sudo systemctl stop "$service_name"
 	sudo systemctl disable "$service_name"
 }
@@ -532,7 +548,8 @@ function restart_service() {
 		return 2
 	fi
 	local unit_file="$1"
-	local service_name="$(basename "$unit_file")"
+	local service_name
+	service_name="$(basename "$unit_file")"
 	sudo systemctl restart "$service_name"
 }
 
@@ -548,7 +565,7 @@ function parse_index_from_signing_key_path() {
 		printerr "unrecognized signing key path: $signing_key_path" >&2
 		return 1
 	fi
-	printf -v $outvar "${BASH_REMATCH[1]}"
+	printf -v "$outvar" "%s" "${BASH_REMATCH[1]}"
 }
 
 function enter_password_and_confirm() {
@@ -562,7 +579,7 @@ function enter_password_and_confirm() {
 	fi
 	# loop until valid password
 	while true; do
-		read -sp "$prompt: " password1
+		IFS= read -rsp "$prompt: " password1
 		printf '\n'
 		if [[ -z $check_func ]]; then
 			break # no validator provided
@@ -579,15 +596,15 @@ function enter_password_and_confirm() {
 	done
 	# loop until confirmed
 	while true; do
-		read -sp "Re-enter to confirm: " password2
+		IFS= read -rsp "Re-enter to confirm: " password2
 		printf '\n'
-		if [[ $password1 != $password2 ]]; then
+		if [[ $password1 != "$password2" ]]; then
 			printwarn "confirmation failed, try again"
 		else
 			break # success
 		fi
 	done
-	printf -v "$outvar" "$password1"
+	printf -v "$outvar" "%s" "$password1"
 }
 
 # source: https://stackoverflow.com/a/53839433/159570
@@ -620,14 +637,16 @@ function string_contains() {
 
 # test expression for network connectivity
 # source: https://stackoverflow.com/a/14939373/159570
-function is_online() {
-	for interface in $(ls /sys/class/net/ | grep -v lo); do
-		if [[ $(cat /sys/class/net/$interface/carrier 2>/dev/null) == 1 ]]; then
+# (modified to avoid `ls | grep`)
+function is_online() ( # subshell
+	shopt -s extglob
+	for interface in /sys/class/net/!(*lo*); do
+		if [[ $(cat "/sys/class/net/$(basename "$interface")/carrier" 2>/dev/null) == 1 ]]; then
 			return 0
 		fi
 	done
 	return 1
-}
+)
 
 function is_devmode() {
 	[[ -n $tools_dir ]] &>/dev/null
@@ -642,12 +661,12 @@ function yes_or_no() {
 		exit 2
 	fi
 	if [[ $1 == '--default-yes' ]]; then
-		read -p "$2 (Y/n): " confirm
+		IFS= read -rp "$2 (Y/n): " confirm
 		if [[ $confirm == [nN] || $confirm == [nN][oO] ]]; then
 			return 1
 		fi
 	else
-		read -p "$2 (y/N): " confirm
+		IFS= read -rp "$2 (y/N): " confirm
 		if [[ $confirm != [yY] && $confirm != [yY][eE][sS] ]]; then
 			return 1
 		fi
@@ -655,6 +674,7 @@ function yes_or_no() {
 }
 
 # "Continue?" prompt, defaulting to no, exiting on 'no' with given code or 1 by default
+# shellcheck disable=SC2120  # optional args
 function continue_or_exit() {
 	local code=1 prompt="Continue?"
 	if [[ $# -gt 0 ]]; then
@@ -663,25 +683,28 @@ function continue_or_exit() {
 	if [[ $# -gt 1 ]]; then
 		prompt="$2"
 	fi
-	yes_or_no --default-no "$prompt" || exit $code
+	yes_or_no --default-no "$prompt" || exit "$code"
 }
 
 # pause script execution until user presses a key
 function press_any_key_to_continue() {
-	read -n 1 -r -s -p $'Press any key to continue...'
+	IFS= read -rsn 1 -p $'Press any key to continue...'
 	printf "\n\n"
 }
 
 # in-place shell selection list
 # source: https://askubuntu.com/a/1386907
-# (with minor syntax changes to fix vscode syntax highlighting)
+# (with minor syntax changes to fix vscode syntax highlighting & linting)
 function choose_from_menu() {
-	local prompt="$1" outvar="$2"
+	local prompt="$1" outvar="$2" options cur count index esc
 	shift
 	shift
-	local options=("$@") cur=0 count=${#options[@]} index=0
-	local esc=$(echo -en "\e") # cache ESC as test doesn't allow esc codes
-	printf "$prompt\n"
+	options=("$@")
+	cur=0
+	count=${#options[@]}
+	index=0
+	esc=$(echo -en "\e") # cache ESC as test doesn't allow esc codes
+	printf "%s\n" "$prompt"
 	while true; do
 		# list all options (option list is zero-based)
 		index=0
@@ -691,22 +714,22 @@ function choose_from_menu() {
 			else
 				echo "  $o"
 			fi
-			index=$(($index + 1))
+			index=$((index + 1))
 		done
-		read -s -n3 key                 # wait for user to key in arrows or ENTER
-		if [[ $key == "$esc[A" ]]; then # up arrow
-			cur=$(($cur - 1))
+		IFS= read -rs -n3 key             # wait for user to key in arrows or ENTER
+		if [[ $key == "${esc}[A" ]]; then # up arrow
+			cur=$((cur - 1))
 			[ "$cur" -lt 0 ] && cur=0
-		elif [[ $key == "$esc[B" ]]; then # down arrow
-			cur=$(($cur + 1))
-			[ "$cur" -ge $count ] && cur=$(($count - 1))
+		elif [[ $key == "${esc}[B" ]]; then # down arrow
+			cur=$((cur + 1))
+			[ "$cur" -ge "$count" ] && cur=$((count - 1))
 		elif [[ $key == "" ]]; then # nothing, i.e the read delimiter - ENTER
 			break
 		fi
 		echo -en "\e[${count}A" # go up to the beginning to re-render
 	done
 	# export the selection to the requested output variable
-	printf -v $outvar "${options[$cur]}"
+	printf -v "$outvar" "%s" "${options[$cur]}"
 }
 
 function beaconchain_base_url() {
@@ -716,10 +739,10 @@ function beaconchain_base_url() {
 	fi
 	local network="$1" outvar="$2"
 	local beaconchain_url_subdomain=""
-	if [[ $network != $mainnet ]]; then
+	if [[ $network != "$mainnet" ]]; then
 		beaconchain_url_subdomain="${network}."
 	fi
-	printf -v $outvar "https://${beaconchain_url_subdomain}beaconcha.in"
+	printf -v "$outvar" "%s" "https://${beaconchain_url_subdomain}beaconcha.in"
 }
 
 # -------------------------- ASSERTIONS ---------------------------------------
@@ -735,7 +758,7 @@ function assert_sudo() {
 
 # assert that script process is running on the node server
 function assert_on_node_server() {
-	if [[ $(hostname) != $node_server_hostname ]]; then
+	if [[ $(hostname) != "$node_server_hostname" ]]; then
 		printerr "script must be run on the node server: $node_server_hostname"
 		exit 1
 	fi
@@ -743,7 +766,7 @@ function assert_on_node_server() {
 
 # assert that script process is not running on the node server
 function assert_not_on_node_server() {
-	if [[ $(hostname) == $node_server_hostname ]]; then
+	if [[ $(hostname) == "$node_server_hostname" ]]; then
 		printerr "script must be run on the client PC, not the node server"
 		exit 1
 	fi
@@ -791,7 +814,7 @@ function print_failed_checks() {
 }
 
 function check_user_does_not_exist() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if user_exists "${!1}"; then
 			_check_failures+=("user already exists: ${!1}")
 		fi
@@ -799,7 +822,7 @@ function check_user_does_not_exist() {
 }
 
 function check_user_exists() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if ! user_exists "${!1}"; then
 			_check_failures+=("user does not exist: ${!1}")
 		fi
@@ -807,7 +830,7 @@ function check_user_exists() {
 }
 
 function check_group_does_not_exist() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if group_exists "${!1}"; then
 			_check_failures+=("group already exists: ${!1}")
 		fi
@@ -815,7 +838,7 @@ function check_group_does_not_exist() {
 }
 
 function check_group_exists() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if ! group_exists "${!1}"; then
 			_check_failures+=("group does not exist: ${!1}")
 		fi
@@ -828,7 +851,7 @@ function check_directory_does_not_exist() {
 		_sudo='sudo'
 		shift
 	fi
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if $_sudo test -d "${!1}"; then
 			_check_failures+=("directory already exists: ${!1}")
 		fi
@@ -841,7 +864,7 @@ function check_directory_exists() {
 		_sudo='sudo'
 		shift
 	fi
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if $_sudo test ! -d "${!1}"; then
 			_check_failures+=("directory does not exist: ${!1}")
 		fi
@@ -854,7 +877,7 @@ function check_file_does_not_exist() {
 		_sudo='sudo'
 		shift
 	fi
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if $_sudo test -f "${!1}"; then
 			_check_failures+=("file already exists: ${!1}")
 		fi
@@ -867,7 +890,7 @@ function check_file_exists() {
 		_sudo='sudo'
 		shift
 	fi
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if $_sudo test ! -f "${!1}"; then
 			_check_failures+=("file does not exist: ${!1}")
 		fi
@@ -875,7 +898,7 @@ function check_file_exists() {
 }
 
 function check_is_valid_ethereum_network() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ${!1} != "$mainnet" && ${!1} != "$testnet" ]]; then
 			_check_failures+=("invalid Ethereum network: ${!1}")
 		fi
@@ -883,7 +906,7 @@ function check_is_valid_ethereum_network() {
 }
 
 function check_is_valid_port() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ${!1} -lt 1 || ${!1} -gt 65535 ]]; then
 			_check_failures+=("invalid port: ${!1}")
 		fi
@@ -891,7 +914,7 @@ function check_is_valid_port() {
 }
 
 function check_is_valid_ipv4_address() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $IPV4_REGEX ]]; then
 			_check_failures+=("invalid IPv4 address: ${!1}")
 		fi
@@ -899,7 +922,7 @@ function check_is_valid_ipv4_address() {
 }
 
 function check_command_does_not_exist_on_path() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if type -P "${!1}" &>/dev/null; then
 			_check_failures+=("command already exists: ${!1}")
 		fi
@@ -907,7 +930,7 @@ function check_command_does_not_exist_on_path() {
 }
 
 function check_command_exists_on_path() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if ! type -P "${!1}" &>/dev/null; then
 			_check_failures+=("command does not exist: ${!1}")
 		fi
@@ -920,8 +943,8 @@ function check_executable_does_not_exist() {
 		_sudo='sudo'
 		shift
 	fi
-	if _check_is_defined $1; then
-		if $_sudo test -x ${!1}; then
+	if _check_is_defined "$1"; then
+		if $_sudo test -x "${!1}"; then
 			_check_failures+=("executable already exists: ${!1}")
 		fi
 	fi
@@ -933,16 +956,17 @@ function check_executable_exists() {
 		_sudo='sudo'
 		shift
 	fi
-	if _check_is_defined $1; then
-		if $_sudo test ! -x ${!1}; then
+	if _check_is_defined "$1"; then
+		if $_sudo test ! -x "${!1}"; then
 			_check_failures+=("file does not exist or is not executable: ${!1}")
 		fi
 	fi
 }
 
 function check_is_service_installed() {
-	if _check_is_defined $1; then
-		local service_name="$(basename "${!1}")"
+	local service_name
+	if _check_is_defined "$1"; then
+		service_name="$(basename "${!1}")"
 		if ! systemctl list-unit-files --full -all | grep -Fq "$service_name"; then
 			_check_failures+=("service is not installed: ${!1}")
 		fi
@@ -950,8 +974,9 @@ function check_is_service_installed() {
 }
 
 function check_is_service_active() {
-	if _check_is_defined $1; then
-		local service_name="$(basename "${!1}")"
+	local service_name
+	if _check_is_defined "$1"; then
+		service_name="$(basename "${!1}")"
 		if ! systemctl is-active --quiet "$service_name"; then
 			_check_failures+=("service is not active: $service_name")
 		fi
@@ -959,7 +984,7 @@ function check_is_service_active() {
 }
 
 function check_is_valid_ethereum_address() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_eth_addr ]]; then
 			_check_failures+=("invalid Ethereum address: ${!1}")
 		fi
@@ -967,7 +992,7 @@ function check_is_valid_ethereum_address() {
 }
 
 function check_string_contains() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if ! string_contains "${!1}" "$2"; then
 			_check_failures+=("$1 does not contain \"$2\"")
 		fi
@@ -975,25 +1000,27 @@ function check_string_contains() {
 }
 
 function check_current_directory_is() {
-	if _check_is_defined $1; then
-		local resolved_dir="$(realpath "${!1}")"
-		if [[ $(pwd) != $resolved_dir ]]; then
+	local resolved_dir
+	if _check_is_defined "$1"; then
+		resolved_dir="$(realpath "${!1}")"
+		if [[ $(pwd) != "$resolved_dir" ]]; then
 			_check_failures+=("current directory is not $resolved_dir")
 		fi
 	fi
 }
 
 function check_current_directory_is_not() {
-	if _check_is_defined $1; then
-		local resolved_dir="$(realpath "${!1}")"
-		if [[ $(pwd) == $resolved_dir ]]; then
+	local resolved_dir
+	if _check_is_defined "$1"; then
+		resolved_dir="$(realpath "${!1}")"
+		if [[ $(pwd) == "$resolved_dir" ]]; then
 			_check_failures+=("current directory is $resolved_dir")
 		fi
 	fi
 }
 
 function check_is_valid_validator_mnemonic() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ $(printf '%s' "${!1}" | wc -w) -ne 24 ]]; then
 			_check_failures+=("$1: expected a 24-word seed phrase")
 		fi
@@ -1001,7 +1028,7 @@ function check_is_valid_validator_mnemonic() {
 }
 
 function check_is_valid_validator_index_or_pubkey() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_uint && ! ${!1} =~ $regex_eth_validator_pubkey ]]; then
 			_check_failures+=("$1: expected a validator index or pubkey")
 		fi
@@ -1009,7 +1036,7 @@ function check_is_valid_validator_index_or_pubkey() {
 }
 
 function check_is_valid_validator_pubkeys() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_eth_validator_pubkey_csv && ! ${!1} =~ $regex_eth_validator_pubkey_csv_v2 ]]; then
 			_check_failures+=("$1: expected a comma-separated list of validator pubkeys")
 		fi
@@ -1017,7 +1044,7 @@ function check_is_valid_validator_pubkeys() {
 }
 
 function check_is_valid_eip2334_index() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ ^[[:digit:]]+$ || ! ${!1} -ge 0 ]]; then
 			_check_failures+=("$1: expected a valid EIP-2334 index ≥ 0")
 		fi
@@ -1025,7 +1052,7 @@ function check_is_valid_eip2334_index() {
 }
 
 function check_is_positive_integer() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ ^[[:digit:]]+$ || ! ${!1} -gt 0 ]]; then
 			_check_failures+=("$1: expected a positive integer")
 		fi
@@ -1033,7 +1060,7 @@ function check_is_positive_integer() {
 }
 
 function check_is_valid_keystore_password() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_keystore_password ]]; then
 			_check_failures+=("$1: $errmsg_keystore_password")
 		fi
@@ -1041,7 +1068,7 @@ function check_is_valid_keystore_password() {
 }
 
 function check_is_boolean() {
-	if _check_is_defined $1; then
+	if _check_is_defined "$1"; then
 		if [[ (${!1} != 'true' && ${!1} != 'false') ]]; then
 			_check_failures+=("$1: expected a boolean value")
 		fi

@@ -11,15 +11,14 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --unit-files-only   If present, only the unit files are generated
 		  --help, -h          Show this message
 	EOF
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='help,unit-files-only' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -113,9 +112,10 @@ if [[ $mevboost_enable == false ]]; then
 fi
 
 # check for latest versions
+declare latest_mevboost_version
 get_latest_mevboost_version latest_mevboost_version
 
-if [[ $mevboost_version != $latest_mevboost_version ]]; then
+if [[ $mevboost_version != "$latest_mevboost_version" ]]; then
 	printwarn "New version of MEV-Boost detected: ${theme_value}$latest_mevboost_version${color_reset}"
 	printwarn "Update the env vars with the latest version and checksums, and then restart this script."
 	exit 1
@@ -134,7 +134,7 @@ function build_relay_opts() {
 	done
 }
 
-if [[ $ethereum_network == $mainnet ]]; then
+if [[ $ethereum_network == "$mainnet" ]]; then
 	mevboost_network_opt="-$mainnet"
 	build_relay_opts "${mevboost_relays_mainnet[@]}"
 else

@@ -1,9 +1,20 @@
 #!/bin/bash
 
-# _staking_deposit_cli.sh
+# _staking-deposit-cli.sh
 #
 # Common subroutines used with the EthStaker Deposit CLI.
 # Not meant to be run as a top-level script.
+
+# externs; suppress unassigned
+declare -g this_dir
+declare -g ethstaker_deposit_cli_basename
+declare -g ethstaker_deposit_cli_basename_sha256
+declare -g ethstaker_deposit_cli_sha256_url
+declare -g ethstaker_deposit_cli_sha256_checksum
+declare -g theme_command
+declare -g theme_value
+declare -g theme_filename
+declare -g color_reset
 
 function staking_deposit_cli__preconditions() {
 	assert_offline
@@ -15,16 +26,23 @@ function staking_deposit_cli__preconditions() {
 	check_is_defined ethstaker_deposit_cli_version
 	check_is_defined ethstaker_deposit_cli_sha256_checksum
 	check_is_defined ethstaker_deposit_cli_url
+	print_failed_checks --error || return
 
 	deposit_cli="$this_dir/$ethstaker_deposit_cli_basename"
 	deposit_cli_sha256="$this_dir/$ethstaker_deposit_cli_basename_sha256"
 
+	reset_checks
 	check_file_exists --sudo deposit_cli
 	check_file_exists --sudo deposit_cli_sha256
 	print_failed_checks --error || return
 }
 
 function staking_deposit_cli__reconnaissance() {
+	reset_checks
+	check_is_defined ethstaker_deposit_cli_sha256_url
+	check_is_defined ethstaker_deposit_cli_sha256_checksum
+	print_failed_checks --error || return
+
 	printf '%s\n  %s\n' \
 		"Using an online PC, please run:" \
 		"${theme_command}wget -qO - '$ethstaker_deposit_cli_sha256_url' | cat${color_reset}"
@@ -44,7 +62,8 @@ function staking_deposit_cli__unpack_tarball() {
 
 	# copy to the temp dir and chown it all
 	# (assume curdir is temp dir)
-	local dest_dir="$(pwd)"
+	local dest_dir
+	dest_dir="$(pwd)"
 	cp -f "$deposit_cli" "$dest_dir"
 	cp -f "$deposit_cli_sha256" "$dest_dir"
 	sudo chown -R "$USER:$USER" "$dest_dir"
@@ -60,7 +79,9 @@ function staking_deposit_cli__unpack_tarball() {
 	printf '\n'
 
 	local deposit_cli_dir="${dest_dir}/${ethstaker_deposit_cli_basename%%.*}"
-	deposit_cli_bin="$deposit_cli_dir/deposit"
+	
+	declare -g deposit_cli_bin
+	export deposit_cli_bin="$deposit_cli_dir/deposit"
 
 	# verify extraction success
 	reset_checks

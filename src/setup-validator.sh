@@ -10,15 +10,14 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --unit-file-only   If present, only generate the unit file
 		  --help, -h         Show this message
 	EOF
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='help,unit-file-only' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -111,6 +110,7 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
+declare latest_prysm_version
 get_latest_prysm_version latest_prysm_version
 
 prysm_validator_mevboost_opt=""

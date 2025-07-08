@@ -10,7 +10,7 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 			--dry-run   Perform a dry-run of the rsync transfers
 			--usb       Deploy to the USB 'DATA' drive. Omit to deploy to the node server instead
 			--help, -h  Show this message
@@ -18,8 +18,7 @@ function show_usage() {
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='help,dry-run,usb' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -118,9 +117,10 @@ press_any_key_to_continue
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 if [[ $usb_mode == true ]]; then
+	declare latest_deposit_cli_version
 	get_latest_deposit_cli_version latest_deposit_cli_version
 
-	if [[ $latest_deposit_cli_version != $ethstaker_deposit_cli_version ]]; then
+	if [[ $latest_deposit_cli_version != "$ethstaker_deposit_cli_version" ]]; then
 		printerr "latest version is different than expected ($ethstaker_deposit_cli_version)"
 		printerr "update the ${color_lightgray}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} and relaunch this script"
 		exit 1
@@ -129,7 +129,7 @@ if [[ $usb_mode == true ]]; then
 
 	printinfo "Verifying ${theme_value}ethstaker-deposit-cli${color_reset} SHA256 checksum of the release page matches our saved value..."
 	fetched_ethstaker_deposit_cli_sha265="$(wget -qO - "$ethstaker_deposit_cli_sha256_url" | cat)"
-	if [[ $fetched_ethstaker_deposit_cli_sha265 != $ethstaker_deposit_cli_sha256_checksum ]]; then
+	if [[ $fetched_ethstaker_deposit_cli_sha265 != "$ethstaker_deposit_cli_sha256_checksum" ]]; then
 		printerr "Found: $fetched_ethstaker_deposit_cli_sha265\nExpected: $ethstaker_deposit_cli_sha256_checksum\n" \
 			"Ensure that ${theme_value}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		exit 1
@@ -253,6 +253,7 @@ fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
+# shellcheck disable=SC2034  # suppress unused
 if [[ $usb_mode == true ]]; then
 	reset_checks
 	deposit_cli_dest="$usb_dist_dir/$ethstaker_deposit_cli_basename"

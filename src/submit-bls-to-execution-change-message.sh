@@ -18,19 +18,16 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --path value   Path to the signed withdrawal message JSON
 		  --help, -h     Show this message
 	EOF
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='help,path:' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
-
-mnemonic=''
 
 while true; do
 	case "$1" in
@@ -128,5 +125,6 @@ sudo -u "$prysmctl_user" "$prysmctl_bin" validator withdraw \
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
+declare base_url
 beaconchain_base_url "$ethereum_network" base_url
 echo "To confirm on-chain, browse to ${theme_url}$base_url/validator/[pubkey or index]${color_reset} and check that your validator(s) have withdrawal credentials prefixed with \`0x01\`."

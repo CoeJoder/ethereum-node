@@ -6,11 +6,11 @@ this_dir="$(dirname "$(realpath "$0")")"
 source "$this_dir/../src/common.sh"
 
 temp_dir=$(mktemp -d)
-pushd "$temp_dir" >/dev/null
+pushd "$temp_dir" >/dev/null || exit
 
 function on_exit() {
 	printinfo -n "Cleaning up..."
-	popd >/dev/null
+	popd >/dev/null || return
 	[[ -d $temp_dir ]] && sudo rm -rf --interactive=never "$temp_dir" >/dev/null
 	print_ok
 }
@@ -315,15 +315,14 @@ function test_continue_or_exit() {
 
 	for ((i = 0; i < ${#yeses[@]}; i++)); do
 		curtest=${yeses[i]}
-		$(echo "$curtest" | continue_or_exit 3)
-		if [[ $? -ne 0 ]]; then
+		if ! echo "$curtest" | continue_or_exit 3; then
 			failures+=("Expected 'yes' (${curtest:-"<blank>"})")
 		fi
 	done
 
 	for ((i = 0; i < ${#nos[@]}; i++)); do
 		curtest=${nos[i]}
-		$(echo "$curtest" | continue_or_exit 3)
+		echo "$curtest" | continue_or_exit 3
 		if [[ $? -ne 3 ]]; then
 			failures+=("Expected 'no' (${curtest:-"<blank>"})")
 		fi
@@ -332,8 +331,8 @@ function test_continue_or_exit() {
 
 # tests for `get_latest_prysm_version()` in common.sh
 function test_get_latest_prysm_version() {
-	local pversion
-	if ! get_latest_prysm_version pversion &>/dev/null; then
+	local _
+	if ! get_latest_prysm_version _ &>/dev/null; then
 		failures+=("failed to get latest prysm version")
 	fi
 }
@@ -344,7 +343,7 @@ function test_download_prysm() {
 	local expected="${program}-${version}-linux-amd64" actual
 	if ! download_prysm $program $version actual; then
 		failures+=("failed to download prysm")
-	elif [[ $expected != $actual ]]; then
+	elif [[ $expected != "$actual" ]]; then
 		failures+=("expected: $expected, actual: $actual")
 	elif [[ ! -f $expected ]]; then
 		failures+=("downloaded file not found: $expected")
@@ -362,7 +361,7 @@ function test_download_ethdo() {
 	local expected='ethdo-1.37.4-linux-amd64.tar.gz' actual
 	if ! download_wealdtech ethdo $version $sha256 actual; then
 		failures+=("failed to download ethdo")
-	elif [[ $expected != $actual ]]; then
+	elif [[ $expected != "$actual" ]]; then
 		failures+=("expected: $expected, actual: $actual")
 	elif [[ ! -f $expected ]]; then
 		failures+=("downloaded file not found: $expected")
@@ -374,7 +373,7 @@ function test_download_ethereal() {
 	local expected='ethereal-2.11.5-linux-amd64.tar.gz' actual
 	if ! download_wealdtech ethereal $version $sha256 actual; then
 		failures+=("failed to download ethereal")
-	elif [[ $expected != $actual ]]; then
+	elif [[ $expected != "$actual" ]]; then
 		failures+=("expected: $expected, actual: $actual")
 	elif [[ ! -f $expected ]]; then
 		failures+=("downloaded file not found: $expected")
@@ -386,7 +385,7 @@ function test_download_mevboost() {
 	local expected='mev-boost_1.9_linux_amd64.tar.gz' actual
 	if ! download_mevboost $version $sha256 actual; then
 		failures+=("failed to download mevboost")
-	elif [[ $expected != $actual ]]; then
+	elif [[ $expected != "$actual" ]]; then
 		failures+=("expected: $expected, actual: $actual")
 	elif [[ ! -f $expected ]]; then
 		failures+=("downloaded file not found: $expected")
@@ -395,19 +394,19 @@ function test_download_mevboost() {
 
 # test for check_directory_does_not_exist() in common.sh
 function test_check_directory_does_not_exist() {
-	local exists=(
+	local exists_arr=(
 		'./tempdir1/'
 		'./tempdir2/zebra'
 	)
-	local exists_root=(
+	local exists_root_arr=(
 		'./tempdir3/'
 		'./tempdir4/zebra'
 	)
-	local not_exist=(
+	local not_exist_arr=(
 		'./tempdir5/'
 		'./tempdir6/zebra'
 	)
-	local not_exist_root=(
+	local not_exist_root_arr=(
 		'./tempdir7/'
 		'./tempdir8/zebra'
 	)
@@ -415,37 +414,37 @@ function test_check_directory_does_not_exist() {
 
 	# exists
 	reset_checks
-	len=${#exists[@]}
+	len=${#exists_arr[@]}
 	for ((i = 0; i < len; i++)); do
-		curtest="${exists[i]}"
+		curtest="${exists_arr[i]}"
 		mkdir -p "$curtest"
 		check_directory_does_not_exist curtest
 	done
-	_expect_checkfailures $len
+	_expect_checkfailures "$len"
 
 	# exists, owned by root
 	reset_checks
-	len=${#exists_root[@]}
+	len=${#exists_root_arr[@]}
 	for ((i = 0; i < len; i++)); do
-		curtest="${exists_root[i]}"
+		curtest="${exists_root_arr[i]}"
 		sudo mkdir -p "$curtest"
 		check_directory_does_not_exist --sudo curtest
 	done
-	_expect_checkfailures $len
+	_expect_checkfailures "$len"
 
 	# not exist
 	reset_checks
-	len=${#not_exist[@]}
+	len=${#not_exist_arr[@]}
 	for ((i = 0; i < len; i++)); do
-		curtest="${not_exist[i]}"
+		curtest="${not_exist_arr[i]}"
 		check_directory_does_not_exist curtest
 	done
 	_dont_expect_checkfailures
 
 	# not exist, owned by root
 	reset_checks
-	for ((i = 0; i < ${#not_exist_root[@]}; i++)); do
-		curtest="${not_exist_root[i]}"
+	for ((i = 0; i < ${#not_exist_root_arr[@]}; i++)); do
+		curtest="${not_exist_root_arr[i]}"
 		check_directory_does_not_exist --sudo curtest
 	done
 	_dont_expect_checkfailures
@@ -453,19 +452,19 @@ function test_check_directory_does_not_exist() {
 
 # test for check_directory_exists() in common.sh
 function test_check_directory_exists() {
-	local exists=(
+	local exists_arr=(
 		'./tempdir1/'
 		'./tempdir2/zebra'
 	)
-	local exists_root=(
+	local exists_root_arr=(
 		'./tempdir3/'
 		'./tempdir4/zebra'
 	)
-	local not_exist=(
+	local not_exist_arr=(
 		'./tempdir5/'
 		'./tempdir6/zebra'
 	)
-	local not_exist_root=(
+	local not_exist_root_arr=(
 		'./tempdir7/'
 		'./tempdir8/zebra'
 	)
@@ -473,9 +472,9 @@ function test_check_directory_exists() {
 
 	# exists
 	reset_checks
-	len=${#exists[@]}
+	len=${#exists_arr[@]}
 	for ((i = 0; i < len; i++)); do
-		curtest="${exists[i]}"
+		curtest="${exists_arr[i]}"
 		mkdir -p "$curtest"
 		check_directory_exists curtest
 	done
@@ -483,9 +482,9 @@ function test_check_directory_exists() {
 
 	# exists, owned by root
 	reset_checks
-	len=${#exists_root[@]}
+	len=${#exists_root_arr[@]}
 	for ((i = 0; i < len; i++)); do
-		curtest="${exists_root[i]}"
+		curtest="${exists_root_arr[i]}"
 		sudo mkdir -p "$curtest"
 		check_directory_exists --sudo curtest
 	done
@@ -493,21 +492,21 @@ function test_check_directory_exists() {
 
 	# not exist
 	reset_checks
-	len=${#not_exist[@]}
+	len=${#not_exist_arr[@]}
 	for ((i = 0; i < len; i++)); do
-		curtest="${not_exist[i]}"
+		curtest="${not_exist_arr[i]}"
 		check_directory_exists curtest
 	done
-	_expect_checkfailures $len
+	_expect_checkfailures "$len"
 
 	# not exist, owned by root
 	reset_checks
-	len=${#not_exist_root[@]}
-	for ((i = 0; i < $len; i++)); do
-		curtest="${not_exist_root[i]}"
+	len=${#not_exist_root_arr[@]}
+	for ((i = 0; i < len; i++)); do
+		curtest="${not_exist_root_arr[i]}"
 		check_directory_exists --sudo curtest
 	done
-	_expect_checkfailures $len
+	_expect_checkfailures "$len"
 }
 
 # test for check_file_does_not_exist() in common.sh
@@ -699,7 +698,7 @@ function test_check_is_valid_ipv4_address() {
 		curtest="${invalid[i]}"
 		check_is_valid_ipv4_address curtest
 	done
-	_expect_checkfailures $len
+	_expect_checkfailures "$len"
 }
 
 # -------------------------- TEST DRIVER --------------------------------------

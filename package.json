@@ -12,7 +12,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "lint": "./test/lint.sh",
+    "test": "./test/tests.sh"
   },
   "devDependencies": {
     "@types/hast": "^3.0.4",

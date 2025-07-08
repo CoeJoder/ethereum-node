@@ -17,7 +17,7 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) outfile
+		Usage: $(basename "${BASH_SOURCE[0]}") outfile
 	EOF
 }
 

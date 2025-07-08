@@ -19,7 +19,7 @@ housekeeping
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage:
-		  $(basename ${BASH_SOURCE[0]}) [options] validator1 [validator2 ...]
+		  $(basename "${BASH_SOURCE[0]}") [options] validator1 [validator2 ...]
 		Options:
 		  --no-banner   Do not show banner
 		  --help, -h    Show this message
@@ -27,8 +27,7 @@ function show_usage() {
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='no-banner,help' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -91,6 +90,7 @@ if [[ $no_banner == false ]]; then
 
 	# -------------------------- PREAMBLE -----------------------------------------
 
+	declare base_url
 	beaconchain_base_url "$ethereum_network" base_url
 
 	cat <<-EOF
@@ -222,10 +222,10 @@ EOF
 )
 
 if ((${#time_since_until[@]} % 3 != 0)); then
-	printerr "Expected output chunks of length = 3 but found:\n${time_since_until[@]}"
+	printerr "Expected output chunks of length = 3 but found:\n${time_since_until[*]}"
 	exit 1
 fi
-for ((i = 0; i < ${#time_since_until[@]}; ((i += 3)))); do
+for ((i = 0; i < ${#time_since_until[@]}; i += 3)); do
 	cat <<-EOF
 
 		Target validator: ${theme_value}${time_since_until[i]}${color_reset}

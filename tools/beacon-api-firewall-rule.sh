@@ -17,7 +17,7 @@ housekeeping
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage:
-		  $(basename ${BASH_SOURCE[0]}) [options] command
+		  $(basename "${BASH_SOURCE[0]}") [options] command
 		Options:
 		  --address value   Target IP address.  Omit to use local interface address
 		  --help, -h        Show this message
@@ -28,8 +28,7 @@ function show_usage() {
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='address:,help' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -70,7 +69,7 @@ while (($#)); do
 		shift 1
 		;;
 	*)
-		printerr "unknown command: $1"
+		[[ -n $1 ]] && printerr "unknown command: $1"
 		exit 1
 		;;
 	esac

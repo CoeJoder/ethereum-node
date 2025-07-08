@@ -50,7 +50,7 @@ function find_available_env_filename() {
 	curfile="env.${network}.sh"
 	for i in {1..9}; do
 		if [[ ! -f "$src_dir/$curfile" ]]; then
-			printf -v $outvar "$curfile"
+			printf -v "$outvar" "%s" "$curfile"
 			return 0
 		fi
 		curfile="env.${network}.${i}.sh"
@@ -64,13 +64,17 @@ function shorten_path() {
 		return 2
 	fi
 	local filepath="$1" outvar="$2"
-	printf -v $outvar "$(basename "$(dirname "$filepath")")/$(basename "$filepath")"
+	printf -v "$outvar" "%s" "$(basename "$(dirname "$filepath")")/$(basename "$filepath")"
 }
 
 # generate an env based on network
-choose_from_menu "Select network:" chosen_network "$testnet" "$mainnet"
 env_sh_basename="env.sh"
 env_sh="$src_dir/$env_sh_basename"
+
+declare chosen_network
+choose_from_menu "Select network:" chosen_network "$testnet" "$mainnet"
+
+declare env_sh_shortened
 shorten_path "$env_sh" env_sh_shortened
 
 # if filename exists and user rejects overwrite, suggest alt filename
@@ -94,13 +98,22 @@ printf '\n'
 
 trap 'on_err_noretry' ERR
 
+# seed the environment with base values
+# shellcheck source=../src/env.sh
 source "$env_base_sh"
+
 cat <<EOF >"$env_sh"
 #!/bin/bash
 
 # Environment Variables
 #
 # Custom variable values which will override the defaults in $(basename "$env_base_sh")
+
+# this file is sourced, so \`export\` is not required
+# shellcheck disable=SC2034
+
+# externs; suppress unassigned
+declare -g dist_dirname
 
 # your Ethereum wallet addresses
 suggested_fee_recipient=''

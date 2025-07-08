@@ -7,7 +7,7 @@
 # Should be `source`d to run in the caller's shell.
 
 _dist_dirname='ethereum-node'
-if [[ $(basename "$(pwd)") == $_dist_dirname ]]; then
+if [[ $(basename "$(pwd)") == "$_dist_dirname" ]]; then
 	cd ..
 fi
 if [[ -d $_dist_dirname ]]; then

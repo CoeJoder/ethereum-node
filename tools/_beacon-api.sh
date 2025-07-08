@@ -5,6 +5,12 @@
 # A function library for querying the Beacon Node API.
 # Not meant to be run as a top-level script.
 
+# externs; suppress unassigned
+declare -g node_server_ssh_port
+declare -g node_server_username
+declare -g node_server_hostname
+declare -g prysm_validator_beacon_rest_api_endpoint
+
 function beacon_api__preconditions() {
 	reset_checks
 	check_is_valid_port node_server_ssh_port
@@ -15,7 +21,8 @@ function beacon_api__preconditions() {
 }
 
 function beacon_api__reconnaissance() {
-	node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
+	declare -g node_server_ssh_endpoint
+	export node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
 }
 
 function beacon_api__get() {
@@ -24,9 +31,9 @@ function beacon_api__get() {
 		return 1
 	fi
 	local query="$1"
-	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
+	ssh -p "$node_server_ssh_port" "$node_server_ssh_endpoint" "
 		curl -LSsX 'GET' -H 'Accept: application/json' \
-			"${prysm_validator_beacon_rest_api_endpoint}${query}"
+			${prysm_validator_beacon_rest_api_endpoint}${query}
 	"
 }
 

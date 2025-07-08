@@ -22,22 +22,21 @@ set_env
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --mnemonic value                Mnemonic used to generate the validator keys.  Omit to be prompted for it instead
 		  --validator_pubkeys value       Validator public keys, comma-separated
 		  --validator_start_index value   Search start index, 0-based
 		  --num_validators value          Number of keys to search
-			--deposit_cli value             Path to the extracted deposit-cli binary (optional)
-			--outfile value                 File to save results in (optional)
-			--no_logging                    If present, stdout/stderr is not tee'd out to the log file
-			--no_banner                     If present, banner is not displayed
+		  --deposit_cli value             Path to the extracted deposit-cli binary (optional)
+		  --outfile value                 File to save results in (optional)
+		  --no_logging                    If present, stdout/stderr is not tee'd out to the log file
+		  --no_banner                     If present, banner is not displayed
 		  --help, -h                      Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='help,no_logging,no_banner,mnemonic:,validator_pubkeys:,validator_start_index:,num_validators:,deposit_cli:,outfile:' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+_parsed_args=$(getopt --apples --options='h' --longoptions='help,no_logging,no_banner,mnemonic:,validator_pubkeys:,validator_start_index:,num_validators:,deposit_cli:,outfile:' \
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -93,7 +92,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		[[ -n $1 ]] && printerr "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -227,8 +226,8 @@ validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 "$deposit_cli_bin" --language=English --non_interactive existing-mnemonic \
 	--mnemonic="$mnemonic" \
 	--keystore_password=passworddoesntmatter \
-	--validator_start_index=$validator_start_index \
-	--num_validators=$num_validators \
+	--validator_start_index="$validator_start_index" \
+	--num_validators="$num_validators" \
 	--chain="$ethereum_network" \
 	--withdrawal_address='' \
 	--folder="$validator_keys_parent_dir" >/dev/null
@@ -268,7 +267,7 @@ if [[ $num_found -ne 0 ]]; then
 	done
 	if [[ -n $indices_outfile ]]; then
 		# ensure empty
-		>"$indices_outfile"
+		: >"$indices_outfile"
 		# numeric-string, null-delimited array sort
 		readarray -td '' indices_found_sorted < <(printf '%s\0' "${indices_found[@]}" | sort -z -n)
 		for index_found in "${indices_found_sorted[@]}"; do
@@ -284,7 +283,7 @@ num_not_found=${#pubkeys_not_found[@]}
 if [[ $num_not_found -ne 0 ]]; then
 	printwarn "Not found:"
 	for pubkey_not_found in "${pubkeys_not_found[@]}"; do
-		echo "  $pubkeys_not_found" >&2
+		echo "  $pubkey_not_found" >&2
 	done
 	exit 1
 fi

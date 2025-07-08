@@ -92,6 +92,7 @@ sudo ufw status
 # -------------------------- POSTCONDITIONS -----------------------------------
 
 assert_sudo
+# shellcheck disable=SC2034  # suppress unused
 ufw_status=$(sudo ufw status | awk -F' ' '{print $1" "$2}')
 
 reset_checks

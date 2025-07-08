@@ -5,6 +5,11 @@
 # Common subroutines used with portable `jq` downloaded on the `DATA` drive.
 # Not meant to be run as a top-level script.
 
+# externs; suppress unassigned
+declare -g usb_dist_dir
+declare -g jq_bin_dist
+declare -g jq_bin_sha256_dist
+
 function portable_jq__preconditions() {
 	assert_sudo
 

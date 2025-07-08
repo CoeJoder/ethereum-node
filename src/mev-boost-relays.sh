@@ -31,7 +31,8 @@ mevboost_relay_hoodi_flashbots='https://0xafa4c6985aa049fb79dd37010438cfebeb0f2b
 # -----------------------------------------------------------------------------
 
 # all mainnet relays
-mevboost_relays_mainnet=(
+declare -g mevboost_relays_mainnet
+export mevboost_relays_mainnet=(
 	"$mevboost_relay_mainnet_bloxroute_maxprofit"
 	"$mevboost_relay_mainnet_bloxroute_regulated"
 	"$mevboost_relay_mainnet_titan_relay_us_regional"
@@ -39,6 +40,7 @@ mevboost_relays_mainnet=(
 )
 
 # all testnet relays
-mevboost_relays_testnet=(
+declare -g mevboost_relays_testnet
+export mevboost_relays_testnet=(
 	"$mevboost_relay_hoodi_flashbots"
 )

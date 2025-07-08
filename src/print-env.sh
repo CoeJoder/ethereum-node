@@ -2,7 +2,7 @@
 
 # -------------------------- HEADER -------------------------------------------
 
-this_dir="$(realpath $(dirname ${BASH_SOURCE[0]}))"
+this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 source "$this_dir/common.sh"
 housekeeping
 

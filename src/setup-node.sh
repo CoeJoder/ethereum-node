@@ -10,15 +10,14 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --unit-files-only   If present, only the unit files are generated
 		  --help, -h          Show this message
 	EOF
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='help,unit-files-only' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -147,6 +146,7 @@ if [[ $geth_history_chain_postmerge_only == true ]]; then
 	geth_history_chain="postmerge"
 fi
 
+declare latest_prysm_version
 get_latest_prysm_version latest_prysm_version
 
 prysm_beacon_cpsync_opts=""

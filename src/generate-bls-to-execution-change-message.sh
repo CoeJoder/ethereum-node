@@ -20,15 +20,14 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --mnemonic value   Mnemonic used to generate the validator keys. Omit to be prompted for it instead
 		  --help, -h         Show this message
 	EOF
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='help,mnemonic:' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -49,7 +48,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		[[ -n $1 ]] && printerr "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -179,7 +178,7 @@ arr_indexes=()
 for i in "${!chosen_indices[@]}"; do
 	arr_index=''
 	for j in "${!indices[@]}"; do
-		if [[ ${chosen_indices[i]} == ${indices[j]} ]]; then
+		if [[ ${chosen_indices[i]} == "${indices[j]}" ]]; then
 			arr_index="$j"
 			break
 		fi
@@ -236,7 +235,7 @@ while read -r index pubkey; do
 	if [[ -n $index && -n $pubkey ]]; then
 		# NOTE: pubkey_map[i] = <beacon-index[i]> <bls-withdrawal-credentials[i]>
 		pubkey_map_entry="${pubkey_map[$pubkey]}"
-		read beacon_index bls_withdrawal_credential <<<"$pubkey_map_entry"
+		IFS= read -r beacon_index bls_withdrawal_credential <<<"$pubkey_map_entry"
 		final_pubkeys+=("$pubkey")
 		final_beacon_indices+=("$beacon_index")
 		final_bls+=("$bls_withdrawal_credential")
@@ -287,7 +286,7 @@ continue_or_exit
 	--withdrawal_address="$withdrawal" \
 	--bls_to_execution_changes_folder="$usb_bls_to_execution_changes_parent_dir" \
 	--bls_withdrawal_credentials_list="$final_bls_csv" \
-	--validator_start_index=$validator_start_index \
+	--validator_start_index="$validator_start_index" \
 	--validator_indices="$final_beacon_indices_csv" \
 	--chain="$ethereum_network"
 

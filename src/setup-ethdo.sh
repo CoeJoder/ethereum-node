@@ -57,15 +57,17 @@ press_any_key_to_continue
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 # check for latest versions
+declare latest_ethdo_version
+declare latest_ethereal_version
 get_latest_ethdo_version latest_ethdo_version
 get_latest_ethereal_version latest_ethereal_version
 
 _new_version_detected=false
-if [[ $ethdo_version != $latest_ethdo_version ]]; then
+if [[ $ethdo_version != "$latest_ethdo_version" ]]; then
 	_new_version_detected=true
 	printwarn "New version of ethdo detected: ${theme_value}$latest_ethdo_version${color_reset}"
 fi
-if [[ $ethereal_version != $latest_ethereal_version ]]; then
+if [[ $ethereal_version != "$latest_ethereal_version" ]]; then
 	_new_version_detected=true
 	printwarn "New version of ethereal detected: ${theme_value}$latest_ethereal_version${color_reset}"
 fi

@@ -73,7 +73,7 @@ sudo chown -R "$USER:$USER" "$usb_dist_dir"
 sudo chmod 700 "$usb_dist_dir"
 cd "$usb_dist_dir" >/dev/null
 
-# search for bls messages
+# search for bls messages, sorted by most-recently-modified
 printinfo "Searching for \`bls-to-execution-change\` messages on \`DATA\` drive..."
 readarray -td '' bls_messages < <(LC_ALL=C find \
 	"$usb_bls_to_execution_changes_dir" -maxdepth 1 -name \

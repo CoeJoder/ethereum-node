@@ -19,15 +19,14 @@ housekeeping
 
 function show_usage() {
 	cat >&2 <<-EOF
-		Usage: $(basename ${BASH_SOURCE[0]}) [options]
+		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --mnemonic value   Mnemonic used to generate the validator keys. Omit to be prompted for it instead
 		  --help, -h         Show this message
 	EOF
 }
 
 _parsed_args=$(getopt --options='h' --longoptions='help,mnemonic:' \
-	--name "$(basename ${BASH_SOURCE[0]})" -- "$@")
-(($? != 0)) && exit 1
+	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
@@ -67,6 +66,7 @@ print_failed_checks --error
 staking_deposit_cli__preconditions
 portable_jq__preconditions
 
+# shellcheck disable=SC2034  # suppress unused
 usb_bls_to_execution_changes_parent_dir="$(dirname "$usb_bls_to_execution_changes_dir")"
 
 reset_checks
@@ -176,9 +176,6 @@ if ! "$this_dir/find-validator-key-indices.sh" \
 fi
 # read the sorted lines, which should be of the format: <index> <pubkey>
 # and populate the final arrays
-final_pubkeys=()
-final_beacon_indices=()
-final_bls=()
 highest_validator_index=''
 highest_validator_pubkey=''
 while read -r index pubkey; do

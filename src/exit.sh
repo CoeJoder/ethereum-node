@@ -25,6 +25,7 @@ check_is_valid_ethereum_network ethereum_network
 check_executable_exists --sudo prysmctl_bin
 check_directory_exists --sudo prysm_validator_wallet_dir
 check_file_exists --sudo prysm_validator_wallet_password_file
+# shellcheck disable=SC2043  # single-iteration loop
 for _command in jq; do
 	check_command_exists_on_path _command
 done
@@ -84,6 +85,7 @@ echo "$active_validators" >&2
 
 # ask for comma-separated list of the public hex keys of the validators to exit
 echo -e "\nEnter a comma-separated list of validator public keys (e.g., ${theme_example}0xABC123,0xDEF456${color_reset}) or ${theme_example}all${color_reset}."
+declare chosen_pubkeys_csv
 read_default "Validators to exit" "all" chosen_pubkeys_csv
 if [[ $chosen_pubkeys_csv == "all" ]]; then
 	prysm_param_validators="--exit-all"
@@ -120,6 +122,6 @@ sudo -u "$prysm_validator_user" "$prysmctl_bin" validator exit \
 	--accept-terms-of-use \
 	--force-exit \
 	--${ethereum_network} \
-	$prysm_param_validators
+	"$prysm_param_validators"
 
 # -------------------------- POSTCONDITIONS -----------------------------------
