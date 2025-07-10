@@ -25,7 +25,7 @@ function reset_test_failures() {
 	failures=()
 }
 
-function print_test_failures() {
+function print_test_results() {
 	local failcount=${#failures[@]}
 	local i
 	if [[ $failcount -eq 0 ]]; then
@@ -43,7 +43,7 @@ function print_test_failures() {
 function run_test() {
 	printinfo -n "Running: ${color_lightgray}$1${color_reset}..."
 	"$1"
-	print_test_failures
+	print_test_results
 }
 
 #
