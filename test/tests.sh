@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# tests.sh
+#
+# Runs unit and integration tests.
+
 # -------------------------- HEADER -------------------------------------------
 
 this_dir="$(dirname "$(realpath "$0")")"
