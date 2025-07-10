@@ -178,7 +178,7 @@ fi
 # and populate the final arrays
 highest_validator_index=''
 highest_validator_pubkey=''
-while read -r index pubkey; do
+while IFS= read -r index pubkey; do
 	if [[ -n $index && -n $pubkey ]]; then
 		highest_validator_index="$index"
 		highest_validator_pubkey="$pubkey"
