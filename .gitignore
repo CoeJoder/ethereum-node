@@ -86,6 +86,7 @@
 !src/setup-validator.sh
 !src/submit-bls-to-execution-change-message.sh
 !src/update.sh
+!src/update-unit-files.sh
 
 !test/
 !test/lint.sh
