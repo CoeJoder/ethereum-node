@@ -12,17 +12,17 @@ housekeeping
 function show_usage() {
 	cat >&2 <<-EOF
 		Usage: $(basename "${BASH_SOURCE[0]}") [options]
-		  --unit-files-only   If present, only the unit files are generated
+		  --unit-file-only   If present, only the unit files are generated
 		  --help, -h          Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='help,unit-files-only' \
+_parsed_args=$(getopt --options='h' --longoptions='help,unit-file-only' \
 	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
-unit_files_only=false
+unit_file_only=false
 
 while true; do
 	case "$1" in
@@ -30,8 +30,8 @@ while true; do
 		show_usage
 		exit 0
 		;;
-	--unit-files-only)
-		unit_files_only=true
+	--unit-file-only)
+		unit_file_only=true
 		shift
 		;;
 	--)
@@ -52,7 +52,7 @@ assert_sudo
 
 reset_checks
 
-if [[ $unit_files_only == true ]]; then
+if [[ $unit_file_only == true ]]; then
 	check_executable_exists --sudo mevboost_bin
 	check_user_exists mevboost_user
 	check_group_exists mevboost_group
@@ -167,7 +167,7 @@ trap 'on_exit' EXIT
 
 assert_sudo
 
-if [[ $unit_files_only == false ]]; then
+if [[ $unit_file_only == false ]]; then
 	# mevboost filesystem
 	printinfo "Setting up MEV-Boost user and group..."
 	sudo useradd --no-create-home --shell /bin/false "$mevboost_user"
@@ -215,7 +215,7 @@ assert_sudo
 
 reset_checks
 
-if [[ $unit_files_only == false ]]; then
+if [[ $unit_file_only == false ]]; then
 	check_executable_exists --sudo mevboost_bin
 	check_user_exists mevboost_user
 	check_group_exists mevboost_group
@@ -225,7 +225,7 @@ check_file_exists --sudo mevboost_unit_file
 
 print_failed_checks --error
 
-if [[ $unit_files_only == false ]]; then
+if [[ $unit_file_only == false ]]; then
 	cat <<-EOF
 
 	Success!  You are now ready to enable the MEV-Boost service.
