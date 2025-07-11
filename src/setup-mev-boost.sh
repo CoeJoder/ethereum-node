@@ -13,16 +13,18 @@ function show_usage() {
 	cat >&2 <<-EOF
 		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --unit-file-only   If present, only the unit files are generated
-		  --help, -h          Show this message
+		  --no-banner        If present, banner is not displayed
+		  --help, -h         Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='help,unit-file-only' \
+_parsed_args=$(getopt --options='h' --longoptions='help,unit-file-only,no-banner' \
 	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
 unit_file_only=false
+no_banner=false
 
 while true; do
 	case "$1" in
@@ -32,6 +34,10 @@ while true; do
 		;;
 	--unit-file-only)
 		unit_file_only=true
+		shift
+		;;
+	--no-banner)
+		no_banner=true
 		shift
 		;;
 	--)
@@ -75,33 +81,35 @@ print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -en "${color_green}${bold}"
-cat <<'EOF'
-              __                                                           
-             /\ \__                                                        
-  ____     __\ \ ,_\  __  __  _____              ___ ___      __   __  __  
- /',__\  /'__`\ \ \/ /\ \/\ \/\ '__`\  _______ /' __` __`\  /'__`\/\ \/\ \ 
-/\__, `\/\  __/\ \ \_\ \ \_\ \ \ \L\ \/\______\/\ \/\ \/\ \/\  __/\ \ \_/ |
-\/\____/\ \____\\ \__\\ \____/\ \ ,__/\/______/\ \_\ \_\ \_\ \____\\ \___/ 
- \/___/  \/____/ \/__/ \/___/  \ \ \/           \/_/\/_/\/_/\/____/ \/__/  
-                                \ \_\                                      
-                                 \/_/                                      
-        __                               __                                
-       /\ \                             /\ \__                             
-       \ \ \____    ___     ___     ____\ \ ,_\                            
- _______\ \ '__`\  / __`\  / __`\  /',__\\ \ \/                            
-/\______\\ \ \L\ \/\ \L\ \/\ \L\ \/\__, `\\ \ \_                           
-\/______/ \ \_,__/\ \____/\ \____/\/\____/ \ \__\                          
-           \/___/  \/___/  \/___/  \/___/   \/__/                          
-EOF
-echo -en "${color_reset}"
+if [[ $no_banner == false ]]; then
+	echo -en "${color_green}${bold}"
+	cat <<-'EOF'
+								__                                                           
+							/\ \__                                                        
+		____     __\ \ ,_\  __  __  _____              ___ ___      __   __  __  
+	/',__\  /'__`\ \ \/ /\ \/\ \/\ '__`\  _______ /' __` __`\  /'__`\/\ \/\ \ 
+	/\__, `\/\  __/\ \ \_\ \ \_\ \ \ \L\ \/\______\/\ \/\ \/\ \/\  __/\ \ \_/ |
+	\/\____/\ \____\\ \__\\ \____/\ \ ,__/\/______/\ \_\ \_\ \_\ \____\\ \___/ 
+	\/___/  \/____/ \/__/ \/___/  \ \ \/           \/_/\/_/\/_/\/____/ \/__/  
+																	\ \_\                                      
+																	\/_/                                      
+					__                               __                                
+				/\ \                             /\ \__                             
+				\ \ \____    ___     ___     ____\ \ ,_\                            
+	_______\ \ '__`\  / __`\  / __`\  /',__\\ \ \/                            
+	/\______\\ \ \L\ \/\ \L\ \/\ \L\ \/\__, `\\ \ \_                           
+	\/______/ \ \_,__/\ \____/\ \____/\/\____/ \ \__\                          
+						\/___/  \/___/  \/___/  \/___/   \/__/                          
+	EOF
+	echo -en "${color_reset}"
+	
+	# -------------------------- PREAMBLE -----------------------------------------
 
-# -------------------------- PREAMBLE -----------------------------------------
-
-cat <<EOF
-Installs MEV-Boost on the node server.
-EOF
-press_any_key_to_continue
+	cat <<-EOF
+	Installs MEV-Boost on the node server.
+	EOF
+	press_any_key_to_continue
+fi
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 

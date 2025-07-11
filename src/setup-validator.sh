@@ -12,16 +12,18 @@ function show_usage() {
 	cat >&2 <<-EOF
 		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --unit-file-only   If present, only generate the unit file
+		  --no-banner        If present, banner is not displayed
 		  --help, -h         Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='help,unit-file-only' \
+_parsed_args=$(getopt --options='h' --longoptions='help,unit-file-only,no-banner' \
 	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
 unit_file_only=false
+no_banner=false
 
 while true; do
 	case "$1" in
@@ -31,6 +33,10 @@ while true; do
 		;;
 	--unit-file-only)
 		unit_file_only=true
+		shift
+		;;
+	--no-banner)
+		no_banner=true
 		shift
 		;;
 	--)
@@ -82,36 +88,40 @@ print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -ne "${color_green}${bold}"
-cat <<'EOF'
-            _____                                         
-______________  /____  _________                          
-__  ___/  _ \  __/  / / /__  __ \_______                  
-_(__  )/  __/ /_ / /_/ /__  /_/ //_____/                  
-/____/ \___/\__/ \__,_/ _  .___/                          
-                        /_/                               
-              ___________________      _____              
-___   _______ ___  /__(_)_____  /_____ __  /______________
-__ | / /  __ `/_  /__  /_  __  /_  __ `/  __/  __ \_  ___/
-__ |/ // /_/ /_  / _  / / /_/ / / /_/ // /_ / /_/ /  /    
-_____/ \__,_/ /_/  /_/  \__,_/  \__,_/ \__/ \____//_/     
-EOF
-echo -ne "${color_reset}"
+if [[ $no_banner == false ]]; then
+	echo -ne "${color_green}${bold}"
+	cat <<-'EOF'
+							_____                                         
+	______________  /____  _________                          
+	__  ___/  _ \  __/  / / /__  __ \_______                  
+	_(__  )/  __/ /_ / /_/ /__  /_/ //_____/                  
+	/____/ \___/\__/ \__,_/ _  .___/                          
+													/_/                               
+								___________________      _____              
+	___   _______ ___  /__(_)_____  /_____ __  /______________
+	__ | / /  __ `/_  /__  /_  __  /_  __ `/  __/  __ \_  ___/
+	__ |/ // /_/ /_  / _  / / /_/ / / /_/ // /_ / /_/ /  /    
+	_____/ \__,_/ /_/  /_/  \__,_/  \__,_/ \__/ \____//_/     
+	EOF
+	echo -ne "${color_reset}"
 
-# -------------------------- PREAMBLE -----------------------------------------
+	# -------------------------- PREAMBLE -----------------------------------------
 
-if [[ $unit_file_only == true ]]; then
-	echo "${theme_value}[UNIT FILE ONLY]${color_reset}"
+	if [[ $unit_file_only == true ]]; then
+		echo "${theme_value}[UNIT FILE ONLY]${color_reset}"
+	fi
+	cat <<-EOF
+	Installs prysm-validator and configures it to run as a service.
+	EOF
+	press_any_key_to_continue
 fi
-cat <<EOF
-Installs prysm-validator and configures it to run as a service.
-EOF
-press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
-declare latest_prysm_version
-get_latest_prysm_version latest_prysm_version
+if [[ $unit_file_only == false ]]; then
+	declare latest_prysm_version
+	get_latest_prysm_version latest_prysm_version
+fi
 
 prysm_validator_mevboost_opt=""
 if [[ $mevboost_enable == true ]]; then

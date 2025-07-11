@@ -12,16 +12,18 @@ function show_usage() {
 	cat >&2 <<-EOF
 		Usage: $(basename "${BASH_SOURCE[0]}") [options]
 		  --unit-files-only   If present, only the unit files are generated
+		  --no-banner         If present, banner is not displayed
 		  --help, -h          Show this message
 	EOF
 }
 
-_parsed_args=$(getopt --options='h' --longoptions='help,unit-files-only' \
+_parsed_args=$(getopt --options='h' --longoptions='help,unit-files-only,no-banner' \
 	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
 
 unit_files_only=false
+no_banner=false
 
 while true; do
 	case "$1" in
@@ -31,6 +33,10 @@ while true; do
 		;;
 	--unit-files-only)
 		unit_files_only=true
+		shift
+		;;
+	--no-banner)
+		no_banner=true
 		shift
 		;;
 	--)
@@ -115,39 +121,43 @@ print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -ne "${color_green}${bold}"
-cat <<'EOF'
-              __                                                 __            
-             /\ \__                                             /\ \           
-  ____     __\ \ ,_\  __  __  _____              ___     ___    \_\ \     __   
- /',__\  /'__`\ \ \/ /\ \/\ \/\ '__`\  _______ /' _ `\  / __`\  /'_` \  /'__`\ 
-/\__, `\/\  __/\ \ \_\ \ \_\ \ \ \L\ \/\______\/\ \/\ \/\ \L\ \/\ \L\ \/\  __/ 
-\/\____/\ \____\\ \__\\ \____/\ \ ,__/\/______/\ \_\ \_\ \____/\ \___,_\ \____\
- \/___/  \/____/ \/__/ \/___/  \ \ \/           \/_/\/_/\/___/  \/__,_ /\/____/
-                                \ \_\                                          
-                                 \/_/                                          
-EOF
-echo -ne "${color_reset}"
+if [[ $no_banner == false ]]; then
+	echo -ne "${color_green}${bold}"
+	cat <<-'EOF'
+								__                                                 __            
+							/\ \__                                             /\ \           
+		____     __\ \ ,_\  __  __  _____              ___     ___    \_\ \     __   
+	/',__\  /'__`\ \ \/ /\ \/\ \/\ '__`\  _______ /' _ `\  / __`\  /'_` \  /'__`\ 
+	/\__, `\/\  __/\ \ \_\ \ \_\ \ \ \L\ \/\______\/\ \/\ \/\ \L\ \/\ \L\ \/\  __/ 
+	\/\____/\ \____\\ \__\\ \____/\ \ ,__/\/______/\ \_\ \_\ \____/\ \___,_\ \____\
+	\/___/  \/____/ \/__/ \/___/  \ \ \/           \/_/\/_/\/___/  \/__,_ /\/____/
+																	\ \_\                                          
+																	\/_/                                          
+	EOF
+	echo -ne "${color_reset}"
 
-# -------------------------- PREAMBLE -----------------------------------------
+	# -------------------------- PREAMBLE -----------------------------------------
 
-if [[ $unit_files_only == true ]]; then
-	echo "${theme_value}[UNIT FILES ONLY]${color_reset}"
+	if [[ $unit_files_only == true ]]; then
+		echo "${theme_value}[UNIT FILES ONLY]${color_reset}"
+	fi
+	cat <<-EOF
+	Installs geth (EL), prysm-beacon (CL), and generates the JWT secret shared between them.  Also configures the EL and CL to run as services.
+	EOF
+	press_any_key_to_continue
 fi
-cat <<EOF
-Installs geth (EL), prysm-beacon (CL), and generates the JWT secret shared between them.  Also configures the EL and CL to run as services.
-EOF
-press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
+
+if [[ $unit_files_only == false ]]; then
+	declare latest_prysm_version
+	get_latest_prysm_version latest_prysm_version
+fi
 
 geth_history_chain="all"
 if [[ $geth_history_chain_postmerge_only == true ]]; then
 	geth_history_chain="postmerge"
 fi
-
-declare latest_prysm_version
-get_latest_prysm_version latest_prysm_version
 
 prysm_beacon_cpsync_opts=""
 if [[ $prysm_beacon_enable_checkpoint_sync == true ]]; then
