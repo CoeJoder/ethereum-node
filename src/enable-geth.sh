@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# enable-geth.sh
+#
+# Starts & enables the geth (EL) service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

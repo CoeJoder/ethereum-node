@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# setup-node.sh
+#
+# Installs & configures geth (EL), prysm-beacon (CL) to run as services.  Also
+# generates the JWT secret shared between them.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e
@@ -142,7 +149,7 @@ if [[ $no_banner == false ]]; then
 		echo "${theme_value}[UNIT FILES ONLY]${color_reset}"
 	fi
 	cat <<-EOF
-	Installs geth (EL), prysm-beacon (CL), and generates the JWT secret shared between them.  Also configures the EL and CL to run as services.
+	Installs & configures geth (EL), prysm-beacon (CL) to run as services.  Also generates the JWT secret shared between them.
 	EOF
 	press_any_key_to_continue
 fi

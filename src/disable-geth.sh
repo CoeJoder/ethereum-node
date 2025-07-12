@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# disable-geth.sh
+#
+# Stops & disables the geth (EL) service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

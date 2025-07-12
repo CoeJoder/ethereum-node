@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# setup-mev-boost.sh
+#
+# Installs & configures the flashbots MEV-Boost client to run as a service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

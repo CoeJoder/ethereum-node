@@ -2,8 +2,8 @@
 
 # update.sh
 #
-# Updates to the latest version all node programs, if installed (geth,
-# prysm-beacon, prysm-validator, prysmctl, ethdo, ethereal, MEV-Boost).
+# Updates to the latest version of all installed node programs (geth, prysm-
+# beacon, prysm-validator, prysmctl, ethdo, ethereal, MEV-Boost).
 #
 # Meant to be run on the node server.
 

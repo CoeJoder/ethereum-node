@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# set-wallet-password.sh
+#
+# Sets the validator wallet password.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

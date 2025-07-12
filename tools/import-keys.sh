@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# import-keys.sh
+#
+# Imports the validator keys from the local 'DATA' flash drive to the node
+# server.
+#
+# Meant to be run on the client PC.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

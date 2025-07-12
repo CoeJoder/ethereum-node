@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# setup-firewall.sh
+#
+# Configures the firewall on the node server to allow only the ports needed for
+# the Ethereum node software and rate-limited SSH access.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

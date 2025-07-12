@@ -2,7 +2,7 @@
 
 # mev-boost-relays.sh
 #
-# List of MEV Boost relays by network.
+# Sets the list of MEV Boost relays into the shell environment.
 # See: https://github.com/ethstaker/ethstaker-guides/blob/main/MEV-relay-list.md
 # 
 # NOTE

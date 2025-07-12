@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# print-env.sh
+#
+# Prints out the project environment variables.
+
 # -------------------------- HEADER -------------------------------------------
 
 this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"

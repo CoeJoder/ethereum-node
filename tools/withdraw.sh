@@ -5,7 +5,7 @@
 # Uploads the `bls-to-execution-change` message from the `DATA` flash drive
 # to the node server, then submits it via prysm-beacon, initiating withdrawal.
 #
-# Meant to be executed on the client PC.
+# Meant to be run on the client PC.
 
 # -------------------------- HEADER -------------------------------------------
 

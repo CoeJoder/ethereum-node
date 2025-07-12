@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# setup-prysmctl.sh
+#
+# Installs & configures the prysmctl utility program.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

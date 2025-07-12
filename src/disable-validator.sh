@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# disable-validator.sh
+#
+# Stops & disables the prysm-validator service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

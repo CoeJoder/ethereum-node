@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# enable-validator.sh
+#
+# Starts & enables the prysm-validator service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

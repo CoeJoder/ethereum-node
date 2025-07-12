@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# setup-ethdo.sh
+#
+# Installs the ethdo & ethereal utility programs.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

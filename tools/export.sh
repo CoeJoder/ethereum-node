@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# export.sh
+#
+# Exports public data about the validators from the node server to the local
+# 'DATA' flash drive.
+#
+# Meant to be run on the client PC.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

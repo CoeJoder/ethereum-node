@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# disable-mev-boost.sh
+#
+# Stops & disables the MEV-Boost service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

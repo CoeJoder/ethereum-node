@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# disable-beacon.sh
+#
+# Stops & disables the prysm-beacon (CL) service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

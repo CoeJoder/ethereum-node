@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# update-unit-files.sh
+#
+# Regenerates the unit files of installed services according to the current
+# project enviornment variables.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

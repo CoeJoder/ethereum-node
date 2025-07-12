@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# setup-validator.sh
+#
+# Installs & configures prysm-validator to run as a service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

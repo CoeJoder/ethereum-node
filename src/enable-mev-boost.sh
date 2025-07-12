@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# enable-mev-boost.sh
+#
+# Starts & enables the MEV-Boost service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

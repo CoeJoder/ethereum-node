@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# enable-beacon.sh
+#
+# Starts & enables the prysm-beacon (CL) service.
+#
+# Meant to be run on the node server.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

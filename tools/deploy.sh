@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# deploy.sh
+#
+# Copies the source scripts from the client PC to the node server.
+# Also copies the source scripts and offline tools to the USB 'DATA' drive.
+#
+# Meant to be run on the client PC.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e

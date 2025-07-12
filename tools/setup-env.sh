@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# setup-env.sh
+#
+# Generates an editable file containing the project's environment variables.
+# 
+# Meant to be run on the client PC.
+
 # -------------------------- HEADER -------------------------------------------
 
 set -e
