@@ -694,7 +694,7 @@ function press_any_key_to_continue() {
 
 # in-place shell selection list
 # source: https://askubuntu.com/a/1386907
-# (with minor syntax changes to fix vscode syntax highlighting & linting)
+# changes: syntax cleanup, linting, cyclic selector
 function choose_from_menu() {
 	local -r prompt="$1" outvar="$2" options=("${@:3}")
 	local cur=0 count=${#options[@]} index=0 esc
@@ -714,10 +714,10 @@ function choose_from_menu() {
 		IFS= read -rs -n3 key             # wait for user to key in arrows or ENTER
 		if [[ $key == "${esc}[A" ]]; then # up arrow
 			((cur--))
-			((cur < 0)) && ((cur = 0))
+			((cur < 0)) && ((cur = count - 1))
 		elif [[ $key == "${esc}[B" ]]; then # down arrow
 			((cur++))
-			((cur >= count)) && ((cur = count - 1))
+			((cur >= count)) && ((cur = 0))
 		elif [[ $key == "" ]]; then # nothing, i.e the read delimiter - ENTER
 			break
 		fi
