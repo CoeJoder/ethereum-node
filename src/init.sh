@@ -6,7 +6,7 @@
 # utility functions.
 
 source "$(realpath "$(dirname "${BASH_SOURCE[0]}")")/common.sh"
-housekeeping
+set_env
 
 # -------------------------- HEADER -------------------------------------------
 
@@ -23,6 +23,3 @@ housekeeping
 # -------------------------- POSTCONDITIONS -----------------------------------
 
 printinfo "Shell has been initialized with project vars and utilities."
-printwarn "All output is being logged.  Exit shell when task is complete."
-
-trap "printinfo \"Closing project shell...\"" EXIT
