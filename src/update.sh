@@ -128,7 +128,7 @@ fi
 reset_checks
 check_executable_exists --sudo mevboost_bin
 if ! has_failed_checks; then
-	IFS= read -r _ _mevboost_current_version < <(sudo "$mevboost_bin" --version)
+	IFS=' ' read -r _ _mevboost_current_version < <(sudo "$mevboost_bin" --version)
 	if [[ "v$_mevboost_current_version" != "$mevboost_version" ]]; then
 		printinfo "mevboost v${_mevboost_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${mevboost_version}?"; then

@@ -226,11 +226,11 @@ final_pubkeys=()
 final_beacon_indices=()
 final_bls=()
 validator_start_index=''
-while IFS= read -r index pubkey; do
+while IFS=' ' read -r index pubkey; do
 	if [[ -n $index && -n $pubkey ]]; then
 		# NOTE: pubkey_map[i] = <beacon-index[i]> <bls-withdrawal-credentials[i]>
 		pubkey_map_entry="${pubkey_map[$pubkey]}"
-		IFS= read -r beacon_index bls_withdrawal_credential <<<"$pubkey_map_entry"
+		IFS=' ' read -r beacon_index bls_withdrawal_credential <<<"$pubkey_map_entry"
 		final_pubkeys+=("$pubkey")
 		final_beacon_indices+=("$beacon_index")
 		final_bls+=("$bls_withdrawal_credential")
