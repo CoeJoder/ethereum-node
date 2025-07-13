@@ -14,7 +14,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "lint": "./test/lint.sh",
-    "test": "./test/tests.sh"
+    "test": "./test/tests.sh",
+    "ssh": "./tools/connect.sh"
   },
   "devDependencies": {
     "@types/hast": "^3.0.4",

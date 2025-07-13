@@ -95,6 +95,7 @@
 !tools/
 !tools/_beacon-api.sh
 !tools/beacon-api-firewall-rule.sh
+!tools/connect.sh
 !tools/deploy.sh
 !tools/estimate-withdrawal-sweep.sh
 !tools/export.sh
