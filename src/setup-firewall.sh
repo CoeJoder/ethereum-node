@@ -36,18 +36,16 @@ print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
 
-echo -ne "${bold}"
-cat <<EOF
-                               ${color_red} (                            (  (     ${color_reset}
-                               ${color_red} )\ ) (  (     (  (  (      ) )\ )\    ${color_reset}
-          _                    ${color_red}(()/( )\ )(   ))\ )\))(  ( /(((_|(_)   ${color_reset}
- ___  ___| |_ _   _ _ __       ${color_red}/(_)|(_|()\ /((_|(_)()\ )(_))_  _      ${color_reset}
-/ __|/ _ \ __| | | | '_ \ ____${color_yellow}(_) _|(_)((_|_)) _(()((_|(_)_| || |  ${color_reset}
-\__ \  __/ |_| |_| | |_) |____|${color_yellow}|  _|| | '_/ -_)\ V  V / _\` | || | ${color_reset}
+show_banner "${bold}" <<EOF
+                               ${color_red} (                            (  (     ${color_reset}${bold}
+                               ${color_red} )\ ) (  (     (  (  (      ) )\ )\    ${color_reset}${bold}
+          _                    ${color_red}(()/( )\ )(   ))\ )\))(  ( /(((_|(_)   ${color_reset}${bold}
+ ___  ___| |_ _   _ _ __       ${color_red}/(_)|(_|()\ /((_|(_)()\ )(_))_  _      ${color_reset}${bold}
+/ __|/ _ \ __| | | | '_ \ ____${color_yellow}(_) _|(_)((_|_)) _(()((_|(_)_| || |  ${color_reset}${bold}
+\__ \  __/ |_| |_| | |_) |____|${color_yellow}|  _|| | '_/ -_)\ V  V / _\` | || | ${color_reset}${bold}
 |___/\___|\__|\__,_| .__/      |_|  |_|_| \___| \_/\_/\__,_|_||_|                               
                    |_|                                                                          
 EOF
-echo -ne "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 

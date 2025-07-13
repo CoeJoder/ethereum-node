@@ -300,6 +300,16 @@ function read_no_default() {
 	printf -v "$outvar" "%s" "$val"
 }
 
+# shellcheck disable=SC2120  # optional args
+function show_banner() {
+	local ansii_color_codes="$1"
+	[[ -n $ansii_color_codes ]] && echo -ne "$ansii_color_codes"
+	setterm -linewrap off
+	cat
+	setterm -linewrap on
+	[[ -n $ansii_color_codes ]] && echo -ne "$color_reset"
+}
+
 # get the latest version string/tag name from a github repo
 # source: https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c
 function get_latest_release() {
