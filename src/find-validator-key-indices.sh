@@ -35,7 +35,7 @@ function show_usage() {
 	EOF
 }
 
-_parsed_args=$(getopt --apples --options='h' --longoptions='help,no_logging,no_banner,mnemonic:,validator_pubkeys:,validator_start_index:,num_validators:,deposit_cli:,outfile:' \
+_parsed_args=$(getopt --options='h' --longoptions='help,no_logging,no_banner,mnemonic:,validator_pubkeys:,validator_start_index:,num_validators:,deposit_cli:,outfile:' \
 	--name "$(basename "${BASH_SOURCE[0]}")" -- "$@")
 eval set -- "$_parsed_args"
 unset _parsed_args
