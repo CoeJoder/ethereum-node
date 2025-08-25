@@ -84,6 +84,7 @@
 !src/setup-node.sh
 !src/setup-prysmctl.sh
 !src/setup-validator.sh
+!src/status.sh
 !src/submit-bls-to-execution-change-message.sh
 !src/update.sh
 !src/update-unit-files.sh

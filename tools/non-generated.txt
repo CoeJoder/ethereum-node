@@ -27,6 +27,7 @@ setup-mev-boost.sh
 setup-node.sh
 setup-prysmctl.sh
 setup-validator.sh
+status.sh
 submit-bls-to-execution-change-message.sh
 update.sh
 update-unit-files.sh
