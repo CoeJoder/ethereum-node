@@ -46,6 +46,11 @@ press_any_key_to_continue
 
 # -------------------------- RECONNAISSANCE -----------------------------------
 
+geth_service_name="$(basename "$geth_unit_file")"
+prysm_beacon_service_name="$(basename "$prysm_beacon_unit_file")"
+prysm_validator_service_name="$(basename "$prysm_validator_unit_file")"
+mevboost_service_name="$(basename "$mevboost_unit_file")"
+
 # -------------------------- EXECUTION ----------------------------------------
 
 geth_status="inactive"
@@ -53,10 +58,10 @@ beacon_status="inactive"
 validator_status="inactive"
 mevboost_status="inactive"
 
-systemctl --quiet is-active $geth_unit_file && geth_status="active"
-systemctl --quiet is-active $prysm_beacon_unit_file && beacon_status="active"
-systemctl --quiet is-active $prysm_validator_unit_file && validator_status="active"
-systemctl --quiet is-active $mevboost_unit_file && mevboost_status="active"
+systemctl --quiet is-active "$geth_service_name" && geth_status="active"
+systemctl --quiet is-active "$prysm_beacon_service_name" && beacon_status="active"
+systemctl --quiet is-active "$prysm_validator_service_name" && validator_status="active"
+systemctl --quiet is-active "$mevboost_service_name" && mevboost_status="active"
 
 cat <<EOF
 Geth:             $geth_status
