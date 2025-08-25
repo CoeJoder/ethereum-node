@@ -6,6 +6,11 @@
 #
 # Should be `source`d to run in the caller's shell.
 
+if [[ ${BASH_SOURCE[-1]} == "$0" ]]; then
+	echo "script must be sourced, not run directly" >&2
+	exit 1
+fi
+
 _dist_dirname='ethereum-node'
 if [[ $(basename "$(pwd)") == "$_dist_dirname" ]]; then
 	cd ..

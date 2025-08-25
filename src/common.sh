@@ -786,6 +786,14 @@ function assert_offline() {
 	fi
 }
 
+# assert that the shell's entrypoint script was sourced, rather than executed directly
+function assert_sourced() {
+	if [[ ${BASH_SOURCE[-1]} == "$0" ]]; then
+    printerr "script must be sourced, not run directly"
+		exit 1
+	fi
+}
+
 # -------------------------- CHECKS -------------------------------------------
 
 _check_failures=()
