@@ -37,13 +37,11 @@ function beacon_api__get() {
 	"
 }
 
+# shellcheck disable=SC2120  # optional args
 function beacon_api__get_validators() {
-	if (($# != 1)); then
-		printerr "usage: beacon_api__get_validators query-params"
-		return 1
-	fi
-	local query_params="$1"
-	beacon_api__get "/eth/v1/beacon/states/head/validators?$query_params"
+	local query_string=""
+	[[ -n $1 ]] && query_string="?$1"
+	beacon_api__get "/eth/v1/beacon/states/head/validators$query_string"
 }
 
 function beacon_api__get_latest_block() {

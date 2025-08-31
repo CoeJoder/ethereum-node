@@ -44,10 +44,11 @@
 !src/content/docs/guides/partial-withdrawal.mdx
 !src/content/docs/guides/validator-setup.mdx
 !src/content/docs/guides/voluntary-exit.mdx
-
 !src/content/docs/reference/
 !src/content/docs/reference/hardware-requirements.mdx
 !src/content/docs/reference/external-resources.mdx
+!src/content/docs/tools/
+!src/content/docs/tools/validator-queries.mdx
 
 !src/content.config.ts
 
@@ -99,6 +100,7 @@
 !tools/connect.sh
 !tools/deploy.sh
 !tools/estimate-withdrawal-sweep.sh
+!tools/estimate-bp-frequency.sh
 !tools/export.sh
 !tools/generated.txt
 !tools/import-keys.sh

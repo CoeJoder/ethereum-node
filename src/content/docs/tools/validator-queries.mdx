@@ -1,0 +1,61 @@
+---
+title: Validator Queries
+description: Perform status queries on validators using the beacon node API.
+sidebar:
+  order: 1
+---
+
+The following queries can be performed using the scripts in the `tools` directory.
+
+### Estimate Withdrawal Sweep
+Estimate the next/previous automatic withdrawal "sweeps" of any validator.  Any validator index or pubkey
+can be used, even if it is not yet a **0x01** type validator.
+As such, it is useful when [timing validator conversions](../guides/compound-or-consolidate/#1-time-the-conversion-carefully).
+
+```bash
+Usage:
+  estimate-withdrawal-sweep.sh [options] validator1 [validator2 ...]
+Options:
+  --no-banner   Do not show banner
+  --help, -h    Show this message
+```
+
+#### Example
+```bash
+cd ethereum-node
+./tools/estimate-withdrawal-sweep.sh 93587 329469
+```
+```
+Target validator: 93587
+Approx. time since last withdrawal: -21:35:39
+Approx. time until next withdrawal: 23:15:26
+
+Target validator: 329469
+Approx. time since last withdrawal: -21:35:38
+Approx. time until next withdrawal: 23:15:27
+```
+
+
+### Estimate Block Proposal Frequency
+Calculate the expected average block proposal frequency.
+
+```bash
+Usage:
+  estimate-bp-frequency.sh [options] validator1 [validator2 ...]
+Options:
+  --no-banner   Do not show banner
+  --help, -h    Show this message
+```
+
+#### Example
+```bash
+cd ethereum-node
+./tools/estimate-bp-frequency.sh 329469 1150854
+```
+```
+Validator: 329469
+Average time between block proposals: 174.2 days
+
+Validator: 1150854
+Average time between block proposals: 2.7 days
+```
