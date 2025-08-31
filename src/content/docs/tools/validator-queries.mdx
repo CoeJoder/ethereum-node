@@ -7,7 +7,7 @@ sidebar:
 
 The following queries can be performed using the scripts in the `tools` directory.
 
-# Estimate Withdrawal Sweep
+## Estimate Withdrawal Sweep
 Estimate the next/previous automatic withdrawal "sweeps" of any validator.  Any validator index or pubkey
 can be used, even if it is not yet a **0x01** type validator.
 As such, it is useful when [timing validator conversions](../../guides/compound-or-consolidate/#1-time-the-conversion-carefully).
@@ -20,7 +20,7 @@ Options:
   --help, -h    Show this message
 ```
 
-### Example
+#### Example
 ```bash
 cd ethereum-node
 ./tools/estimate-withdrawal-sweep.sh 93587 329469
@@ -36,7 +36,7 @@ Approx. time until next withdrawal: 23:15:27
 ```
 
 
-# Estimate Block Proposal Frequency
+## Estimate Block Proposal Frequency
 Calculate the expected average block proposal frequency.
 
 ```
@@ -47,7 +47,7 @@ Options:
   --help, -h    Show this message
 ```
 
-### Example
+#### Example
 ```bash
 cd ethereum-node
 ./tools/estimate-bp-frequency.sh 329469 1150854
