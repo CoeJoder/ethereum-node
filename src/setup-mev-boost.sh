@@ -81,6 +81,8 @@ check_is_defined mevboost_addr
 check_is_defined mevboost_min_bid
 check_is_boolean mevboost_enable
 
+check_is_defined mainnet
+check_is_defined testnet
 check_is_valid_ethereum_network ethereum_network
 
 print_failed_checks --error
