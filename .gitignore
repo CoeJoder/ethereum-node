@@ -19,9 +19,6 @@
 !config/plugins/rehype-tasklist-enhancer.ts
 
 !external/
-!external/bash-tools/
-!external/bash-tools/src/
-!external/bash-tools/src/bash-tools.sh
 
 !public/
 !public/favicon.ico
@@ -57,7 +54,6 @@
 
 !src/content.config.ts
 
-!src/__script_template.sh
 !src/_portable_jq.sh
 !src/_staking-deposit-cli.sh
 !src/common.sh
