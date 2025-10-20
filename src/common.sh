@@ -463,3 +463,8 @@ function check_is_valid_keystore_password() {
 		fi
 	fi
 }
+
+# -------------------------- FOOTER -------------------------------------------
+
+# this script should be sourced rather than executed directly
+assert_sourced
