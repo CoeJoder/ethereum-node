@@ -18,6 +18,11 @@
 !config/plugins/
 !config/plugins/rehype-tasklist-enhancer.ts
 
+!external/
+!external/bash-tools/
+!external/bash-tools/src/
+!external/bash-tools/src/bash-tools.sh
+
 !public/
 !public/favicon.ico
 !public/robots.txt
