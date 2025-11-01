@@ -87,8 +87,8 @@ prysmctl_bin='/usr/local/bin/prysmctl'
 prysmctl_datadir='/var/lib/prysm/prysmctl'
 
 # ethdo/ethereal values
-ethdo_version='v1.37.4'
-ethdo_sha256_checksum='a133b5d284f5fb2e6c4406764cae3f0cbb49355edf01081befda132af651c344'
+ethdo_version='v1.39.0'
+ethdo_sha256_checksum='e474439597c782ee3e4be8910207eae34c3dc2bd0778299257f774667552e144'
 ethdo_bin='/usr/local/bin/ethdo'
 ethereal_version='v2.11.5'
 ethereal_sha256_checksum='ed4cc43fc35c16264f21a163fd3ffc0d4cefc79916984ab6718c9a847cd08f8f'
