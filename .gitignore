@@ -94,6 +94,7 @@
 !test/
 !test/lint.sh
 !test/tests.sh
+!test/testsuite_all.sh
 
 !tools/
 !tools/_beacon-api.sh
