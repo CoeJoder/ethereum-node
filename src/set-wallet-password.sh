@@ -53,7 +53,7 @@ reset_checks
 check_file_does_not_exist --sudo prysm_validator_wallet_password_file
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
-	printf '\n'
+	stderr
 	sudo rm -rf --interactive=never "$prysm_validator_wallet_password_file"
 fi
 

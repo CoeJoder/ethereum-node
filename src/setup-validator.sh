@@ -50,7 +50,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -107,9 +107,9 @@ EOF
 	# -------------------------- PREAMBLE -----------------------------------------
 
 	if [[ $unit_file_only == true ]]; then
-		echo "${theme_value}[UNIT FILE ONLY]${color_reset}"
+		stderr "${theme_value}[UNIT FILE ONLY]${color_reset}"
 	fi
-	cat <<-EOF
+	cat >&2 <<-EOF
 	Installs prysm-validator and configures it to run as a service.
 	EOF
 	press_any_key_to_continue
@@ -132,7 +132,7 @@ reset_checks
 check_file_does_not_exist prysm_validator_unit_file
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -141,10 +141,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_retry' ERR
@@ -154,12 +153,12 @@ assert_sudo
 
 if [[ $unit_file_only == false ]]; then
 	# system and app list updates
-	printinfo Running APT update and upgrade...
+	log info Running APT update and upgrade...
 	sudo apt-get -y update
 	sudo apt-get -y upgrade
 
 	# prysm-validator filesystem
-	printinfo "Setting up prysm-validator user, group, datadir..."
+	log info "Setting up prysm-validator user, group, datadir..."
 	sudo useradd --no-create-home --shell /bin/false "$prysm_validator_user"
 	sudo mkdir -p "$prysm_validator_datadir"
 	sudo chown -R "${prysm_validator_user}:${prysm_validator_group}" "$prysm_validator_datadir"
@@ -167,13 +166,13 @@ if [[ $unit_file_only == false ]]; then
 	sudo usermod -a -G "$prysmctl_group" "$prysm_validator_user"
 
 	# prysm-validator install
-	printinfo "Downloading prysm-validator..."
+	log info "Downloading prysm-validator..."
 	install_prysm validator \
 		"$latest_prysm_version" "$prysm_validator_bin" "$prysm_validator_user" "$prysm_validator_group"
 fi
 
 # prysm-validator unit file
-printinfo "Generating ${theme_filename}$prysm_validator_unit_file${color_reset}:"
+log info "Generating ${theme_filename}$prysm_validator_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$prysm_validator_unit_file"
 [Unit]
 Description=prysm validator service
@@ -203,7 +202,7 @@ WantedBy=multi-user.target
 EOF
 
 # reload system services
-echo "Reloading services daemon..."
+stderr "Reloading services daemon..."
 sudo systemctl daemon-reload
 
 # -------------------------- POSTCONDITIONS -----------------------------------

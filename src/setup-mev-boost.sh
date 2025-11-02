@@ -51,7 +51,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -115,8 +115,8 @@ fi
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 if [[ $mevboost_enable == false ]]; then
-	printerr "Env var ${theme_value}mevboost_enable${color_reset} must be set to ${theme_value}true${color_reset} to run this script."
-	printwarn "The beacon-chain and validator unit files must be regenerated after toggling ${theme_command}mevboost_enable${color_reset}!"
+	log error "Env var ${theme_value}mevboost_enable${color_reset} must be set to ${theme_value}true${color_reset} to run this script."
+	log warn "The beacon-chain and validator unit files must be regenerated after toggling ${theme_command}mevboost_enable${color_reset}!"
 	exit 1
 fi
 
@@ -125,8 +125,8 @@ declare latest_mevboost_version
 get_latest_mevboost_version latest_mevboost_version
 
 if [[ $mevboost_version != "$latest_mevboost_version" ]]; then
-	printwarn "New version of MEV-Boost detected: ${theme_value}$latest_mevboost_version${color_reset}"
-	printwarn "Update the env vars with the latest version and checksums, and then restart this script."
+	log warn "New version of MEV-Boost detected: ${theme_value}$latest_mevboost_version${color_reset}"
+	log warn "Update the env vars with the latest version and checksums, and then restart this script."
 	exit 1
 fi
 
@@ -156,7 +156,7 @@ reset_checks
 check_file_does_not_exist --sudo mevboost_unit_file
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -165,10 +165,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_noretry' ERR
@@ -178,17 +177,17 @@ assert_sudo
 
 if [[ $unit_file_only == false ]]; then
 	# mevboost filesystem
-	printinfo "Setting up MEV-Boost user and group..."
+	log warn "Setting up MEV-Boost user and group..."
 	sudo useradd --no-create-home --shell /bin/false "$mevboost_user"
 
 	# mevboost install
-	printinfo "Installing MEV-Boost..."
+	log warn "Installing MEV-Boost..."
 	install_mevboost \
 		"$mevboost_version" "$mevboost_sha256_checksum" "$mevboost_bin" "$mevboost_user" "$mevboost_group"
 fi
 
 # mevboost unit file
-printinfo "Generating ${theme_filename}$mevboost_unit_file${color_reset}:"
+log warn "Generating ${theme_filename}$mevboost_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$mevboost_unit_file"
 [Unit]
 Description=MEV-Boost Service for Ethereum ($ethereum_network)
@@ -215,7 +214,7 @@ WantedBy=multi-user.target
 EOF
 
 # reload system services
-echo "Reloading services daemon..."
+stderr "Reloading services daemon..."
 sudo systemctl daemon-reload
 
 # -------------------------- POSTCONDITIONS -----------------------------------

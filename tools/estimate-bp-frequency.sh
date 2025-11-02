@@ -46,14 +46,14 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown option: $1"
+		log error "unknown option: $1"
 		exit 1
 		;;
 	esac
 done
 
 if (($# < 1)); then
-	printerr "must specify a list of validators by index or pubkey"
+	log error "must specify a list of validators by index or pubkey"
 	exit 1
 fi
 
@@ -99,14 +99,14 @@ validators_csv="$(join_arr ',' "${validators[@]}")"
 
 # -------------------------- EXECUTION ----------------------------------------
 
-printinfo "Finding EBs of given validators..."
+log info "Finding EBs of given validators..."
 validator_ebs_json="$(beacon_api__get_validators "id=${validators_csv}" | jq '.data | 
 	map({
 		(.index): .validator.effective_balance | tonumber
 	}) |
 	add')"
 
-printinfo "Finding total EB of all $ethereum_network validators..."
+log info "Finding total EB of all $ethereum_network validators..."
 total_eb="$(beacon_api__get_validators | jq '
 	[
 		.data[] | 
@@ -142,7 +142,7 @@ EOF
 )
 
 if ((${#expected_time_between_proposals[@]} % 2 != 0)); then
-	printerr "Expected output chunks of length = 2 but found:\n${expected_time_between_proposals[*]}"
+	log error "Expected output chunks of length = 2 but found:\n${expected_time_between_proposals[*]}"
 	exit 1
 fi
 for ((i = 0; i < ${#expected_time_between_proposals[@]}; i += 2)); do

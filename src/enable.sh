@@ -20,12 +20,10 @@ assert_on_node_server
 assert_sudo
 
 reset_checks
-
 check_is_defined geth_unit_file
 check_is_defined prysm_beacon_unit_file
 check_is_defined prysm_validator_unit_file
 check_is_defined mevboost_unit_file
-
 print_failed_checks --error
 
 # -------------------------- BANNER -------------------------------------------
@@ -60,7 +58,7 @@ check_is_service_installed geth_unit_file
 if ! has_failed_checks; then
 	_start_geth=true
 else
-	printwarn "Skipping geth (not installed)..."
+	log warn "Skipping geth (not installed)..."
 fi
 
 reset_checks
@@ -69,7 +67,7 @@ check_is_service_installed prysm_beacon_unit_file
 if ! has_failed_checks; then
 	_start_prysmbeacon=true
 else
-	printwarn "Skipping beacon (not installed)..."
+	log warn "Skipping beacon (not installed)..."
 fi
 
 reset_checks
@@ -78,7 +76,7 @@ check_is_service_installed prysm_validator_unit_file
 if ! has_failed_checks; then
 	_start_prysmvalidator=true
 else
-	printwarn "Skipping validator (not installed)..."
+	log warn "Skipping validator (not installed)..."
 fi
 
 reset_checks
@@ -87,7 +85,7 @@ check_is_service_installed mevboost_unit_file
 if ! has_failed_checks; then
 	_start_mevboost=true
 else
-	printwarn "Skipping MEV-Boost (not installed)..."
+	log warn "Skipping MEV-Boost (not installed)..."
 fi
 
 if [[ $_start_geth == false || 

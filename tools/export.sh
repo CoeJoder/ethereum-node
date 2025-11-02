@@ -60,7 +60,7 @@ reset_checks
 check_file_does_not_exist --sudo validator_statuses_json
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -79,11 +79,10 @@ print_failed_checks --error
 
 # delete remote temp file on exit
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
 		rm -f --interactive=never \"$remote_temp_file\" &>/dev/null"
 	rm -f --interactive=never "$local_temp_file" &>/dev/null
-	print_ok
 }
 trap 'on_exit' EXIT
 
@@ -92,7 +91,7 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 	\"\$HOME/$dist_dirname/get-validator-statuses.sh\" \"$remote_temp_file\"
 "
 
-printinfo "Transferring remote output to local 'DATA' drive..."
+log info "Transferring remote output to local 'DATA' drive..."
 rsync -avh -e "ssh -p $node_server_ssh_port" \
 	--progress \
 	"${node_server_ssh_endpoint}:${remote_temp_file}" "$local_temp_file"

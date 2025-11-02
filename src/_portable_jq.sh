@@ -20,12 +20,12 @@ function portable_jq__preconditions() {
 	print_failed_checks --error || return
 
 	# checksum using the included .sha256 file
-	printinfo "Verifying jq SHA256 checksum..."
+	log info "Verifying jq SHA256 checksum..."
 	(
 		cd "$usb_dist_dir"
 		sha256sum -c "$jq_bin_sha256_dist"
 	) || return $?
-	printf '\n'
+	stderr
 }
 
 function jq() {

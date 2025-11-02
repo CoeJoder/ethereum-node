@@ -85,17 +85,17 @@ assert_sudo
 trap 'on_err_retry' ERR
 
 # chown the `DATA` dir and pushd into it
-printinfo "Chowning the source files..."
+log info "Chowning the source files..."
 sudo chown -R "$USER:$USER" "$usb_dist_dir"
 sudo chmod 700 "$usb_dist_dir"
 pushd "$usb_dist_dir" >/dev/null
 
 # 1. create remote tempdir
-printinfo "Creating remote tempdir..."
+log info "Creating remote tempdir..."
 remote_temp_dir="$(ssh -p $node_server_ssh_port $node_server_ssh_endpoint "echo \"\$(mktemp -d)\"")"
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 
 	# 4. delete the remote tempdir if it exists
@@ -105,8 +105,6 @@ function on_exit() {
 	# 5. reseal the USB deployment
 	sudo chown -R root:root "$usb_dist_dir"
 	sudo chmod 0 "$usb_dist_dir"
-
-	print_ok
 }
 trap 'on_exit' EXIT
 
@@ -116,7 +114,7 @@ check_is_defined remote_temp_dir
 print_failed_checks --error
 
 # 2. copy into tempdir
-printinfo "Copying validator keys to remote tempdir..."
+log info "Copying validator keys to remote tempdir..."
 rsync -avh -e "ssh -p $node_server_ssh_port" \
 	--progress \
 	"$usb_validator_keys" "${node_server_ssh_endpoint}:${remote_temp_dir}"
@@ -125,25 +123,25 @@ rsync -avh -e "ssh -p $node_server_ssh_port" \
 ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 	set -e
 	source \"\$HOME/$dist_dirname/common.sh\"
-	printinfo \"Logged into node server.\"
+	log info \"Logged into node server.\"
 	
 	assert_sudo
 	if sudo test -d \"$prysm_validator_keys_dir\"; then
-		printwarn \"Destination already exists: $prysm_validator_keys_dir\"
+		log warn \"Destination already exists: $prysm_validator_keys_dir\"
 		continue_or_exit 1 \"Overwrite?\"
 		sudo rm -rfv --interactive=never \"$prysm_validator_keys_dir\"
 	fi
 
-	printinfo \"Copying validator keys from tempdir to prysm-validator dir...\"
+	log info \"Copying validator keys from tempdir to prysm-validator dir...\"
 	sudo cp -rfv \"$remote_temp_dir\" \"$prysm_validator_keys_dir\"
 
-	printinfo \"Setting validator keys ownership...\"
+	log info \"Setting validator keys ownership...\"
 	sudo chown -R \"${prysm_validator_user}:${prysm_validator_group}\" \"$prysm_validator_keys_dir\"
 
-	printinfo \"Setting validator keys permission bits...\"
+	log info \"Setting validator keys permission bits...\"
 	sudo chmod -R 700 \"$prysm_validator_keys_dir\"
 
-	printinfo \"Importing validator keys...\"
+	log info \"Importing validator keys...\"
 	sudo -u \"$prysm_validator_user\" validator accounts import \\
 		--keys-dir=\"$prysm_validator_keys_dir\" \\
 		--wallet-dir=\"$prysm_validator_wallet_dir\" \\
@@ -153,7 +151,7 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
-printinfo "Verify that the new accounts are listed here:"
+log info "Verify that the new accounts are listed here:"
 ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 	sudo -u \"$prysm_validator_user\" validator accounts list \\
 		--wallet-dir=\"$prysm_validator_wallet_dir\" \\

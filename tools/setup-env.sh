@@ -47,7 +47,7 @@ press_any_key_to_continue
 
 function find_available_env_filename() {
 	if (($# != 2)); then
-		printerr "usage: find_available_env_filename network outvar"
+		log error "usage: find_available_env_filename network outvar"
 		return 2
 	fi
 	local network="$1" outvar="$2" curfile i
@@ -64,7 +64,7 @@ function find_available_env_filename() {
 
 function shorten_path() {
 	if (($# != 2)); then
-		printerr "usage: shorten_path filepath outvar"
+		log error "usage: shorten_path filepath outvar"
 		return 2
 	fi
 	local filepath="$1" outvar="$2"
@@ -83,7 +83,7 @@ shorten_path "$env_sh" env_sh_shortened
 
 # if filename exists and user rejects overwrite, suggest alt filename
 while [[ -f $env_sh ]]; do
-	printwarn "found existing ${theme_filename}$env_sh_shortened${color_reset}"
+	log warn "found existing ${theme_filename}$env_sh_shortened${color_reset}"
 	if yes_or_no --default-no "Overwrite?"; then
 		break
 	else
@@ -96,7 +96,7 @@ while [[ -f $env_sh ]]; do
 		shorten_path "$env_sh" env_sh_shortened
 	fi
 done
-printf '\n'
+stderr
 
 # -------------------------- EXECUTION ----------------------------------------
 

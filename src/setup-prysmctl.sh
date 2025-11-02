@@ -39,7 +39,6 @@ show_banner "${color_green}${bold}" <<'EOF'
                                \ \_\            \ \_\            /\___/                                       
                                 \/_/             \/_/            \/__/                                        
 EOF
-echo -en "${color_reset}"
 
 # -------------------------- PREAMBLE -----------------------------------------
 
@@ -59,10 +58,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_retry' ERR
@@ -71,14 +69,14 @@ trap 'on_exit' EXIT
 assert_sudo
 
 # prysmctl filesystem
-printinfo "Setting up prysmctl user, group, datadir..."
+log info "Setting up prysmctl user, group, datadir..."
 sudo useradd --no-create-home --shell /bin/false "$prysmctl_user"
 sudo mkdir -p "$prysmctl_datadir"
 sudo chown -R "${prysmctl_user}:${prysmctl_group}" "$prysmctl_datadir"
 sudo chmod -R 770 "$prysmctl_datadir"
 
 # prysmctl install
-printinfo "Downloading prysmctl..."
+log info "Downloading prysmctl..."
 install_prysm prysmctl \
 	"$latest_prysm_version" "$prysmctl_bin" "$prysmctl_user" "$prysmctl_group"
 

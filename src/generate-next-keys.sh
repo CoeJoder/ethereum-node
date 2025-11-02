@@ -47,7 +47,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -106,7 +106,7 @@ if [[ -z $mnemonic ]]; then
 	reset_checks
 	check_is_valid_validator_mnemonic mnemonic
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -117,13 +117,12 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
 	for temp_file in "${temp_files_to_delete[@]}"; do
 		rm -f --interactive=never "$temp_file" >/dev/null
 	done
-	print_ok
 }
 
 trap 'on_err_noretry' ERR
@@ -135,29 +134,27 @@ staking_deposit_cli__unpack_tarball
 # search for all imported validators
 all_validators="$(jq -C "$filter_all" "$validator_statuses_json")"
 if [[ -z $all_validators ]]; then
-	printerr "No validators found:"
-	jq -C "$filter_all" "$validator_statuses_json"
+	log error "No validators found:"
+	log error "$(jq -C "$filter_all" "$validator_statuses_json")"
 	exit 1
 fi
-printinfo "All validators:"
-echo "$all_validators" >&2
+log info "All validators:"
+log info "$all_validators"
 
 # collect the pubkeys
 readarray -t pubkeys < <(jq -r "$filter_all_pubkeys" "$validator_statuses_json")
 pubkeys_csv="$(join_arr ',' "${pubkeys[@]}")"
 
 function find_failed_exit() {
-	printerr "Failed to find EIP-2334 start index.  Try running the find-script yourself, adjusting params as needed:"
-	echo -en "$theme_command" >&2
-	cat >&2 <<-EOF
-		./find-validator-key-indices.sh \\
-			--validator_pubkeys="$pubkeys_csv"
+	log error "Failed to find EIP-2334 start index.  Try running the find-script yourself, adjusting params as needed:"
+	logcat error <<-EOF
+		${theme_command}./find-validator-key-indices.sh \\
+		  --validator_pubkeys="$pubkeys_csv"${color_reset}
 	EOF
-	echo -e "$color_reset" >&2
 	exit 1
 }
 
-printinfo "Need to find the highest EIP-2334 key index of the existing validators..."
+log info "Need to find the highest EIP-2334 key index of the existing validators..."
 find_validator_key_indices_outfile=$(mktemp)
 temp_files_to_delete+=("$find_validator_key_indices_outfile")
 if ! "$this_dir/find-validator-key-indices.sh" \
@@ -182,12 +179,12 @@ done <"$find_validator_key_indices_outfile"
 if [[ -z $highest_validator_index ]]; then
 	find_failed_exit
 fi
-printf '\n'
+stderr
 
-printinfo "Highest index validator found:\n\tindex: ${theme_value}${highest_validator_index}${color_reset}\n\tpubkey: ${theme_value}${highest_validator_pubkey}${color_reset}"
+log info "Highest index validator found:\n\tindex: ${theme_value}${highest_validator_index}${color_reset}\n\tpubkey: ${theme_value}${highest_validator_pubkey}${color_reset}"
 next_validator_index=$((highest_validator_index + 1))
-printinfo "Next index: ${theme_value}${next_validator_index}${color_reset}"
-printf '\n'
+log info "Next index: ${theme_value}${next_validator_index}${color_reset}"
+stderr
 
 cat <<EOF
 Ready to run the following command:${theme_command}

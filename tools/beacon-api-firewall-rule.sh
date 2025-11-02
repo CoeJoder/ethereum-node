@@ -51,7 +51,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown option: $1"
+		log error "unknown option: $1"
 		exit 1
 		;;
 	esac
@@ -69,17 +69,17 @@ while (($#)); do
 		shift 1
 		;;
 	*)
-		[[ -n $1 ]] && printerr "unknown command: $1"
+		[[ -n $1 ]] && log error "unknown command: $1"
 		exit 1
 		;;
 	esac
 done
 
 if [[ $command_add == false && $command_delete == false ]]; then
-	printerr "command missing"
+	log error "command missing"
 	exit 1
 elif [[ $command_add == true && $command_delete == true ]]; then
-	printerr "multiple commands"
+	log error "multiple commands"
 	exit 1
 fi
 
@@ -131,7 +131,7 @@ reset_checks
 check_is_valid_ipv4_address node_server_ip_address
 print_failed_checks --error
 
-printinfo "$node_server_hostname has address ${color_yellow}$node_server_ip_address${color_reset}"
+log info "$node_server_hostname has address ${color_yellow}$node_server_ip_address${color_reset}"
 
 # use the commandline option if provided
 client_pc_ip_address="$address"
@@ -142,7 +142,7 @@ if [[ -z $address ]]; then
 	check_is_valid_ipv4_address client_pc_ip_address
 	print_failed_checks --error
 
-	printinfo "Local interface connects to node server from address ${theme_value}${bold}$client_pc_ip_address${color_reset}\n"
+	log info "Local interface connects to node server from address ${theme_value}${bold}$client_pc_ip_address${color_reset}\n"
 fi
 
 if [[ $command_add == true ]]; then
@@ -156,7 +156,7 @@ fi
 ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 	set -e
 	source \"\$HOME/$dist_dirname/common.sh\"
-	printinfo \"Logged into node server.\"
+	log info \"Logged into node server.\"
 
 	assert_sudo
 
@@ -171,4 +171,4 @@ ssh -p $node_server_ssh_port $node_server_ssh_endpoint -t "
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
-printinfo "Check that the above firewall rules are correct."
+log info "Check that the above firewall rules are correct."

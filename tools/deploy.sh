@@ -51,7 +51,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -128,20 +128,20 @@ if [[ $usb_mode == true ]]; then
 	get_latest_deposit_cli_version latest_deposit_cli_version
 
 	if [[ $latest_deposit_cli_version != "$ethstaker_deposit_cli_version" ]]; then
-		printerr "latest version is different than expected ($ethstaker_deposit_cli_version)"
-		printerr "update the ${color_lightgray}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} and relaunch this script"
+		log error "latest version is different than expected ($ethstaker_deposit_cli_version)"
+		log error "update the ${color_lightgray}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} and relaunch this script"
 		exit 1
 	fi
-	printf '\n'
+	stderr
 
-	printinfo "Verifying ${theme_value}ethstaker-deposit-cli${color_reset} SHA256 checksum of the release page matches our saved value..."
+	log info "Verifying ${theme_value}ethstaker-deposit-cli${color_reset} SHA256 checksum of the release page matches our saved value..."
 	fetched_ethstaker_deposit_cli_sha265="$(wget -qO - "$ethstaker_deposit_cli_sha256_url" | cat)"
 	if [[ $fetched_ethstaker_deposit_cli_sha265 != "$ethstaker_deposit_cli_sha256_checksum" ]]; then
-		printerr "Found: $fetched_ethstaker_deposit_cli_sha265\nExpected: $ethstaker_deposit_cli_sha256_checksum\n" \
+		log error "Found: $fetched_ethstaker_deposit_cli_sha265\nExpected: $ethstaker_deposit_cli_sha256_checksum\n" \
 			"Ensure that ${theme_value}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		exit 1
 	fi
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -151,10 +151,9 @@ if [[ $usb_mode == true ]]; then
 	pushd "$temp_dir" >/dev/null
 
 	function on_exit() {
-		printinfo -n "Cleaning up..."
+		log info "Cleaning up..."
 		popd >/dev/null
 		rm -rf --interactive=never "$temp_dir" >/dev/null
-		print_ok
 	}
 
 	trap 'on_err_retry' ERR
@@ -162,25 +161,25 @@ if [[ $usb_mode == true ]]; then
 
 	assert_sudo
 
-	printinfo "Downloading EthStaker Deposit CLI..."
+	log info "Downloading EthStaker Deposit CLI..."
 	download_file "$ethstaker_deposit_cli_url"
 
 	# construct a .sha256 file from the value we saved from the release page and perform checksum
 	echo "$ethstaker_deposit_cli_sha256_checksum  $ethstaker_deposit_cli_basename" >"$ethstaker_deposit_cli_basename_sha256"
 	if ! sha256sum -c "$ethstaker_deposit_cli_basename_sha256"; then
-		printerr "checksum failed; expected: ${theme_value}$ethstaker_deposit_cli_sha256_checksum${color_reset}"
+		log error "checksum failed; expected: ${theme_value}$ethstaker_deposit_cli_sha256_checksum${color_reset}"
 		exit 1
 	fi
 
-	printinfo "Downloading ${jq_version}..."
+	log info "Downloading ${jq_version}..."
 	download_jq "$jq_bin" "$jq_bin_sha256" "$jq_version"
 	chmod +x "$jq_bin"
 
-	printinfo "Downloading ethdo ${ethdo_version}..."
+	log info "Downloading ethdo ${ethdo_version}..."
 	download_wealdtech ethdo \
 		"$ethdo_version" "$ethdo_sha256_checksum" ethdo_bin
 
-	printinfo "Downloading ethereal ${ethereal_version}..."
+	log info "Downloading ethereal ${ethereal_version}..."
 	download_wealdtech ethereal \
 		"$ethereal_version" "$ethereal_sha256_checksum" ethereal_bin
 	
@@ -190,7 +189,7 @@ if [[ $usb_mode == true ]]; then
 	echo "$ethdo_sha256_checksum  $ethdo_bin" >"$ethdo_bin_sha256"
 	echo "$ethereal_sha256_checksum  $ethereal_bin" >"$ethereal_bin_sha256"
 
-	printinfo "Deploying..."
+	log info "Deploying..."
 
 	# create the usb dist dir if necessary and copy over 3rd party software and checksums
 	sudo mkdir -p "$usb_dist_dir"
@@ -241,7 +240,7 @@ if [[ $usb_mode == true ]]; then
 	sudo cp -fv "$tools_dir/unseal.sh" "$unseal_dest"
 
 	# seal the deployment
-	printinfo "Sealing the deployment..."
+	log info "Sealing the deployment..."
 	sudo chown -R root:root "$usb_dist_dir"
 	sudo chown root:root "$unseal_dest"
 	sudo chmod 0 "$usb_dist_dir"
@@ -249,7 +248,7 @@ if [[ $usb_mode == true ]]; then
 else
 	trap 'on_err_retry' ERR
 
-	printinfo "Deploying..."
+	log info "Deploying..."
 
 	# overwrite non-generated files and remove deleted files i.e., those listed in
 	# includes-file but not existing in source filesystem

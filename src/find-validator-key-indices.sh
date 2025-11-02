@@ -92,7 +92,7 @@ while true; do
 		break
 		;;
 	*)
-		[[ -n $1 ]] && printerr "unknown argument: $1"
+		[[ -n $1 ]] && log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -153,7 +153,7 @@ if [[ -z $mnemonic ]]; then
 	reset_checks
 	check_is_valid_validator_mnemonic mnemonic
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 # prompt for validator pubkeys if not passed as script arg
@@ -163,7 +163,7 @@ if [[ -z $validator_pubkeys_csv ]]; then
 	reset_checks
 	check_is_valid_validator_pubkeys validator_pubkeys_csv
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 # prompt for validator start index if not passed as script arg
@@ -173,7 +173,7 @@ if [[ -z $validator_start_index ]]; then
 	reset_checks
 	check_is_valid_eip2334_index validator_start_index
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 # prompt for num validators to search if not passed as a script arg
@@ -183,7 +183,7 @@ if [[ -z $num_validators ]]; then
 	reset_checks
 	check_is_positive_integer num_validators
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -192,10 +192,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_retry' ERR
@@ -218,7 +217,7 @@ for validator_pubkey in "${validator_pubkeys[@]}"; do
 done
 
 # generate keys in the temp dir
-printinfo "Searching..."
+log info "Searching..."
 validator_keys_parent_dir='.'
 validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 "$deposit_cli_bin" --language=English --non_interactive existing-mnemonic \
@@ -229,7 +228,7 @@ validator_keys_dir="$validator_keys_parent_dir/validator_keys"
 	--chain="$ethereum_network" \
 	--withdrawal_address='' \
 	--folder="$validator_keys_parent_dir" >/dev/null
-printf '\n'
+stderr
 
 # search the generated keys for pubkey matches and extract the indices
 # from the `path` property
@@ -259,9 +258,9 @@ done
 # print sorted indices to file
 num_found=${#indices_found[@]}
 if [[ $num_found -ne 0 ]]; then
-	printinfo "Found $num_found matches:"
+	log info "Found $num_found matches:"
 	for i in "${indices_found_msgs[@]}"; do
-		echo -e "$i" >&2
+		log info "  $i"
 	done
 	if [[ -n $indices_outfile ]]; then
 		# ensure empty
@@ -279,9 +278,9 @@ fi
 # return an error code and warning message if any indices not found
 num_not_found=${#pubkeys_not_found[@]}
 if [[ $num_not_found -ne 0 ]]; then
-	printwarn "Not found:"
+	log warn "Not found:"
 	for pubkey_not_found in "${pubkeys_not_found[@]}"; do
-		echo "  $pubkey_not_found" >&2
+		log warn "  $pubkey_not_found"
 	done
 	exit 1
 fi

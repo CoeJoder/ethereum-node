@@ -188,8 +188,8 @@ function on_err_noretry() {
 # get the latest EthStaker Deposit CLI release version
 function get_latest_deposit_cli_version() {
 	if [[ $# -ne 1 ]]; then
-		printerr "usage: get_latest_deposit_cli_version outvar"
-		return 2
+		log error "Usage: get_latest_deposit_cli_version outvar"
+		return 255
 	fi
 	local outvar="$1"
 	get_latest_github_release "ethstaker/ethstaker-deposit-cli" "$outvar"
@@ -198,8 +198,8 @@ function get_latest_deposit_cli_version() {
 # get the latest prysm release version
 function get_latest_prysm_version() {
 	if [[ $# -ne 1 ]]; then
-		printerr "usage: get_latest_prysm_version outvar"
-		return 2
+		log error "Usage: get_latest_prysm_version outvar"
+		return 255
 	fi
 	local outvar="$1"
 	get_latest_github_release "OffchainLabs/prysm" "$outvar"
@@ -208,8 +208,8 @@ function get_latest_prysm_version() {
 # get the latest ethdo release version
 function get_latest_ethdo_version() {
 	if [[ $# -ne 1 ]]; then
-		printerr "usage: get_latest_ethdo_version outvar"
-		return 2
+		log error "Usage: get_latest_ethdo_version outvar"
+		return 255
 	fi
 	local outvar="$1"
 	get_latest_github_release "wealdtech/ethdo" "$outvar"
@@ -218,8 +218,8 @@ function get_latest_ethdo_version() {
 # get the latest ethereal release version
 function get_latest_ethereal_version() {
 	if [[ $# -ne 1 ]]; then
-		printerr "usage: get_latest_ethereal_version outvar"
-		return 2
+		log error "Usage: get_latest_ethereal_version outvar"
+		return 255
 	fi
 	local outvar="$1"
 	get_latest_github_release "wealdtech/ethereal" "$outvar"
@@ -228,8 +228,8 @@ function get_latest_ethereal_version() {
 # get the latest mevboost release version
 function get_latest_mevboost_version() {
 	if [[ $# -ne 1 ]]; then
-		printerr "usage: get_latest_mevboost_version outvar"
-		return 2
+		log error "Usage: get_latest_mevboost_version outvar"
+		return 255
 	fi
 	local outvar="$1"
 	get_latest_github_release "flashbots/mev-boost" "$outvar"
@@ -237,8 +237,8 @@ function get_latest_mevboost_version() {
 
 function download_jq() {
 	if [[ $# -ne 3 ]]; then
-		printerr "usage: download_jq jq_bin jq_bin_sha256 version"
-		return 3
+		log error "Usage: download_jq jq_bin jq_bin_sha256 version"
+		return 255
 	fi
 	local program_bin="$1" program_bin_sha256="$2" version="$3"
 	local program_bin_url="https://github.com/jqlang/jq/releases/download/${version}/${program_bin}"
@@ -256,8 +256,8 @@ function download_jq() {
 # and assign the bin filename to the given `outvar`
 function download_prysm() {
 	if [[ $# -ne 3 ]]; then
-		printerr "usage: download_prysm program version outvar"
-		return 2
+		log error "Usage: download_prysm program version outvar"
+		return 255
 	fi
 	local program="$1" version="$2" outvar="$3"
 	local program_bin="${program}-${version}-linux-amd64"
@@ -272,8 +272,8 @@ function download_prysm() {
 
 function download_wealdtech() {
 	if [[ $# -ne 4 || ($1 != 'ethdo' && $1 != 'ethereal') ]]; then
-		printerr "usage: download_wealdtech {ethdo|ethereal} version sha256_checksum outvar"
-		return 2
+		log error "Usage: download_wealdtech {ethdo|ethereal} version sha256_checksum outvar"
+		return 255
 	fi
 	local program="$1" version="$2" sha256_checksum="$3" outvar="$4"
 	# filenames exclude the first 'v' of version string
@@ -286,7 +286,7 @@ function download_wealdtech() {
 	# expected checksum should match downloaded checksum
 	fetched_sha265="$(wget -qO - "$program_bin_sha256_url" | cat)"
 	if [[ $fetched_sha265 != "$sha256_checksum" ]]; then
-		printerr "Found: $fetched_sha265\nExpected: $sha256_checksum\n" \
+		log error "Found: $fetched_sha265\nExpected: $sha256_checksum\n" \
 			"Ensure that ${theme_value}${program}_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		return 1
 	fi
@@ -296,8 +296,8 @@ function download_wealdtech() {
 
 function download_mevboost() {
 	if [[ $# -ne 3 ]]; then
-		printerr "usage: download_mevboost version sha256_checksum outvar"
-		return 2
+		log error "Usage: download_mevboost version sha256_checksum outvar"
+		return 255
 	fi
 	local version="$1" sha256_checksum="$2" outvar="$3"
 	local program_bin="mev-boost_${version:1}_linux_amd64.tar.gz"
@@ -310,7 +310,7 @@ function download_mevboost() {
 
 	# checksum against the locally-saved value
 	if ! echo "$sha256_checksum  $program_bin" | shasum -a 256 -cq -; then
-		printerr "Checksum failed against locally-saved value!\n" \
+		log error "Checksum failed against locally-saved value!\n" \
 			"Ensure that ${theme_value}mevboost_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		return 1
 	fi
@@ -320,8 +320,8 @@ function download_mevboost() {
 # downloads and installs a given version of a prysm program
 function install_prysm() {
 	if [[ $# -ne 5 ]]; then
-		printerr "usage: install_prysm program version destination_bin owner group"
-		return 2
+		log error "Usage: install_prysm program version destination_bin owner group"
+		return 255
 	fi
 	local program="$1" version="$2" destination_bin="$3" owner="$4" group="$5"
 	local downloaded_bin
@@ -334,8 +334,8 @@ function install_prysm() {
 # downloads, extracts, and installs a given version of a wealdtech program
 function install_wealdtech() {
 	if [[ $# -ne 6 || ($1 != 'ethdo' && $1 != 'ethereal') ]]; then
-		printerr "usage: install_wealdtech {ethdo|ethereal} version sha256_checksum destination_bin owner group"
-		return 2
+		log error "Usage: install_wealdtech {ethdo|ethereal} version sha256_checksum destination_bin owner group"
+		return 255
 	fi
 	local program="$1" version="$2" sha256_checksum="$3" destination_bin="$4" owner="$5" group="$6"
 	local downloaded_tar
@@ -349,8 +349,8 @@ function install_wealdtech() {
 # downloads, extracts, and installs a given version of MEV-Boost
 function install_mevboost() {
 	if [[ $# -ne 5 ]]; then
-		printerr "usage: install_mevboost version sha256_checksum destination_bin owner group"
-		return 2
+		log error "Usage: install_mevboost version sha256_checksum destination_bin owner group"
+		return 255
 	fi
 	local version="$1" sha256_checksum="$2" destination_bin="$3" owner="$4" group="$5"
 	local downloaded_tar
@@ -365,12 +365,12 @@ function install_mevboost() {
 # e.g. 'm/12381/3600/4/0/0' yields '4'
 function parse_index_from_signing_key_path() {
 	if [[ $# -ne 2 ]]; then
-		printerr "usage: parse_index_from_signing_key_path signing_key_path outvar"
-		return 2
+		log error "Usage: parse_index_from_signing_key_path signing_key_path outvar"
+		return 255
 	fi
 	local signing_key_path="$1" outvar="$2"
 	if [[ ! $signing_key_path =~ $regex_eth_validator_signing_key_path ]]; then
-		printerr "unrecognized signing key path: $signing_key_path" >&2
+		log error "unrecognized signing key path: $signing_key_path" >&2
 		return 1
 	fi
 	printf -v "$outvar" "%s" "${BASH_REMATCH[1]}"
@@ -383,8 +383,8 @@ function is_devmode() {
 
 function beaconchain_base_url() {
 	if (($# != 2)); then
-		printerr "usage: beaconchain_base_url network outvar"
-		return 2
+		log error "Usage: beaconchain_base_url network outvar"
+		return 255
 	fi
 	local network="$1" outvar="$2"
 	local beaconchain_url_subdomain=""

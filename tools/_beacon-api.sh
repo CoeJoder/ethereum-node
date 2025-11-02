@@ -27,7 +27,7 @@ function beacon_api__reconnaissance() {
 
 function beacon_api__get() {
 	if (($# != 1)); then
-		printerr "usage: beacon_api__get query"
+		log error "usage: beacon_api__get query"
 		return 1
 	fi
 	local query="$1"

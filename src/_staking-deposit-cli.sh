@@ -43,14 +43,14 @@ function staking_deposit_cli__reconnaissance() {
 	check_is_defined ethstaker_deposit_cli_sha256_checksum
 	print_failed_checks --error || return
 
-	printf '%s\n  %s\n' \
-		"Using an online PC, please run:" \
-		"${theme_command}wget -qO - '$ethstaker_deposit_cli_sha256_url' | cat${color_reset}"
+	stderr "Using an online PC, please run:
+		${theme_command}wget -qO - '$ethstaker_deposit_cli_sha256_url' | cat${color_reset}
+	"
 	if ! yes_or_no --default-no "Does the output match this? ${theme_value}$ethstaker_deposit_cli_sha256_checksum${color_reset}"; then
-		printerr "unexpected checksum; ensure that ${theme_value}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
+		log error "unexpected checksum; ensure that ${theme_value}ethstaker_deposit_cli_${color_reset} values in ${theme_filename}env.sh${color_reset} are correct and relaunch this script"
 		return 1
 	fi
-	printf '\n'
+	stderr
 }
 
 function staking_deposit_cli__unpack_tarball() {
@@ -69,14 +69,14 @@ function staking_deposit_cli__unpack_tarball() {
 	sudo chown -R "$USER:$USER" "$dest_dir"
 
 	# checksum using the included .sha256 file
-	printinfo "Verifying deposit-cli SHA256 checksum..."
+	log info "Verifying deposit-cli SHA256 checksum..."
 	sha256sum -c "$deposit_cli_sha256" || return
-	printf '\n'
+	stderr
 
 	# unpack tarball
-	printinfo "Unpacking tarball..."
+	log info "Unpacking tarball..."
 	tar xvzf "$ethstaker_deposit_cli_basename"
-	printf '\n'
+	stderr
 
 	local deposit_cli_dir="${dest_dir}/${ethstaker_deposit_cli_basename%%.*}"
 	

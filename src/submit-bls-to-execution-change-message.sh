@@ -44,7 +44,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -97,13 +97,12 @@ message_path="$temp_dir/$message_filename"
 sudo chown -c "$prysmctl_user:$prysmctl_group" "$message_path"
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	sudo rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 trap 'on_exit' EXIT
 
-printinfo "Ready to invoke prysmctl the following way:${theme_command}"
+log info "Ready to invoke prysmctl the following way:${theme_command}"
 cat <<EOF
 sudo -u "$prysmctl_user" "$prysmctl_bin" validator withdraw \\
 	--path="$message_path" \\

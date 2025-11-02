@@ -106,7 +106,7 @@ check_executable_exists --sudo ethdo_bin
 if ! has_failed_checks; then
 	_ethdo_current_version="$(sudo "$ethdo_bin" version)"
 	if [[ "v$_ethdo_current_version" != "$ethdo_version" ]]; then
-		printinfo "ethdo v${_ethdo_current_version} is installed"
+		log info "ethdo v${_ethdo_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${ethdo_version}?"; then
 			_update_ethdo=true
 		fi
@@ -118,7 +118,7 @@ check_executable_exists --sudo ethereal_bin
 if ! has_failed_checks; then
 	_ethereal_current_version="$(sudo "$ethereal_bin" version)"
 	if [[ "v$_ethereal_current_version" != "$ethereal_version" ]]; then
-		printinfo "ethereal v${_ethereal_current_version} is installed"
+		log info "ethereal v${_ethereal_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${ethereal_version}?"; then
 			_update_ethereal=true
 		fi
@@ -130,7 +130,7 @@ check_executable_exists --sudo mevboost_bin
 if ! has_failed_checks; then
 	IFS=' ' read -r _ _mevboost_current_version < <(sudo "$mevboost_bin" --version)
 	if [[ "v$_mevboost_current_version" != "$mevboost_version" ]]; then
-		printinfo "mevboost v${_mevboost_current_version} is installed"
+		log info "mevboost v${_mevboost_current_version} is installed"
 		if yes_or_no --default-no "Replace with ${mevboost_version}?"; then
 			_update_mevboost=true
 		fi
@@ -143,10 +143,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_retry' ERR
@@ -155,42 +154,42 @@ trap 'on_exit' EXIT
 assert_sudo
 
 # system and app list updates (includes geth)
-printinfo Running APT update and upgrade...
+log info Running APT update and upgrade...
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
 if [[ $_update_prysmbeacon == true ]]; then
-	printinfo "Updating prysm-beacon..."
+	log info "Updating prysm-beacon..."
 	install_prysm beacon-chain \
 		"$latest_prysm_version" "$prysm_beacon_bin" "$prysm_beacon_user" "$prysm_beacon_group"
 fi
 
 if [[ $_update_prysmvalidator == true ]]; then
-	printinfo "Updating prysm-validator..."
+	log info "Updating prysm-validator..."
 	install_prysm validator \
 		"$latest_prysm_version" "$prysm_validator_bin" "$prysm_validator_user" "$prysm_validator_group"
 fi
 
 if [[ $_update_prysmctl == true ]]; then
-	printinfo "Updating prysmctl..."
+	log info "Updating prysmctl..."
 	install_prysm prysmctl \
 		"$latest_prysm_version" "$prysmctl_bin" "$prysmctl_user" "$prysmctl_group"
 fi
 
 if [[ $_update_ethdo == true ]]; then
-	printinfo "Updating ethdo..."
+	log info "Updating ethdo..."
 	install_wealdtech ethdo \
 		"$ethdo_version" "$ethdo_sha256_checksum" "$ethdo_bin" "$USER" "$USER"
 fi
 
 if [[ $_update_ethereal == true ]]; then
-	printinfo "Updating ethereal..."
+	log info "Updating ethereal..."
 	install_wealdtech ethereal \
 		"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$USER" "$USER"
 fi
 
 if [[ $_update_mevboost == true ]]; then
-	printinfo "Updating mevboost..."
+	log info "Updating mevboost..."
 	install_mevboost \
 		"$mevboost_version" "$mevboost_sha256_checksum" "$mevboost_bin" "$mevboost_user" "$mevboost_group"
 fi

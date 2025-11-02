@@ -61,7 +61,7 @@ check_is_service_active geth_unit_file
 if ! has_failed_checks; then
 	_restart_geth=true
 else
-	printwarn "Skipping geth (not installed or inactive)..."
+	log warn "Skipping geth (not installed or inactive)..."
 fi
 
 reset_checks
@@ -71,7 +71,7 @@ check_is_service_active prysm_beacon_unit_file
 if ! has_failed_checks; then
 	_restart_prysmbeacon=true
 else
-	printwarn "Skipping beacon (not installed or inactive)..."
+	log warn "Skipping beacon (not installed or inactive)..."
 fi
 
 reset_checks
@@ -81,7 +81,7 @@ check_is_service_active prysm_validator_unit_file
 if ! has_failed_checks; then
 	_restart_prysmvalidator=true
 else
-	printwarn "Skipping validator (not installed or inactive)..."
+	log warn "Skipping validator (not installed or inactive)..."
 fi
 
 reset_checks
@@ -91,7 +91,7 @@ check_is_service_active mevboost_unit_file
 if ! has_failed_checks; then
 	_restart_mevboost=true
 else
-	printwarn "Skipping MEV-Boost (not installed or inactive)..."
+	log warn "Skipping MEV-Boost (not installed or inactive)..."
 fi
 
 if [[ $_restart_geth == false || 

@@ -48,14 +48,14 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown option: $1"
+		log error "unknown option: $1"
 		exit 1
 		;;
 	esac
 done
 
 if (($# < 1)); then
-	printerr "must specify a list of validators by index or pubkey"
+	log error "must specify a list of validators by index or pubkey"
 	exit 1
 fi
 
@@ -110,7 +110,7 @@ beacon_api__reconnaissance
 #   :. 4/3 withdrawals / second
 withdrawals_per_second='(4/3)'  # valid Python number expression
 
-printinfo "Converting any validator pubkeys to indexes..."
+log info "Converting any validator pubkeys to indexes..."
 target_validators=()
 has_lookup_errors=false
 for _validator in "${validators[@]}"; do
@@ -124,7 +124,7 @@ for _validator in "${validators[@]}"; do
 		if [[ $_target_validator != 'null' ]]; then
 			target_validators+=("$_target_validator")
 		else
-			printerr "Validator index not found: ${theme_value}$_validator${color_reset}"
+			log error "Validator index not found: ${theme_value}$_validator${color_reset}"
 			has_lookup_errors=true
 		fi
 	else
@@ -138,7 +138,7 @@ target_validators_csv="$(join_arr ',' "${target_validators[@]}")"
 
 # -------------------------- EXECUTION ----------------------------------------
 
-printinfo "Searching for all validators eligible for withdrawal..."
+log info "Searching for all validators eligible for withdrawal..."
 
 # active and ((0x01 creds with > 32 ETH) or (0x02 creds with > 2048 ETH))
 active="$(beacon_api__get_validators "status=active" | 
@@ -170,8 +170,8 @@ latest_withdrawn_validator="$(beacon_api__get_latest_block |
 )"
 
 if [[ $latest_withdrawn_validator == 'null' ]]; then
-	printwarn "Latest withdraw not found.  Sparse block payload?"
-	printwarn "Try again later."
+	log warn "Latest withdraw not found.  Sparse block payload?"
+	log warn "Try again later."
 	exit 1
 fi
 
@@ -219,7 +219,7 @@ EOF
 )
 
 if ((${#time_since_until[@]} % 3 != 0)); then
-	printerr "Expected output chunks of length = 3 but found:\n${time_since_until[*]}"
+	log error "Expected output chunks of length = 3 but found:\n${time_since_until[*]}"
 	exit 1
 fi
 for ((i = 0; i < ${#time_since_until[@]}; i += 3)); do

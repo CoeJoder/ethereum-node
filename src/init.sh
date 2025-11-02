@@ -24,4 +24,4 @@ assert_sourced
 
 # -------------------------- POSTCONDITIONS -----------------------------------
 
-printinfo "Shell has been initialized with project vars and utilities."
+log info "Shell has been initialized with project vars and utilities."

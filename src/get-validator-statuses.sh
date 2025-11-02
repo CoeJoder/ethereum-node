@@ -54,7 +54,7 @@ print_failed_checks --error
 
 # -------------------------- EXECUTION ----------------------------------------
 
-printinfo "Fetching validator indices from prysm-validator wallet..."
+log info "Fetching validator indices from prysm-validator wallet..."
 validator_indices=$(sudo -u "$prysm_validator_user" "$prysm_validator_bin" accounts list \
 	--wallet-dir="$prysm_validator_wallet_dir" \
 	--wallet-password-file="$prysm_validator_wallet_password_file" \
@@ -65,9 +65,9 @@ validator_indices=$(sudo -u "$prysm_validator_user" "$prysm_validator_bin" accou
 	awk 'NR>1 {print $2}')
 validator_indices_csv="${validator_indices//$'\n'/,}"
 
-printinfo "Querying beacon chain for validator statuses..."
+log info "Querying beacon chain for validator statuses..."
 api_url="http://localhost:3500/eth/v1/beacon/states/head/validators?id=$validator_indices_csv"
-printinfo "curl -X 'GET' \"$api_url\" -H 'accept: application/json' --no-progress-meter"
+log info "curl -X 'GET' \"$api_url\" -H 'accept: application/json' --no-progress-meter"
 curl -X 'GET' "$api_url" -H 'accept: application/json' --no-progress-meter |
 	tee >(cat 1>&2) |
 	jq '.data' >"$_outfile"

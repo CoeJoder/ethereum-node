@@ -51,7 +51,7 @@ while true; do
 		break
 		;;
 	*)
-		printerr "unknown argument: $1"
+		log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -144,9 +144,9 @@ EOF
 	# -------------------------- PREAMBLE -----------------------------------------
 
 	if [[ $unit_files_only == true ]]; then
-		echo "${theme_value}[UNIT FILES ONLY]${color_reset}"
+		stderr "${theme_value}[UNIT FILES ONLY]${color_reset}"
 	fi
-	cat <<-EOF
+	cat >&2 <<-EOF
 	Installs & configures geth (EL), prysm-beacon (CL) to run as services.  Also generates the JWT secret shared between them.
 	EOF
 	press_any_key_to_continue
@@ -166,7 +166,7 @@ fi
 
 prysm_beacon_cpsync_opts=""
 if [[ $prysm_beacon_enable_checkpoint_sync == true ]]; then
-	printinfo "checkpoint-sync enabled"
+	log info "checkpoint-sync enabled"
 	prysm_beacon_cpsync_opts="--checkpoint-sync-url=\"$prysm_beacon_checkpoint_sync_url\" \\
 	--genesis-beacon-api-url=\"$prysm_beacon_genesis_beacon_api_url\""
 
@@ -175,7 +175,7 @@ if [[ $prysm_beacon_enable_checkpoint_sync == true ]]; then
 		Prysm-beacon genesis beacon API URL: ${color_green}$prysm_beacon_genesis_beacon_api_url${color_reset}
 	EOF
 else
-	printinfo "checkpoint-sync disabled"
+	log info "checkpoint-sync disabled"
 	prysm_beacon_checkpoint_sync_url=""
 	prysm_beacon_genesis_beacon_api_url=""
 fi
@@ -191,7 +191,7 @@ if [[ -n $suggested_fee_recipient ]]; then
 fi
 
 continue_or_exit
-printf '\n'
+stderr
 
 # if unit files already exist, confirm overwrite
 reset_checks
@@ -199,7 +199,7 @@ check_file_does_not_exist --sudo geth_unit_file
 check_file_does_not_exist --sudo prysm_beacon_unit_file
 if ! print_failed_checks --warn; then
 	continue_or_exit 1 "Overwrite?"
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -208,10 +208,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_noretry' ERR
@@ -221,19 +220,19 @@ assert_sudo
 
 if [[ $unit_files_only == false ]]; then
 	# system and app list updates
-	printinfo Running APT update and upgrade...
+	log info Running APT update and upgrade...
 	sudo apt-get -y update
 	sudo apt-get -y upgrade
 
 	# JWT secret
-	printinfo "Generating JWT secret..."
+	log info "Generating JWT secret..."
 	openssl rand -hex 32 | tr -d "\n" >"jwt.hex"
 	sudo mkdir -p "$(dirname "$eth_jwt_file")"
 	sudo mv -vf jwt.hex "$eth_jwt_file"
 	sudo chmod 644 "$eth_jwt_file"
 
 	# geth filesystem
-	printinfo "Setting up geth user, group, datadir..."
+	log info "Setting up geth user, group, datadir..."
 	sudo useradd --no-create-home --shell /bin/false "$geth_user"
 	sudo mkdir -p "$geth_datadir"
 	sudo mkdir -p "$geth_datadir_secondary_ancient"
@@ -243,26 +242,26 @@ if [[ $unit_files_only == false ]]; then
 	sudo chmod -R 700 "${geth_datadir_secondary}"
 
 	# geth install
-	printinfo "Installing geth..."
+	log info "Installing geth..."
 	sudo add-apt-repository -y ppa:ethereum/ethereum
 	sudo apt-get -y update
 	sudo apt-get -y install ethereum
 
 	# prysm-beacon filesystem
-	printinfo "Setting up prysm-beacon user, group, datadir..."
+	log info "Setting up prysm-beacon user, group, datadir..."
 	sudo useradd --no-create-home --shell /bin/false "$prysm_beacon_user"
 	sudo mkdir -p "${prysm_beacon_datadir}/beaconchaindata"
 	sudo chown -R "${prysm_beacon_user}:${prysm_beacon_group}" "$prysm_beacon_datadir"
 	sudo chmod -R 700 "$prysm_beacon_datadir"
 
 	# prysm-beacon install
-	printinfo "Installing prysm-beacon..."
+	log info "Installing prysm-beacon..."
 	install_prysm beacon-chain \
 		"$latest_prysm_version" "$prysm_beacon_bin" "$prysm_beacon_user" "$prysm_beacon_group"
 fi
 
 # geth unit file
-printinfo "Generating ${theme_filename}$geth_unit_file${color_reset}:"
+log info "Generating ${theme_filename}$geth_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$geth_unit_file"
 [Unit]
 Description=geth EL service
@@ -295,7 +294,7 @@ WantedBy=multi-user.target
 EOF
 
 # prysm-beacon unit file
-printinfo "Generating ${theme_filename}$prysm_beacon_unit_file${color_reset}:"
+log info "Generating ${theme_filename}$prysm_beacon_unit_file${color_reset}:"
 cat <<EOF | sudo tee "$prysm_beacon_unit_file"
 [Unit]
 Description=prysm beacon CL service
@@ -331,7 +330,7 @@ WantedBy=multi-user.target
 EOF
 
 # reload system services
-echo "Reloading services daemon..."
+stderr
 sudo systemctl daemon-reload
 
 # -------------------------- POSTCONDITIONS -----------------------------------

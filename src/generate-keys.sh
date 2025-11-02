@@ -90,7 +90,7 @@ while true; do
 		break
 		;;
 	*)
-		[[ -n $1 ]] && printerr "unknown option: $1"
+		[[ -n $1 ]] && log error "unknown option: $1"
 		exit 1
 		;;
 	esac
@@ -117,17 +117,17 @@ while (($#)); do
 		exit 0
 		;;
 	*)
-		printerr "unknown command: $1"
+		log error "unknown command: $1"
 		exit 1
 		;;
 	esac
 done
 
 if [[ $mode_new == false && $mode_existing == false ]]; then
-	printerr "command missing"
+	log error "command missing"
 	exit 1
 elif [[ $mode_new == true && $mode_existing == true ]]; then
-	printerr "multiple commands"
+	log error "multiple commands"
 	exit 1
 fi
 
@@ -182,7 +182,7 @@ fi
 # prompt to delete destination directory if present
 assert_sudo
 if sudo test -d "$validator_keys_dir"; then
-	printwarn "Destination already exists: $validator_keys_dir"
+	log warn "Destination already exists: $validator_keys_dir"
 	continue_or_exit 1 "Overwrite?"
 	sudo rm -rfv --interactive=never "$validator_keys_dir"
 fi
@@ -190,7 +190,7 @@ fi
 # prompt for keystore password if not passed as script arg
 if [[ -z $keystore_password ]]; then
 	log_pause "keystore password entry"
-	echo "Create a password that secures your validator keystore(s). You will need to re-enter this to decrypt them when you setup your Ethereum validators"
+	stderr "Create a password that secures your validator keystore(s). You will need to re-enter this to decrypt them when you setup your Ethereum validators"
 	enter_password_and_confirm "Choose a keystore password" \
 		"$errmsg_keystore_password" \
 		check_is_valid_keystore_password \
@@ -200,7 +200,7 @@ if [[ -z $keystore_password ]]; then
 	reset_checks
 	check_is_valid_keystore_password keystore_password
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 # prompt for num validators to generate if not passed as script arg
@@ -210,7 +210,7 @@ if [[ -z $num_validators ]]; then
 	reset_checks
 	check_is_positive_integer num_validators
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 if [[ $mode_existing == true ]]; then
@@ -221,7 +221,7 @@ if [[ $mode_existing == true ]]; then
 		reset_checks
 		check_is_valid_eip2334_index validator_start_index
 		print_failed_checks --error
-		printf '\n'
+		stderr
 	fi
 
 	# prompt for mnemonic if not passed as script arg
@@ -234,7 +234,7 @@ if [[ $mode_existing == true ]]; then
 		reset_checks
 		check_is_valid_validator_mnemonic mnemonic
 		print_failed_checks --error
-		printf '\n'
+		stderr
 	fi
 fi
 
@@ -244,10 +244,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_noretry' ERR

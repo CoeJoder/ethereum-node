@@ -66,13 +66,13 @@ node_server_ssh_endpoint="${node_server_username}@${node_server_hostname}"
 bls_to_execution_change_message_format='bls_to_execution_change-*.json'
 
 # chown the `DATA` dir and cd into it
-printinfo "Chowning the source files..."
+log info "Chowning the source files..."
 sudo chown -R "$USER:$USER" "$usb_dist_dir"
 sudo chmod 700 "$usb_dist_dir"
 cd "$usb_dist_dir" >/dev/null
 
 # search for bls messages, sorted by most-recently-modified
-printinfo "Searching for \`bls-to-execution-change\` messages on \`DATA\` drive..."
+log info "Searching for \`bls-to-execution-change\` messages on \`DATA\` drive..."
 readarray -td '' bls_messages < <(LC_ALL=C find \
 	"$usb_bls_to_execution_changes_dir" -maxdepth 1 -name \
 	"$bls_to_execution_change_message_format" -type f -printf '%T@/%P\0' |
@@ -80,14 +80,14 @@ readarray -td '' bls_messages < <(LC_ALL=C find \
 
 # prompt for which bls message to submit if multiple found
 if ((${#bls_messages[@]} == 0)); then
-	printerr "No bls messages found in ${theme_filename}$usb_bls_to_execution_changes_dir${color_reset}"
+	log error "No bls messages found in ${theme_filename}$usb_bls_to_execution_changes_dir${color_reset}"
 	exit 1
 elif ((${#bls_messages[@]} == 1)); then
 	bls_message="${bls_messages[0]}"
-	printinfo "Found ${theme_filename}$bls_message${color_reset}"
+	log info "Found ${theme_filename}$bls_message${color_reset}"
 	continue_or_exit
 else
-	printwarn "Multiple bls messages found!"
+	log warn "Multiple bls messages found!"
 	choose_from_menu "Please select one to submit:" bls_message "${bls_messages[@]}"
 	continue_or_exit
 fi
@@ -98,11 +98,11 @@ assert_sudo
 trap 'on_err_retry' ERR
 
 # 1. create remote tempdir
-printinfo "Creating remote tempdir..."
+log info "Creating remote tempdir..."
 remote_temp_dir="$(ssh -p $node_server_ssh_port $node_server_ssh_endpoint "echo \"\$(mktemp -d)\"")"
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 
 	# 4. delete the remote tempdir if it exists
 	ssh -p $node_server_ssh_port $node_server_ssh_endpoint "
@@ -111,8 +111,6 @@ function on_exit() {
 	# 5. reseal the USB deployment
 	sudo chown -R root:root "$usb_dist_dir"
 	sudo chmod 0 "$usb_dist_dir"
-	
-	print_ok
 }
 trap 'on_exit' EXIT
 
@@ -122,7 +120,7 @@ check_is_defined remote_temp_dir
 print_failed_checks --error
 
 # 2. copy into tempdir
-printinfo "Copying \`bls-to-execution-change\` message to remote tempdir..."
+log info "Copying \`bls-to-execution-change\` message to remote tempdir..."
 rsync -avh -e "ssh -p $node_server_ssh_port" \
 	--progress \
 	"$usb_bls_to_execution_changes_dir/$bls_message" "${node_server_ssh_endpoint}:${remote_temp_dir}"

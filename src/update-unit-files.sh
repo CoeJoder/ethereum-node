@@ -60,17 +60,17 @@ press_any_key_to_continue
 assert_sudo
 
 if sudo test -f "$mevboost_unit_file"; then
-	printinfo "Updating ${theme_filename}MEV-Boost${color_reset} unit file..."
+	log info "Updating ${theme_filename}MEV-Boost${color_reset} unit file..."
 	"$script_mevboost" --unit-file-only --no-banner
 fi
 
 if sudo test -f "$geth_unit_file" && sudo test -f "$prysm_beacon_unit_file"; then
-	printinfo "Updating ${theme_filename}geth${color_reset} and ${theme_filename}prysm-beacon${color_reset} unit files..."
+	log info "Updating ${theme_filename}geth${color_reset} and ${theme_filename}prysm-beacon${color_reset} unit files..."
 	"$script_node" --unit-files-only --no-banner
 fi
 
 if sudo test -f "$prysm_validator_unit_file"; then
-	printinfo "Updating ${theme_filename}prysm-validator${color_reset} unit file..."
+	log info "Updating ${theme_filename}prysm-validator${color_reset} unit file..."
 	"$script_validator" --unit-file-only --no-banner
 fi
 

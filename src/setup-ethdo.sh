@@ -60,15 +60,15 @@ get_latest_ethereal_version latest_ethereal_version
 _new_version_detected=false
 if [[ $ethdo_version != "$latest_ethdo_version" ]]; then
 	_new_version_detected=true
-	printwarn "New version of ethdo detected: ${theme_value}$latest_ethdo_version${color_reset}"
+	log warn "New version of ethdo detected: ${theme_value}$latest_ethdo_version${color_reset}"
 fi
 if [[ $ethereal_version != "$latest_ethereal_version" ]]; then
 	_new_version_detected=true
-	printwarn "New version of ethereal detected: ${theme_value}$latest_ethereal_version${color_reset}"
+	log warn "New version of ethereal detected: ${theme_value}$latest_ethereal_version${color_reset}"
 fi
 
 if [[ $_new_version_detected == true ]]; then
-	printwarn "It is suggested to update env vars with latest version checksums and then restart script."
+	log warn "It is suggested to update env vars with latest version checksums and then restart script."
 	continue_or_exit 1 "Continue anyways with older versions?"
 fi
 
@@ -78,10 +78,9 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
-	print_ok
 }
 
 trap 'on_err_retry' ERR
@@ -90,16 +89,16 @@ trap 'on_exit' EXIT
 assert_sudo
 
 # ethdo install
-printinfo "Installing ethdo..."
+log info "Installing ethdo..."
 install_wealdtech ethdo \
 	"$ethdo_version" "$ethdo_sha256_checksum" "$ethdo_bin" "$USER" "$USER"
 
 # ethereal install
-printinfo "Installing ethereal..."
+log info "Installing ethereal..."
 install_wealdtech ethereal \
 	"$ethereal_version" "$ethereal_sha256_checksum" "$ethereal_bin" "$USER" "$USER"
 
-printinfo "Configuring bash completion..."
+log info "Configuring bash completion..."
 ethdo_bashcompletions='/etc/bash_completion.d/ethdo'
 ethereal_bashcompletions='/etc/bash_completion.d/ethereal'
 sudo ethdo completion bash | sudo tee "$ethdo_bashcompletions" >/dev/null

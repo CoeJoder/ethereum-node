@@ -48,7 +48,7 @@ while true; do
 		break
 		;;
 	*)
-		[[ -n $1 ]] && printerr "unknown argument: $1"
+		[[ -n $1 ]] && log error "unknown argument: $1"
 		exit 1
 		;;
 	esac
@@ -106,7 +106,7 @@ if [[ -z $mnemonic ]]; then
 	reset_checks
 	check_is_valid_validator_mnemonic mnemonic
 	print_failed_checks --error
-	printf '\n'
+	stderr
 fi
 
 # -------------------------- EXECUTION ----------------------------------------
@@ -117,13 +117,12 @@ temp_dir=$(mktemp -d)
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	printinfo -n "Cleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
 	for temp_file in "${temp_files_to_delete[@]}"; do
 		rm -f --interactive=never "$temp_file" >/dev/null
 	done
-	print_ok
 }
 
 trap 'on_err_noretry' ERR
@@ -135,12 +134,12 @@ staking_deposit_cli__unpack_tarball
 # search for active validators
 active_validators="$(jq -C "$filter_active" "$validator_statuses_json")"
 if [[ -z $active_validators ]]; then
-	printerr "No active validators found:"
-	jq -C "$filter_all" "$validator_statuses_json"
+	log error "No active validators found:"
+	log error "$(jq -C "$filter_all" "$validator_statuses_json")"
 	exit 1
 fi
-printinfo "Active validators:"
-echo "$active_validators" >&2
+log info "Active validators:"
+log info "$active_validators"
 
 # create parallel arrays to hold validator info
 readarray -t indices < <(jq -r "$filter_active_indices" "$validator_statuses_json")
@@ -155,7 +154,7 @@ for i in "${!pubkeys[@]}"; do
 done
 
 # prompt for validators to withdraw
-echo -e "\nEnter a comma-separated list of validator indices (e.g., ${theme_example}1833689,1833692${color_reset}) or ${theme_example}all${color_reset}."
+stderr -e "\nEnter a comma-separated list of validator indices (e.g., ${theme_example}1833689,1833692${color_reset}) or ${theme_example}all${color_reset}."
 read_default "Validators to withdraw" "all" chosen_indices_csv
 if [[ $chosen_indices_csv == "all" ]]; then
 	chosen_indices=("${indices[@]}")
@@ -163,10 +162,10 @@ if [[ $chosen_indices_csv == "all" ]]; then
 elif [[ $chosen_indices_csv =~ $regex_eth_validator_indices_csv ]]; then
 	readarray -td ',' chosen_indices < <(printf '%s' "$chosen_indices_csv")
 else
-	printerr 'expected "all" or a comma-separated list of validator indices'
+	log error 'expected "all" or a comma-separated list of validator indices'
 	exit 1
 fi
-printf '\n'
+stderr
 
 # determine the parallel array indexes based on the chosen indices
 arr_indexes=()
@@ -179,7 +178,7 @@ for i in "${!chosen_indices[@]}"; do
 		fi
 	done
 	if [[ -z $arr_index ]]; then
-		printerr "invalid validator index: ${chosen_indices[i]}"
+		log error "invalid validator index: ${chosen_indices[i]}"
 		exit 1
 	fi
 	arr_indexes+=("$arr_index")
@@ -190,7 +189,7 @@ done
 chosen_pubkeys=()
 for i in "${arr_indexes[@]}"; do
 	if [[ -z "${pubkeys[i]}" ]]; then
-		printerr "expected pubkey at index $i"
+		log error "expected pubkey at index $i"
 		exit 1
 	fi
 	chosen_pubkeys+=("${pubkeys[i]}")
@@ -198,17 +197,16 @@ done
 chosen_pubkeys_csv="$(join_arr ',' "${chosen_pubkeys[@]}")"
 
 function find_failed_exit() {
-	printerr "Failed to find EIP-2334 start index.  Try running the find-script yourself, adjusting params as needed:"
-	echo -en "$theme_command" >&2
-	cat >&2 <<-EOF
-		./find-validator-key-indices.sh \\
-			--validator_pubkeys="$chosen_pubkeys_csv"
+	log error "Failed to find EIP-2334 start index.  Try running the find-script yourself, adjusting params as needed:"
+	logcat error <<-EOF
+		${theme_command}./find-validator-key-indices.sh \\
+		  --validator_pubkeys="$chosen_pubkeys_csv"
+		${color_reset}
 	EOF
-	echo -e "$color_reset" >&2
 	exit 1
 }
 
-printinfo "Need to find the lowest EIP-2334 key index of the chosen validators..."
+log info "Need to find the lowest EIP-2334 key index of the chosen validators..."
 find_validator_key_indices_outfile=$(mktemp)
 temp_files_to_delete+=("$find_validator_key_indices_outfile")
 if ! "$this_dir/find-validator-key-indices.sh" \
@@ -242,7 +240,7 @@ done <"$find_validator_key_indices_outfile"
 if [[ -z $validator_start_index ]]; then
 	find_failed_exit
 fi
-printf '\n'
+stderr
 
 # serialize the final arrays
 final_pubkeys_csv="$(join_arr ',' "${final_pubkeys[@]}")"
@@ -250,16 +248,16 @@ final_beacon_indices_csv="$(join_arr ',' "${final_beacon_indices[@]}")"
 final_bls_csv="$(join_arr ',' "${final_bls[@]}")"
 
 # display results before call
-printinfo "Validator pubkeys:\n${final_pubkeys_csv}"
-printinfo "Beacon indices:\n${final_beacon_indices_csv}"
-printinfo "BLS Withdrawal Credentials:\n${final_bls_csv}"
-printinfo "EIP-2334 validator start index:\n${validator_start_index}"
-printf '\n'
+log info "Validator pubkeys:\n${final_pubkeys_csv}"
+log info "Beacon indices:\n${final_beacon_indices_csv}"
+log info "BLS Withdrawal Credentials:\n${final_bls_csv}"
+log info "EIP-2334 validator start index:\n${validator_start_index}"
+stderr
 
 # obnoxious confirmation message
-printwarn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
-printwarn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
-printwarn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
+log warn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
+log warn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
+log warn "IMPORTANT: ensure that ${theme_command}withdrawal_address${color_reset} below is set to your withdrawal wallet address!!!"
 
 cat <<EOF
 Ready to run the following command:${theme_command}

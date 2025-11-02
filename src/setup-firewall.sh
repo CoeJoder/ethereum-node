@@ -74,7 +74,7 @@ sudo ufw status numbered
 ${color_reset}
 EOF
 continue_or_exit 0
-printf '\n'
+stderr
 
 # -------------------------- EXECUTION ----------------------------------------
 

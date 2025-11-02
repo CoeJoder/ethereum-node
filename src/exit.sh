@@ -60,11 +60,10 @@ temp_validator_statuses_json="$(mktemp)"
 pushd "$temp_dir" >/dev/null
 
 function on_exit() {
-	echo -en "\nCleaning up..."
+	log info "Cleaning up..."
 	popd >/dev/null
 	rm -rf --interactive=never "$temp_dir" >/dev/null
 	rm -f --interactive=never "$temp_validator_statuses_json" >/dev/null
-	echo -e "${color_green}OK${color_reset}"
 }
 
 trap 'on_err_retry' ERR
@@ -74,11 +73,11 @@ trap 'on_exit' EXIT
 "$this_dir/get-validator-statuses.sh" "$temp_validator_statuses_json"
 active_validators="$(jq -C "$filter_active" "$temp_validator_statuses_json")"
 if [[ -z $active_validators ]]; then
-	printerr "No active validators found:"
+	log error "No active validators found:"
 	jq -C "$filter_all" "$temp_validator_statuses_json"
 	exit 1
 fi
-printinfo "Active validators:"
+log info "Active validators:"
 echo "$active_validators" >&2
 
 # ask for comma-separated list of the public hex keys of the validators to exit
@@ -90,10 +89,10 @@ if [[ $chosen_pubkeys_csv == "all" ]]; then
 elif [[ $chosen_pubkeys_csv =~ $regex_eth_validator_pubkey_csv ]]; then
 	prysm_param_validators="--public-keys $chosen_pubkeys_csv"
 else
-	printerr 'expected "all" or a comma-separated list of hexadecimal numbers'
+	log error 'expected "all" or a comma-separated list of hexadecimal numbers'
 	exit 1
 fi
-printf '\n'
+stderr
 
 # need to invoke prysmctl as validator user, in a directory where both
 # current user and validator user have read/write/execute permissions
