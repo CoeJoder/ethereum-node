@@ -86,11 +86,13 @@ includes_non_generated="$tools_dir/non-generated.txt"
 includes_generated="$tools_dir/generated.txt"
 includes_offline="$tools_dir/offline.txt"
 deploy_src_dir="$(realpath "$src_dir")/"
+bashtools_src_dir="$(realpath "$proj_dir")/external/bash-tools/src/"
 
 check_file_exists includes_non_generated
 check_file_exists includes_generated
 check_file_exists includes_offline
 check_directory_exists deploy_src_dir
+check_directory_exists bashtools_src_dir
 
 print_failed_checks --error
 
@@ -207,7 +209,7 @@ if [[ $usb_mode == true ]]; then
 	# includes-file but not existing in source filesystem
 	rsync -avh \
 		--progress \
-		--delete \
+		--delete-after \
 		--include-from="$includes_non_generated" \
 		--include-from="$includes_offline" \
 		--exclude="*" \
@@ -221,6 +223,18 @@ if [[ $usb_mode == true ]]; then
 		--exclude="*" \
 		$rsync_opts \
 		"$deploy_src_dir" "$usb_dist_dir"
+
+	# copy over bash-tools
+	rsync -avh \
+		--progress \
+		--delete-after \
+		--relative \
+		--include='*/' \
+		--exclude='__*.sh' \
+		--include='*.sh' \
+		--exclude='*' \
+		$rsync_opts \
+		"$bashtools_src_dir" "$usb_dist_dir"
 
 	# deploy the unseal.sh script to the dist parent dir
 	unseal_dest="$client_pc_usb_data_drive/unseal.sh"
@@ -254,6 +268,18 @@ else
 		--exclude="*" \
 		$rsync_opts \
 		"$deploy_src_dir" "${node_server_username}@${node_server_hostname}:$dist_dirname"
+
+	# copy over bash-tools
+	rsync -av -e "ssh -p $node_server_ssh_port" \
+		--progress \
+		--relative \
+		--delete-after \
+		--include='*/' \
+		--exclude='__*.sh' \
+		--include='*.sh' \
+		--exclude='*' \
+		$rsync_opts \
+		"$bashtools_src_dir" "${node_server_username}@${node_server_hostname}:$dist_dirname"
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
