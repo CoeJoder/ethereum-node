@@ -224,6 +224,8 @@ if [[ $usb_mode == true ]]; then
 		"$deploy_src_dir" "$usb_dist_dir"
 
 	# copy over bash-tools
+	# ensure curdir is projdir for --relative to work correctly
+	pushd "$proj_dir"
 	rsync -avh \
 		--progress \
 		--delete-after \
@@ -233,7 +235,8 @@ if [[ $usb_mode == true ]]; then
 		--include='*.sh' \
 		--exclude='*' \
 		$rsync_opts \
-		"$bashtools_src_dir" "$usb_dist_dir"
+		"$(realpath --relative-to="${PWD}" "$bashtools_src_dir")" "$usb_dist_dir"
+	popd
 
 	# deploy the unseal.sh script to the dist parent dir
 	unseal_dest="$client_pc_usb_data_drive/unseal.sh"
@@ -269,6 +272,8 @@ else
 		"$deploy_src_dir" "${node_server_username}@${node_server_hostname}:$dist_dirname"
 
 	# copy over bash-tools
+	# ensure curdir is projdir for --relative to work correctly
+	pushd "$proj_dir"
 	rsync -av -e "ssh -p $node_server_ssh_port" \
 		--progress \
 		--relative \
@@ -278,7 +283,8 @@ else
 		--include='*.sh' \
 		--exclude='*' \
 		$rsync_opts \
-		"$bashtools_src_dir" "${node_server_username}@${node_server_hostname}:$dist_dirname"
+		"$(realpath --relative-to="${PWD}" "$bashtools_src_dir")" "${node_server_username}@${node_server_hostname}:$dist_dirname"
+		popd
 fi
 
 # -------------------------- POSTCONDITIONS -----------------------------------
