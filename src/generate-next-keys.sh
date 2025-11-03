@@ -146,6 +146,7 @@ readarray -t pubkeys < <(jq -r "$filter_all_pubkeys" "$validator_statuses_json")
 pubkeys_csv="$(join_arr ',' "${pubkeys[@]}")"
 
 function find_failed_exit() {
+	functrace
 	log error "Failed to find EIP-2334 start index.  Try running the find-script yourself, adjusting params as needed:"
 	logcat error <<-EOF
 		${theme_command}./find-validator-key-indices.sh \\

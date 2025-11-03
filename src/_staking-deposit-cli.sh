@@ -17,6 +17,7 @@ declare -g theme_filename
 declare -g color_reset
 
 function staking_deposit_cli__preconditions() {
+	functrace
 	assert_offline
 	assert_not_on_node_server
 	assert_sudo
@@ -38,6 +39,7 @@ function staking_deposit_cli__preconditions() {
 }
 
 function staking_deposit_cli__reconnaissance() {
+	functrace
 	reset_checks
 	check_is_defined ethstaker_deposit_cli_sha256_url
 	check_is_defined ethstaker_deposit_cli_sha256_checksum
@@ -54,6 +56,7 @@ function staking_deposit_cli__reconnaissance() {
 }
 
 function staking_deposit_cli__unpack_tarball() {
+	functrace
 	# these are set during preconditions, make sure they're set
 	reset_checks
 	check_file_exists --sudo deposit_cli

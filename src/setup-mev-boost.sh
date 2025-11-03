@@ -134,6 +134,7 @@ mevboost_network_opt=""
 mevboost_relay_opts=""
 
 function build_relay_opts() {
+	functrace "$@"
 	local relays=("$@")
 	for i in "${!relays[@]}"; do
 		mevboost_relay_opts="${mevboost_relay_opts}-relay ${relays[i]}"

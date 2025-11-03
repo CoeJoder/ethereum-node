@@ -187,6 +187,7 @@ function on_err_noretry() {
 
 # get the latest EthStaker Deposit CLI release version
 function get_latest_deposit_cli_version() {
+	functrace "$@"
 	if [[ $# -ne 1 ]]; then
 		log error "Usage: get_latest_deposit_cli_version outvar"
 		return 255
@@ -197,6 +198,7 @@ function get_latest_deposit_cli_version() {
 
 # get the latest prysm release version
 function get_latest_prysm_version() {
+	functrace "$@"
 	if [[ $# -ne 1 ]]; then
 		log error "Usage: get_latest_prysm_version outvar"
 		return 255
@@ -207,6 +209,7 @@ function get_latest_prysm_version() {
 
 # get the latest ethdo release version
 function get_latest_ethdo_version() {
+	functrace "$@"
 	if [[ $# -ne 1 ]]; then
 		log error "Usage: get_latest_ethdo_version outvar"
 		return 255
@@ -217,6 +220,7 @@ function get_latest_ethdo_version() {
 
 # get the latest ethereal release version
 function get_latest_ethereal_version() {
+	functrace "$@"
 	if [[ $# -ne 1 ]]; then
 		log error "Usage: get_latest_ethereal_version outvar"
 		return 255
@@ -227,6 +231,7 @@ function get_latest_ethereal_version() {
 
 # get the latest mevboost release version
 function get_latest_mevboost_version() {
+	functrace "$@"
 	if [[ $# -ne 1 ]]; then
 		log error "Usage: get_latest_mevboost_version outvar"
 		return 255
@@ -236,6 +241,7 @@ function get_latest_mevboost_version() {
 }
 
 function download_jq() {
+	functrace "$@"
 	if [[ $# -ne 3 ]]; then
 		log error "Usage: download_jq jq_bin jq_bin_sha256 version"
 		return 255
@@ -255,6 +261,7 @@ function download_jq() {
 # download and checksum a prysm program from the GitHub release page,
 # and assign the bin filename to the given `outvar`
 function download_prysm() {
+	functrace "$@"
 	if [[ $# -ne 3 ]]; then
 		log error "Usage: download_prysm program version outvar"
 		return 255
@@ -271,6 +278,7 @@ function download_prysm() {
 }
 
 function download_wealdtech() {
+	functrace "$@"
 	if [[ $# -ne 4 || ($1 != 'ethdo' && $1 != 'ethereal') ]]; then
 		log error "Usage: download_wealdtech {ethdo|ethereal} version sha256_checksum outvar"
 		return 255
@@ -295,6 +303,7 @@ function download_wealdtech() {
 }
 
 function download_mevboost() {
+	functrace "$@"
 	if [[ $# -ne 3 ]]; then
 		log error "Usage: download_mevboost version sha256_checksum outvar"
 		return 255
@@ -319,6 +328,7 @@ function download_mevboost() {
 
 # downloads and installs a given version of a prysm program
 function install_prysm() {
+	functrace "$@"
 	if [[ $# -ne 5 ]]; then
 		log error "Usage: install_prysm program version destination_bin owner group"
 		return 255
@@ -333,6 +343,7 @@ function install_prysm() {
 
 # downloads, extracts, and installs a given version of a wealdtech program
 function install_wealdtech() {
+	functrace "$@"
 	if [[ $# -ne 6 || ($1 != 'ethdo' && $1 != 'ethereal') ]]; then
 		log error "Usage: install_wealdtech {ethdo|ethereal} version sha256_checksum destination_bin owner group"
 		return 255
@@ -348,6 +359,7 @@ function install_wealdtech() {
 
 # downloads, extracts, and installs a given version of MEV-Boost
 function install_mevboost() {
+	functrace "$@"
 	if [[ $# -ne 5 ]]; then
 		log error "Usage: install_mevboost version sha256_checksum destination_bin owner group"
 		return 255
@@ -364,6 +376,7 @@ function install_mevboost() {
 # parses the index number from a validator signing key path per EIP-2334
 # e.g. 'm/12381/3600/4/0/0' yields '4'
 function parse_index_from_signing_key_path() {
+	functrace "$@"
 	if [[ $# -ne 2 ]]; then
 		log error "Usage: parse_index_from_signing_key_path signing_key_path outvar"
 		return 255
@@ -382,6 +395,7 @@ function is_devmode() {
 }
 
 function beaconchain_base_url() {
+	functrace "$@"
 	if (($# != 2)); then
 		log error "Usage: beaconchain_base_url network outvar"
 		return 255
@@ -398,17 +412,20 @@ function beaconchain_base_url() {
 
 # assert that script process is running on the node server
 function assert_on_node_server() {
+	functrace
 	assert_on_host "$node_server_hostname"
 }
 
 # assert that script process is not running on the node server
 function assert_not_on_node_server() {
+	functrace
 	assert_not_on_host "$node_server_hostname"
 }
 
 # -------------------------- CHECKS -------------------------------------------
 
 function check_is_valid_ethereum_network() {
+	functrace "$@"
 	if _check_is_defined "$1"; then
 		if [[ ${!1} != "$mainnet" && ${!1} != "$testnet" ]]; then
 			_check_failures+=("invalid Ethereum network: ${!1}")
@@ -417,6 +434,7 @@ function check_is_valid_ethereum_network() {
 }
 
 function check_is_valid_ethereum_address() {
+	functrace "$@"
 	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_eth_addr ]]; then
 			_check_failures+=("invalid Ethereum address: ${!1}")
@@ -425,6 +443,7 @@ function check_is_valid_ethereum_address() {
 }
 
 function check_is_valid_validator_mnemonic() {
+	functrace "$@"
 	if _check_is_defined "$1"; then
 		if [[ $(printf '%s' "${!1}" | wc -w) -ne 24 ]]; then
 			_check_failures+=("$1: expected a 24-word seed phrase")
@@ -433,6 +452,7 @@ function check_is_valid_validator_mnemonic() {
 }
 
 function check_is_valid_validator_index_or_pubkey() {
+	functrace "$@"
 	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_uint && ! ${!1} =~ $regex_eth_validator_pubkey ]]; then
 			_check_failures+=("$1: expected a validator index or pubkey")
@@ -441,6 +461,7 @@ function check_is_valid_validator_index_or_pubkey() {
 }
 
 function check_is_valid_validator_pubkeys() {
+	functrace "$@"
 	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_eth_validator_pubkey_csv && ! ${!1} =~ $regex_eth_validator_pubkey_csv_v2 ]]; then
 			_check_failures+=("$1: expected a comma-separated list of validator pubkeys")
@@ -449,6 +470,7 @@ function check_is_valid_validator_pubkeys() {
 }
 
 function check_is_valid_eip2334_index() {
+	functrace "$@"
 	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ ^[[:digit:]]+$ || ! ${!1} -ge 0 ]]; then
 			_check_failures+=("$1: expected a valid EIP-2334 index ≥ 0")
@@ -457,6 +479,7 @@ function check_is_valid_eip2334_index() {
 }
 
 function check_is_valid_keystore_password() {
+	functrace "$@"
 	if _check_is_defined "$1"; then
 		if [[ ! ${!1} =~ $regex_keystore_password ]]; then
 			_check_failures+=("$1: $errmsg_keystore_password")

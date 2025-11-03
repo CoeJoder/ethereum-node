@@ -11,6 +11,7 @@ declare -g jq_bin_dist
 declare -g jq_bin_sha256_dist
 
 function portable_jq__preconditions() {
+	functrace
 	assert_sudo
 
 	reset_checks
@@ -29,5 +30,6 @@ function portable_jq__preconditions() {
 }
 
 function jq() {
+	functrace "$@"
 	"$jq_bin_dist" "$@"
 }

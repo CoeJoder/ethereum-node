@@ -2,13 +2,13 @@
 
 # test_suite_all.sh
 #
-# Runs all `bash-tools` tests defined in `tests.sh`
+# Runs all tests defined in `./test/testcases.sh`
 
-this_dir="$(dirname "$(realpath "$0")")"
+this_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 export this_dir
 
 function test_in_subshell() ( # subshell
-	source "$this_dir/tests.sh"
+	source "$this_dir/testcases.sh"
 	run_test "$1"
 )
 

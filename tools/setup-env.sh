@@ -46,6 +46,7 @@ press_any_key_to_continue
 # -------------------------- RECONNAISSANCE -----------------------------------
 
 function find_available_env_filename() {
+	functrace "$@"
 	if (($# != 2)); then
 		log error "usage: find_available_env_filename network outvar"
 		return 2
@@ -63,6 +64,7 @@ function find_available_env_filename() {
 }
 
 function shorten_path() {
+	functrace "$@"
 	if (($# != 2)); then
 		log error "usage: shorten_path filepath outvar"
 		return 2
