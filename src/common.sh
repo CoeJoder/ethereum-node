@@ -114,6 +114,7 @@ function housekeeping() {
 	log_start
 	log_timestamp
 	set_env
+	set_loglevel 'trace'
 }
 
 # set the project environment variables
