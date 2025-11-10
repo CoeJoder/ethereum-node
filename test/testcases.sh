@@ -16,7 +16,7 @@ source "$this_dir/../external/bash-tools/test/test_framework.sh"
 
 # .env setup
 housekeeping
-set_loglevel 'trace'
+set_loglevel 'info'
 
 # -------------------------- TEST CASES ---------------------------------------
 
