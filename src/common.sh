@@ -100,8 +100,8 @@ regex_eth_validator_bls_withdrawal_credentials='^0x[[:xdigit:]]{64}$'
 regex_eth_validator_signing_key_path='m/12381/3600/([[:digit:]]+)/0/0'
 
 # prompted by the EthStaker Deposit CLI
-regex_keystore_password='^.{8,}$'
-errmsg_keystore_password='expected a valid keystore password of at least 8-digits'
+regex_keystore_password='^.{12,}$'
+errmsg_keystore_password='expected a valid keystore password of at least 12-digits'
 
 # generic error messages to display on ERR trap
 errmsg_noretry="\nSomething went wrong.  Send ${theme_filename}log.txt${color_reset} to the HGiC (Head Geek-in-Charge)"
