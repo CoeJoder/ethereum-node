@@ -111,4 +111,5 @@
 !tools/offline.txt
 !tools/setup-env.sh
 !tools/unseal.sh
+!tools/validator_accounts_list.sh
 !tools/withdraw.sh
