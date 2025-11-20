@@ -7,6 +7,40 @@ sidebar:
 
 The following queries can be performed using the scripts in the `tools` directory.
 
+## Validator Accounts List
+List the validator account pubkeys and their on-chain indices.
+
+```
+Usage:
+  validator_accounts_list.sh
+```
+
+#### Example
+```bash
+cd ethereum-node
+./tools/validator_accounts_list.sh
+```
+```
+(keymanager kind) local wallet
+
+Showing 3 validator accounts
+View the eth1 deposit transaction data for your accounts by running `validator accounts list --show-deposit-data`
+
+Account 0 | handicap-beagle-hunter
+[validating public key] 0xa5ec42c0084d979fa1a6e1159cf63d6a387ed86cc24e896d17c6b6a35eacb2f5c04400b7dbff10bd377195c8a2fd9ab6
+
+Account 1 | whisker-kayak-peanuts
+[validating public key] 0xaff4bd663af39ea32969d8597f43b512474fd64e19fc9219223c1e729cf4e00f3b5ee4e4062ae6e516a975eae7a60edd
+
+Account 2 | usually-much-kingbreak
+[validating public key] 0xb6df8dc0c4c8b7513434a572c256003f91a641bff054086f7378990df985599defbbed432087fcb71f303bf728638fd9
+
+Validator indices:
+0xa5ec42c0: 1119809
+0xaff4bd66: 1119810
+0xb6df8dc0: 1119811
+```
+
 ## Estimate Withdrawal Sweep
 Estimate the next/previous automatic withdrawal "sweeps" of any validator.  Any validator index or pubkey
 can be used, even if it is not yet a **0x01** type validator.
